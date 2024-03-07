@@ -12,23 +12,24 @@ const form = ref<IProduct>({
     name:'',
     code:'',
     sku:'',
+    sale_price:0,
     status:'',
 })
 onMounted(() => {
     const id :number = route.params.id
-    fetchProductByID(id).then((res) => {
+    fetchProductByID(id).then((res:any) => {
         console.log(res)
                 form.value = res.data;
-            }).catch((err) => {
+            }).catch((err:any) => {
                 toast.error(err.message)
             })
 })
 const handleSubmit = () => {
     const id :number = route.params.id
-    updateProduct(id,form.value).then((res)=>{
+    updateProduct(id,form.value).then((res:any)=>{
         toast(res.data)
         router.push('/products')
-    }).catch((err)=>{
+    }).catch((err:any)=>{
         if(err.response.status == "422"){
         errorMessages.value =  err.response.data.errors
         }else if(err.response.status == "401"){  
@@ -128,6 +129,28 @@ const handleSubmit = () => {
                                 </v-select>
                             </VCol>
 
+                        </VRow>
+                    </VCol>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="sku">Sale Price</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="sku"
+                            type="number"
+                            v-model="form.sale_price"
+                            :error-messages="errorMessages.sale_price"
+                            placeholder="Please enter sale price"
+                            persistent-placeholder
+                            />
+                        </VCol>
                         </VRow>
                     </VCol>
                     <VCol

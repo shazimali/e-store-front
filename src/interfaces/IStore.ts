@@ -1,6 +1,9 @@
 export interface IStore {
     name: string,
     status: string,
+    ntn: string,
+    sale_tax_number: string,
+    address: string,
     city_id: number|string ,
     email: string,
     phone: number|string ,

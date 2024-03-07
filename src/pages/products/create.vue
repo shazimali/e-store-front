@@ -90,6 +90,28 @@
 
                         </VRow>
                     </VCol>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="sku">Sale Price</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="sku"
+                            type="number"
+                            v-model="form.sale_price"
+                            :error-messages="errorMessages.sale_price"
+                            placeholder="Please enter sale price"
+                            persistent-placeholder
+                            />
+                        </VCol>
+                        </VRow>
+                    </VCol>
                     <VCol
                         cols="12"
                         class="d-flex gap-4"
@@ -106,7 +128,7 @@
  <script setup lang="ts">
  import { IProduct } from '@/interfaces/IProduct';
 import { saveProduct } from '@/services/ProductService';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { toast } from 'vue3-toastify';
 
 const errorMessages = ref<IProduct>({});
@@ -115,13 +137,14 @@ const form = ref<IProduct>({
     name:'',
     code:'',
     sku:'',
+    sale_price:0,
     status:'',
 })
 const handleSubmit = () => {
-    saveProduct(form.value).then((res)=>{
+    saveProduct(form.value).then((res:any)=>{
         toast(res.data)
         router.push('/products')
-    }).catch((err)=>{
+    }).catch((err:any)=>{
         if(err.response.status == "422"){
         errorMessages.value =  err.response.data.errors
         }else if(err.response.status == "401"){  

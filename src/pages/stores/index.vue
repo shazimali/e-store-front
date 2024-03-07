@@ -66,9 +66,10 @@ import { toast } from 'vue3-toastify';
        const current_page = ref<number>(1)
        const router = useRouter();
        const headers = [
-               { title: "Name", align: "start",value: "name" },
-               { title: "Code", value: "code"},
-               { title: "Email", value: "email"},
+                { title: "Code",align: "start", value: "code"},
+               { title: "Name", value: "name" },
+               { title: "NTN", value: "ntn" },
+               { title: "Sale Tax ", value: "sale_tax_number" },
                { title: "Phone", value: "phone"},
                { title: "City", value: "city"},
                { title: "Status", value: "status"},
@@ -89,7 +90,7 @@ import { toast } from 'vue3-toastify';
                 lstStores.value = res.data.data
                 total_items.value= res.data.meta.total
                 loading.value = false;
-                }).catch((err) => {
+                }).catch((err:any) => {
                 toast.error(err.message)
                 loading.value = false;
             })

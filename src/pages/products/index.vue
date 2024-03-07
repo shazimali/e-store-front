@@ -32,12 +32,12 @@
            item-key="id"
            @update:options ="doFetchProducts"
            class="elevation-1"
-       >
+            >
 
       <template v-slot:item.status="{ item }">
-        <div class="text-end">
+        <div>
           <v-chip
-            :color="item.status == 'ACTIVE' ? 'green' : 'red'"
+            :color="item.status == 'INACTIVE' ? 'green' : 'red'"
             :text="item.status"
           ></v-chip>
         </div>
@@ -65,10 +65,11 @@ import { toast } from 'vue3-toastify';
        const total_items = ref<number>()
        const current_page = ref<number>(1)
        const router = useRouter();
-       const headers = [
+       const headers:any = [
                { title: "Name", align: "start",value: "name" },
                { title: "Code", value: "code"},
                { title: "SKU", value: "sku"},
+               { title: "Sale Price", value: "sale_price"},
                { title: "Status", value: "status"},
                { title: "Created At", value: "created_at"},
                { title: "Actions", value: "actions" }

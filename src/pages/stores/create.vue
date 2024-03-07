@@ -8,27 +8,25 @@ const errorMessages = ref<IStore>({});
 const lstCities = ref<[]>([]);
 const router = useRouter();
 const form = ref<IStore>({
-    name:'',
-    code:'',
-    email:'',
-    status:'',
-    city_id: '',
-    phone: '',
+    name:'',code:'',email:'',
+    ntn:'',sale_tax_number:'',
+    address:'',status:'',
+    city_id: '',phone: ''
 })
 
 onMounted(() => {
-    fetchCities().then((res) => {
+    fetchCities().then((res:any) => {
         console.log(res.data)
         lstCities.value = res.data
-    }).catch((err) => {
+    }).catch((err:any) => {
         toast.error(err.message);
     })
 })
 const handleSubmit = () => {
-    saveStore(form.value).then((res)=>{
+    saveStore(form.value).then((res:any)=>{
         toast(res.data)
         router.push('/stores')
-    }).catch((err)=>{
+    }).catch((err:any)=>{
         if(err.response.status == "422"){
         errorMessages.value =  err.response.data.errors
         }else if(err.response.status == "401"){  
@@ -134,6 +132,48 @@ const handleSubmit = () => {
                         <VCol
                             cols="12"
                         >
+                            <label for="sku">NTN</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="ntn"
+                            v-model="form.ntn"
+                            :error-messages="errorMessages.ntn"
+                            placeholder="Please enter NTN"
+                            persistent-placeholder
+                            />
+                        </VCol>
+                        </VRow>
+                    </VCol>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="sku">Sale Tax Number</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="sale_tax_number"
+                            v-model="form.sale_tax_number"
+                            :error-messages="errorMessages.sale_tax_number"
+                            placeholder="Please enter sale tax number"
+                            persistent-placeholder
+                            />
+                        </VCol>
+                        </VRow>
+                    </VCol>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
                             <label for="status">Status</label>
                         </VCol>
                 
@@ -176,6 +216,24 @@ const handleSubmit = () => {
 
                         </VRow>
                     </VCol>
+                    <VCol
+                            cols="12"
+                        >
+                            <label for="address">Address</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                        <VTextField
+                            id="sale_tax_number"
+                            v-model="form.address"
+                            :error-messages="errorMessages.address"
+                            placeholder="Please enter address"
+                            persistent-placeholder
+                            />
+                            </VCol>
+
                     <VCol
                         cols="12"
                         class="d-flex gap-4"

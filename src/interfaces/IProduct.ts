@@ -1,7 +1,7 @@
 export interface IProduct {
-    id:number,
     name : string,
     sku : string | number,
+    sale_price : number,
     code : string | number,
     status: string
 }
