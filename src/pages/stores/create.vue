@@ -197,7 +197,7 @@ const handleSubmit = () => {
                         <VCol
                             cols="12"
                         >
-                            <label for="status">City</label>
+                            <label for="status">Head Office</label>
                         </VCol>
                 
                         <VCol

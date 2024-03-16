@@ -3,33 +3,40 @@ import { getRandomValues } from 'crypto';
 
 import { fetchProducts } from '@/services/ProductService';
 <script setup lang="ts">
+import { IBranchList } from '@/interfaces/IBranch';
 import { IDeliverable, IDeliverableErrors } from '@/interfaces/IDeliverable';
 import { IProductList } from '@/interfaces/IProduct';
 import { IStoreList } from '@/interfaces/IStore';
-import { fetchProductsAndStores, saveDeliverable } from '@/services/Deliverable';
+import { fetchBranchesAndProductsByStoreID, fetchStores, saveDeliverable } from '@/services/Deliverable';
 import { toast } from 'vue3-toastify';
 import SelectedProducts from './selectedProducts.vue';
 const errorMessages = ref<IDeliverableErrors>({})
 const lstProducts = ref<IProductList>([])
 const lstStores = ref<IStoreList>()
+const lstBranches = ref<IBranchList>()
 const loading = ref<boolean>(false)
 const searchInput = ref<string>('')
 const form = ref<IDeliverable>({
     date:new Date().toISOString().slice(0,10),
+    order_date:new Date().toISOString().slice(0,10),
+    sr_number:'',
     total_qty:'',
-    store_id: NaN,
+    store_id: '',
     products:[],
-    product_id:''
+    product_id:'',
+    branch_id: ''
 })
 onMounted(() => {
-    fetchProductsAndStores().then((res) => {
-        lstProducts.value = res.data.products;
-        lstStores.value = res.data.stores
-    }).catch((err) => {
-        toast.error(err.message)
-    })
+    doFetchStores()
 })
 
+const doFetchStores = () => {
+    fetchStores().then((res:any) => {
+        lstStores.value = res.data
+    }).catch((err:any) => {
+        toast.error(err.message)
+    })
+}
 const handleSelectedProducts = () => {
     const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
      if (selectedIdx != -1){ 
@@ -67,11 +74,15 @@ const handleTotalQty = (qty:number) => {
 
 const handleSubmit = () => {
     loading.value = true;
-    saveDeliverable(form.value).then((res) => {
+    saveDeliverable(form.value).then((res:any) => {
         reset();
-        toast.success(res.data);
+        doFetchStores();
+        const id = res.data;
+        toast.success('Deliverable created successfully');
         loading.value = false
-    }).catch((err) => {
+        let url = '/print/'+id+"?type="+"deliverable";
+        window.open(url, '_blank');
+    }).catch((err:any) => {
         loading.value = false
         if(err.response.status == "422"){
             errorMessages.value =  err.response.data.errors
@@ -83,10 +94,30 @@ const handleSubmit = () => {
     })
 }
 
+const getBranchesAndProducts = (id:number) => {
+    if(id){
+        fetchBranchesAndProductsByStoreID(id).then((res:any) => {
+        lstBranches.value = res.data.branches
+        lstProducts.value = res.data.products
+        }).catch((err:any) => {
+            toast.error(err.message)
+        })
+    }else{
+        lstBranches.value = []
+    }
+    
+}
+
 const reset = () => {
-    form.value.store_id = NaN
+    form.value.store_id = ''
+    form.value.branch_id = ''
+    form.value.sr_number = ''
+    form.value.date = new Date().toISOString().slice(0,10)
+    form.value.order_date = new Date().toISOString().slice(0,10)
     form.value.total_qty = 0
     form.value.products = []
+    lstBranches.value = []
+    lstStores.value = []
 }
 </script>
 <template>
@@ -94,38 +125,82 @@ const reset = () => {
            <VCardText>
              <VForm @submit.prevent="handleSubmit">
      <VRow>
-       <VCol cols="6">
-             <label for="name">Date</label>
+        <VCol cols="4">
+             <label for="date">Date</label>
              <VTextField
                id="date"
                type="date"
+               tabindex="1"
                :error-messages="errorMessages.date"
                v-model="form.date"
                persistent-placeholder
              />
 
        </VCol>
-       <VCol cols="6">
-             <label for="name">Store</label>
-             <v-select
-            v-model="form.store_id"         
-            :items="lstStores"
-            item-title="name"
-            item-value="id"
-            label="select store"
-            :error-messages="errorMessages.store_id"
-            variant="outlined"
-            />
+       <VCol cols="4">
+             <label for="order_date">Order Date</label>
+             <VTextField
+               id="order_date"
+               type="date"
+               tabindex="2"
+               :error-messages="errorMessages.order_date"
+               v-model="form.order_date"
+               persistent-placeholder
+             />
 
        </VCol>
-       <VCol cols="12">
+       <VCol cols="4">
+             <label for="sr_number">Sr #</label>
+             <VTextField
+               id="sr_number"
+               type="text"
+               tabindex="3"
+               :error-messages="errorMessages.sr_number"
+               v-model="form.sr_number"
+               persistent-placeholder
+             />
+
+       </VCol>
+        <VCol cols="6">
+             <label for="name">Main Store</label>
+            <v-autocomplete
+            v-model="form.store_id"
+            :items="lstStores"
+            :item-title="item => item? `${item.code}-${item.name}`: ''"
+            item-value="id"
+            tabindex="4 "
+            :error-messages="errorMessages.store_id"
+            variant="outlined"
+            @update:menu="getBranchesAndProducts(form.store_id)"
+            >
+            </v-autocomplete>
+
+       </VCol>
+
+       <VCol v-if="lstBranches && lstBranches.length > 0" cols="6">
+             <label for="branches">Branches</label>
+            <v-autocomplete
+            v-model="form.branch_id"
+            :items="lstBranches"
+            :item-title="item => item? `${item.code}-${item.name}`: ''"
+            item-value="id"
+            tabindex="5"
+            :error-messages="errorMessages.branch_id"
+            variant="outlined"
+            >
+            </v-autocomplete>
+
+       </VCol>
+       
+       <VCol v-if="lstBranches && lstBranches.length > 0" cols="12">
             
             <label for="products">Products</label>
             <v-autocomplete
                 v-model="form.product_id"
                 v-model:search="searchInput"
                 :items="lstProducts"
-                item-title="name"
+                tabindex="6"
+                :item-title="item => item? `${item.code}-${item.name}`: ''"
                 item-value="id"
                 :error-messages="errorMessages.products"
                 variant="outlined"
@@ -134,7 +209,7 @@ const reset = () => {
             </v-autocomplete>
         </VCol>
         
-        <VCol cols="12">
+        <VCol v-if="lstBranches && lstBranches.length > 0" cols="12">
             <SelectedProducts 
             v-bind="form"
             @delete-product="handleProductDelete"
@@ -145,6 +220,7 @@ const reset = () => {
         </VCol>
         
        <VCol
+        v-if="lstBranches && lstBranches.length > 0"
          cols="12"
          class="d-flex gap-4 justify-end align-center flex-wrap"
        >

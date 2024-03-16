@@ -9,6 +9,30 @@
                         <VCol
                             cols="12"
                         >
+                            <label for="status">Main Store</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                        <v-autocomplete
+                            v-model="form.store_id"
+                            :items="lstStores"
+                            :item-title="item => item? `${item.code}-${item.name}`: ''"
+                            item-value="id"
+                            :error-messages="errorMessages.store_id"
+                            variant="outlined"
+                            >
+                        </v-autocomplete>
+                            </VCol>
+
+                        </VRow>
+                    </VCol>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
                             <label for="name">Name</label>
                         </VCol>
                 
@@ -127,18 +151,27 @@
  </template>
  <script setup lang="ts">
  import { IProduct } from '@/interfaces/IProduct';
-import { saveProduct } from '@/services/ProductService';
+import { fetchStores, saveProduct } from '@/services/ProductService';
 import { ref } from 'vue';
 import { toast } from 'vue3-toastify';
 
 const errorMessages = ref<IProduct>({});
 const router = useRouter();
+const lstStores = ref<[]>([])
 const form = ref<IProduct>({
     name:'',
     code:'',
     sku:'',
     sale_price:0,
     status:'',
+    store_id:''
+})
+onMounted(() => {
+    fetchStores().then((res:any) => {
+        lstStores.value = res.data;
+    }).catch((err:any) => {
+        toast.error('err.message');
+    })
 })
 const handleSubmit = () => {
     saveProduct(form.value).then((res:any)=>{

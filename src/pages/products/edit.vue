@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { IProduct } from '@/interfaces/IProduct';
-import { fetchProductByID, updateProduct } from '@/services/ProductService';
+import { fetchProductByID, fetchStores, updateProduct } from '@/services/ProductService';
 import { onMounted, ref } from 'vue';
 import { toast } from 'vue3-toastify';
 
 const route = useRoute()
 const errorMessages = ref<IProduct>({});
-const item_per_page = ref<number>(10);
+const lstStores = ref<[]>([])
 const router = useRouter();
 const form = ref<IProduct>({
     name:'',
@@ -14,11 +14,16 @@ const form = ref<IProduct>({
     sku:'',
     sale_price:0,
     status:'',
+    store_id:''
 })
 onMounted(() => {
+    fetchStores().then((res:any) => {
+        lstStores.value = res.data;
+    }).catch((err:any) => {
+        toast.error('err.message');
+    })
     const id :number = route.params.id
     fetchProductByID(id).then((res:any) => {
-        console.log(res)
                 form.value = res.data;
             }).catch((err:any) => {
                 toast.error(err.message)
@@ -45,6 +50,30 @@ const handleSubmit = () => {
         <VCardText>
             <VForm @submit.prevent="handleSubmit">
                 <VRow>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="status">Main Store</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                        <v-autocomplete
+                            v-model="form.store_id"
+                            :items="lstStores"
+                            :item-title="item => item? `${item.code}-${item.name}`: ''"
+                            item-value="id"
+                            :error-messages="errorMessages.store_id"
+                            variant="outlined"
+                            >
+                        </v-autocomplete>
+                            </VCol>
+
+                        </VRow>
+                    </VCol>
                     <VCol cols="6">
                         <VRow no-gutters>
                         <VCol
@@ -158,7 +187,7 @@ const handleSubmit = () => {
                         class="d-flex gap-4"
                     >
                         <VBtn type="submit">
-                        Create
+                        Update
                         </VBtn>
                     </VCol>
                 </VRow>

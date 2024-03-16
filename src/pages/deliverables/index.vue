@@ -33,11 +33,21 @@
            @update:options ="doFetchDeliverables"
            class="elevation-1"
        >
-
-                <template 
+       <template v-slot:item.sr="{index}">
+            {{index+1}}
+        </template>
+        <template v-slot:item.invoice_id="{item}">
+            <a :href="`/print/${item.id}/?type=deliverable`" target="_blank">
+          {{ item.invoice_id }}
+            </a>
+        </template>
+        <template v-slot:item.total_qty="{item}">
+            {{ commaFormate(item.total_qty ) }}
+        </template>
+                <!-- <template 
                     v-slot:item.actions="{ item }">
                     <v-icon v-if="canAccess('purchase_edit')"  @click="handleEdit(item.id)" class="mr-2 ri-pencil-line"/>
-                </template>
+                </template> -->
             </v-data-table-server>
        </VCard>
        </VCol>
@@ -47,7 +57,7 @@
 
 import { IDeliverableList } from '@/interfaces/IDeliverable';
 import { fetchDeliverables } from '@/services/Deliverable';
-import { canAccess } from '@core/utils/helpers';
+import { canAccess, commaFormate } from '@core/utils/helpers';
 import { toast } from 'vue3-toastify';
        const lstDeliverables = ref<IDeliverableList>([])
        const loading = ref<boolean>(false)
@@ -57,12 +67,13 @@ import { toast } from 'vue3-toastify';
        const current_page = ref<number>(1)
        const router = useRouter();
        const headers = [
-               { title: "Invoice#", align: "start",value: "invoice_id" },
+               { title: "Sr#", align: "start",value: "sr" },
+               { title: "Invoice#",value: "invoice_id" },
                { title: "Store", value: "store"},
                { title: "Total Quantity", value: "total_qty"},
                { title: "Date", value: "date"},
                { title: "Created At", value: "created_at"},
-               { title: "Actions", value: "actions" }
+            //    { title: "Actions", value: "actions" }
            ]
        onMounted(() => {
         doFetchDeliverables()

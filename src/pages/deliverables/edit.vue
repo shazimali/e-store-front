@@ -6,7 +6,7 @@ import { fetchProducts } from '@/services/ProductService';
 import { IDeliverable, IDeliverableErrors } from '@/interfaces/IDeliverable';
 import { IProductList } from '@/interfaces/IProduct';
 import { IStoreList } from '@/interfaces/IStore';
-import { fetchDeliverableByID, fetchProductsAndStores, saveDeliverable } from '@/services/Deliverable';
+import { fetchDeliverableByID, fetchStores, saveDeliverable } from '@/services/Deliverable';
 import { toast } from 'vue3-toastify';
 import SelectedProducts from './selectedProducts.vue';
 const errorMessages = ref<IDeliverableErrors>({})
@@ -18,16 +18,18 @@ const router = useRouter();
 const route = useRoute();
 const form = ref<IDeliverable>({
     date:new Date().toISOString().slice(0,10),
+    order_date:new Date().toISOString().slice(0,10),
+    sr_number:'',
     total_qty:'',
-    store_id: NaN,
+    store_id: '',
     products:[],
-    product_id:''
+    product_id:'',
+    branch_id: ''
 })
 onMounted(() => {
     const id = route.params.id;
-    fetchProductsAndStores().then((res: any) => {
-        lstProducts.value = res.data.products;
-        lstStores.value = res.data.stores
+    fetchStores().then((res: any) => {
+        lstStores.value = res.data
     }).catch((err: any) => {
         toast.error(err.message)
     })

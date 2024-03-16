@@ -9,74 +9,47 @@ export const routes = [
       {
         path: 'dashboard',
         name: 'dashboard',
-        // meta : {
-        //   middleware: auth
-        // },
         component: () => import('@/pages/dashboard.vue'),
         
       },
       {
         path: 'users',
-        name: 'users',
-        // meta : {
-        //   middleware: [auth, canAccess]
-        // },
+        name: 'users',       
         component: () => import('@/pages/users/index.vue'),
       },
       {
         path: 'users/create',
         name: 'users-create',
-        // meta : {
-        //   middleware: auth
-        // },
         component: () => import('@/pages/users/create.vue'),
       },
       {
         path: 'users/:id',
         name: 'users-edit',
-        // meta : {
-        //   middleware: auth
-        // },
         component: () => import('@/pages/users/edit.vue'),
       },
       {
         path: 'roles',
         name: 'roles',
-        // meta : {
-        //   middleware: auth
-        // },
         component: () => import('@/pages/roles/index.vue'),
       },
       {
         path: 'roles/create',
         name: 'roles-create',
-        // meta : {
-        //   middleware: auth
-        // },
         component: () => import('@/pages/roles/create.vue'),
       },
       {
         path: 'roles/:id',
         name: 'roles-edit',
-        // meta : {
-        //   middleware: auth
-        // },
         component: () => import('@/pages/roles/edit.vue'),
       },
       {
         path: 'products',
         name: 'products',
-        // meta : {
-        //   middleware: auth
-        // },
         component: () => import('@/pages/products/index.vue'),
       },
       {
         path: 'products/create',
         name: 'products-create',
-        // meta : {
-        //   middleware: auth
-        // },
         component: () => import('@/pages/products/create.vue'),
       },
       {
@@ -98,6 +71,21 @@ export const routes = [
         path: 'stores/:id',
         name: 'stores-edit',
         component: () => import('@/pages/stores/edit.vue'),
+      },
+      {
+        path: 'branches',
+        name: 'branches',
+        component: () => import('@/pages/branches/index.vue'),
+      },
+      {
+        path: 'branches/create',
+        name: 'branches-create',
+        component: () => import('@/pages/branches/create.vue'),
+      },
+      {
+        path: 'branches/:id',
+        name: 'branches-edit',
+        component: () => import('@/pages/branches/edit.vue'),
       },
       {
         path: 'purchases',
@@ -170,6 +158,10 @@ export const routes = [
       {
         path: 'register',
         component: () => import('@/pages/register.vue'),
+      },
+      {
+        path: 'print/:id',
+        component: () => import('@/pages/print.vue'),
       },
       {
         path: '/:pathMatch(.*)*',

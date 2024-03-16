@@ -4,7 +4,6 @@ import logo from '@images/logo.svg?raw'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 </script>
@@ -90,9 +89,9 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
     <slot />
 
     <!-- 👉 Footer -->
-    <template #footer>
+    <!-- <template #footer>
       <Footer />
-    </template>
+    </template> -->
   </VerticalNavLayout>
 </template>
 

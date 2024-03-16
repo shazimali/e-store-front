@@ -1,27 +1,29 @@
 <script setup lang="ts">
-import { IStore } from '@/interfaces/IStore';
-import { fetchCities, fetchStoreByID, updateStore } from '@/services/StoreService';
-import { onMounted, ref } from 'vue';
+import { IBranch } from '@/interfaces/IBranch';
+import { fetchBranchByID, fetchCitiesAndStores, updateBranch } from '@/services/BranchService';
 import { toast } from 'vue3-toastify';
 
 const route = useRoute()
-const errorMessages = ref<IStore>({});
+const errorMessages = ref<IBranch>({});
 const router = useRouter();
 const lstCities = ref<[]>([]);
-const form = ref<IStore>({
+const lstStores = ref<[]>([]);
+const form = ref<IBranch>({
     name:'',code:'',email:'',
     ntn:'',sale_tax_number:'',
     address:'',status:'',
-    city_id: '',phone: ''
+    city_id: '',phone: '',
+    store_id:''
 })
 onMounted(() => {
-    fetchCities().then((res:any) => {
-        lstCities.value = res.data
+    fetchCitiesAndStores().then((res:any) => {
+        lstCities.value = res.data.cities
+        lstStores.value = res.data.stores
     }).catch((err:any) => {
         toast.error(err.message);
     })
     const id :number = route.params.id
-    fetchStoreByID(id).then((res:any) => {
+    fetchBranchByID(id).then((res:any) => {
                 form.value = res.data;
             }).catch((err:any) => {
                 toast.error(err.message)
@@ -29,9 +31,9 @@ onMounted(() => {
 })
 const handleSubmit = () => {
     const id :number = route.params.id
-    updateStore(id,form.value).then((res:any)=>{
+    updateBranch(id,form.value).then((res:any)=>{
         toast(res.data)
-        router.push('/stores')
+        router.push('/branches')
     }).catch((err:any)=>{
         if(err.response.status == "422"){
         errorMessages.value =  err.response.data.errors
@@ -44,10 +46,34 @@ const handleSubmit = () => {
 }
 </script>
 <template>
-    <VCard title="Edit Store">
+    <VCard title="Edit Branch">
         <VCardText>
             <VForm @submit.prevent="handleSubmit">
                 <VRow>
+                    <VCol cols="12">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="status">Main Store</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                        <v-autocomplete
+                            v-model="form.store_id"
+                            :items="lstStores"
+                            :item-title="item => item? `${item.code}-${item.name}`: ''"
+                            item-value="id"
+                            :error-messages="errorMessages.store_id"
+                            variant="outlined"
+                            >
+                        </v-autocomplete>
+                            </VCol>
+
+                        </VRow>
+                    </VCol>
                     <VCol cols="6">
                         <VRow no-gutters>
                         <VCol
@@ -203,7 +229,7 @@ const handleSubmit = () => {
                         <VCol
                             cols="12"
                         >
-                            <label for="status">Head Office</label>
+                            <label for="status">City</label>
                         </VCol>
                 
                         <VCol

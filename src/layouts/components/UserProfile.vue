@@ -8,8 +8,8 @@ import { useRouter } from "vue-router";
   const handleLogOut = () => {
 
     let id:number = localStorage.getItem('user_id')
+      window.localStorage.clear()
       doLogOut(id).then((res) => {
-        window.localStorage.clear()
         router.push('/login')
       }).catch(() => alert('Failed to log out'))
 }

@@ -85,6 +85,10 @@ const handleSubmit = () => {
     })
 }
 
+const getItemText = (item:any) => {
+    return `${item.name}`;
+}
+
 const reset = () => {
     form.value.total_price = 0
     form.value.total_qty = 0
@@ -114,7 +118,7 @@ const reset = () => {
                 v-model="form.product_id"
                 v-model:search="searchInput"
                 :items="lstProducts"
-                item-title="name"
+                :item-title="item => item? `${item.code}-${item.name}`: ''"
                 item-value="id"
                 :error-messages="errorMessages.products"
                 variant="outlined"

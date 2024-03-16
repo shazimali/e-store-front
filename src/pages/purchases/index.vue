@@ -16,7 +16,7 @@
       ></v-text-field>
       <v-spacer></v-spacer>
 
-            <v-btn v-if="canAccess('purchase_create')" color="primary" to="/products/create">
+            <v-btn v-if="canAccess('purchase_create')" color="primary" to="/purchases/create">
                 New Purchase
             </v-btn>
         </v-subheader>

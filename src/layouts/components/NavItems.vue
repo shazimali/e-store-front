@@ -78,6 +78,14 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       to: '/stores'
     }"
   />
+  <VerticalNavLink
+    v-if="canAccess('store_access')"
+    :item="{
+      title: 'Branches',
+      icon: 'ri-git-merge-line',
+      to: '/branches'
+    }"
+  />
 
 
   <VerticalNavSectionTitle
