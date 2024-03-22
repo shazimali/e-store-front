@@ -11,8 +11,14 @@ const form = ref<IStore>({
     name:'',code:'',email:'',
     ntn:'',sale_tax_number:'',
     address:'',status:'',
-    city_id: '',phone: ''
+    city_id: '',phone: '',
+    is_sr:1
 })
+
+const sr_arr = ref([
+    {'name':'Yes',id: 1},
+    {'name':'No',id: 0},
+]);
 
 onMounted(() => {
     fetchCities().then((res:any) => {
@@ -216,7 +222,9 @@ const handleSubmit = () => {
 
                         </VRow>
                     </VCol>
-                    <VCol
+                    <VCol cols="8">
+                    <VRow no-gutters>
+                        <VCol
                             cols="12"
                         >
                             <label for="address">Address</label>
@@ -232,8 +240,34 @@ const handleSubmit = () => {
                             placeholder="Please enter address"
                             persistent-placeholder
                             />
+                        </VCol>
+                    </VRow>
+                    </VCol>    
+                    <VCol cols="4">
+                        <VRow no-gutters>
+                            <VCol
+                            cols="12"
+                        >
+                            <label for="status">Is SR</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <v-select
+                                v-model="form.is_sr"         
+                                :items="sr_arr"
+                                item-value="id"
+                                item-title="name"
+                                :error-messages="errorMessages.status"
+                                selected="ACTIVE"
+                                variant="outlined"
+                                >
+                                </v-select>
                             </VCol>
-
+                        </VRow>
+                    </VCol>
+                        
                     <VCol
                         cols="12"
                         class="d-flex gap-4"

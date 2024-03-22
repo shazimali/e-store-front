@@ -1,8 +1,9 @@
-export interface IDeliverable{
+export interface IReturnDeliverable{
     date:string,
     order_date:string,
     sr_number:string,
     store_id:number,
+    return_type:string,
     remarks:string,
     branch_id:number,
     total_qty:number | string,
@@ -10,30 +11,33 @@ export interface IDeliverable{
     products:IProductObj[]
 }
 
-export interface IDeliverableEdit{
+export interface IReturnDeliverableEdit{
     date:string,
     invoice_sr_number:string,
     order_date:string,
     sr_number:string,
     store_id:number,
+    return_type:string,
     remarks:string,
     branch_id:number,
     total_qty:number | string,
     products:IProductObj[]
 }
 
-export interface IDeliverableErrors {
+export interface IReturnDeliverableErrors {
     date:string,
     sr_number:string,
     branch_id:number,
+    return_type:string,
     order_date:string,
     store_id:string,
     products:[]
 }
 
-export  interface IDeliverableList {
+export  interface IReturnDeliverableList {
     date:string,
     order_date:string,
+    return_type:string,
     branch_id:number,
     sr_number:string,
     store:string,

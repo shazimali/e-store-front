@@ -35,24 +35,39 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     />
   </VerticalNavGroup>
   <VerticalNavGroup
-  v-if="canAccess('purchase_access') ||  canAccess('purchase_create')"
+  v-if="canAccess('deliverable_access') ||  canAccess('deliverable_create')"
     :item="{
       title: 'Deliverables',
       icon: 'ri-truck-line',
     }"
   >
     <VerticalNavLink
-    v-if="canAccess('purchase_access')"
+    v-if="canAccess('deliverable_access')"
       :item="{
         title: 'All Deliverables',
         to: '/deliverables',
       }"
     />
     <VerticalNavLink
-    v-if="canAccess('purchase_create')"
+    v-if="canAccess('deliverable_create')"
       :item="{
         title: 'New Deliverable',
         to: '/deliverables/create',
+        badgeClass: 'bg-light-primary text-primary',
+      }"
+    />
+    <VerticalNavLink
+    v-if="canAccess('return_deliverable_access')"
+      :item="{
+        title: 'All R-Deliverables',
+        to: '/return-deliverables',
+      }"
+    />
+    <VerticalNavLink
+    v-if="canAccess('return_deliverable_create')"
+      :item="{
+        title: 'New R-Deliverable',
+        to: '/return-deliverables/create',
         badgeClass: 'bg-light-primary text-primary',
       }"
     />
@@ -86,8 +101,19 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       to: '/branches'
     }"
   />
-
-
+  <VerticalNavSectionTitle
+    :item="{
+      heading: 'Company & Settings',
+    }"
+  />
+  <VerticalNavLink
+    v-if="canAccess('role_access')"
+    :item="{
+      title: 'Company',
+      icon: 'ri-building-2-line',
+      to: '/company'
+    }"
+  />
   <VerticalNavSectionTitle
     :item="{
       heading: 'Users & Roles',

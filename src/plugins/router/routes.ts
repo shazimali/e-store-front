@@ -118,6 +118,26 @@ export const routes = [
         component: () => import('@/pages/deliverables/edit.vue'),
       },
       {
+        path: 'return-deliverables',
+        name: 'return-deliverables',
+        component: () => import('@/pages/return_deliverables/index.vue'),
+      },
+      {
+        path: 'return-deliverables/create',
+        name: 'return-deliverables-create',
+        component: () => import('@/pages/return_deliverables/create.vue'),
+      },
+      {
+        path: 'return-deliverables/:id',
+        name: 'return-deliverables-edit',
+        component: () => import('@/pages/return_deliverables/edit.vue'),
+      },
+      {
+        path: 'company',
+        name: 'company',
+        component: () => import('@/pages/company/index.vue'),
+      },
+      {
         path: 'account-settings',
         component: () => import('@/pages/account-settings.vue'),
       },

@@ -1,4 +1,4 @@
-import { IDeliverable } from "@/interfaces/IDeliverable"
+import { IDeliverable, IDeliverableEdit } from "@/interfaces/IDeliverable"
 import axios from "axios"
 
 export const fetchDeliverables = async (current_page :number,item_per_page :number,search: string) => {
@@ -24,6 +24,6 @@ export const fetchDeliverableByID = async (id:number) => {
     return await axios.get('/deliverables/edit/'+id)
 }
 
-export  const updateDeliverable = async (id:number,params: IDeliverable) => {
+export  const updateDeliverable = async (id:number,params: IDeliverableEdit) => {
     return await  axios.put("/deliverables/update/"+id, {...params})
 }

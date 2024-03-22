@@ -13,6 +13,7 @@ import { useRouter } from "vue-router";
         router.push('/login')
       }).catch(() => alert('Failed to log out'))
 }
+const user_name = localStorage.getItem('user_name')
 
 const router = useRouter();
 </script>
@@ -63,7 +64,7 @@ const router = useRouter();
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              John Doe
+              {{ user_name }}
             </VListItemTitle>
             <VListItemSubtitle>Admin</VListItemSubtitle>
           </VListItem>

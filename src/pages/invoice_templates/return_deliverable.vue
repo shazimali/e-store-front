@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { commaFormate } from '@/@core/utils/helpers';
-import { fetchDeliverableByIDForPrint } from '@/services/Deliverable';
+import { fetchReturnDeliverableByIDForPrint } from '@/services/ReturnDeliverable';
 import logo from '@images/avatars/e-logo.png';
 import { toast } from 'vue3-toastify';
 const route = useRoute();
-console.log(route.query.type)
 const id :number = route.params.id
 const dispatched_name = localStorage.getItem('user_name');
 const  deliverable = ref<any>({});
 onMounted(() => {
-    fetchDeliverableByIDForPrint(id).then((res:any) => {
+    fetchReturnDeliverableByIDForPrint(id).then((res:any) => {
         deliverable.value = res.data.data
     }).catch((err:any) => {
         toast.error(err.message)
@@ -27,14 +26,14 @@ onMounted(() => {
             </v-col>
             <v-col cols="8">
           <h5>Every Day Plastic Industry</h5>
-          <h6 style="margin-left: 45px;">Delivery Challan</h6>
+          <h6 style="margin-left: 45px;">Return Challan</h6>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
       <v-row no-gutters>
-        <v-col cols="12">D/C#{{ deliverable.invoice_sr_number }}</v-col>
-        <v-col cols="12">D/C Date: {{ deliverable.date }}</v-col>
+        <v-col cols="12">Return#{{ deliverable.invoice_sr_number }}</v-col>
+        <v-col cols="12">Return Date: {{ deliverable.date }}</v-col>
       </v-row>
       <v-row no-gutters class="mt-3">
         <v-col cols="5">
@@ -68,6 +67,15 @@ onMounted(() => {
         <v-col cols="2"></v-col>
         <v-col cols="5">
           <table>
+            <tr>
+              <td>Type:</td>
+              <td>
+                <strong>
+                  {{ deliverable.return_type}}
+                </strong>
+                
+              </td>
+            </tr>
             <tr>
               <td>{{ deliverable.store.is_sr ? 'SR#:' : 'RV#:' }}</td>
               <td>
@@ -143,26 +151,6 @@ onMounted(() => {
   </v-table>
   <span> <strong>Remarks: </strong>{{ deliverable.remarks }}</span>
         </v-col>
-      </v-row>
-      <v-row>
-        <table style="    position: absolute;
-    right: 10px;
-    bottom: 10px;">
-          <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>
-          <div class="mb-2">
-            Driver/Adda ___________
-          </div>
-          <div class="mb-2">
-            Checked ___________
-          </div>
-        </td>
-      </tr>
-        </table>
       </v-row>
     </v-container>
   </div>

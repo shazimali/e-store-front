@@ -35,7 +35,7 @@
        >
 
       <template v-slot:item.status="{ item }">
-        <div class="text-end">
+        <div>
           <v-chip
             :color="item.status == 'ACTIVE' ? 'green' : 'red'"
             :text="item.status"
@@ -68,9 +68,6 @@ import { toast } from 'vue3-toastify';
        const headers = [
                 { title: "Code",align: "start", value: "code"},
                { title: "Name", value: "name" },
-               { title: "NTN", value: "ntn" },
-               { title: "Sale Tax ", value: "sale_tax_number" },
-               { title: "Phone", value: "phone"},
                { title: "Head Office", value: "city"},
                { title: "Status", value: "status"},
                { title: "Created At", value: "created_at"},

@@ -4,10 +4,12 @@ import { getRandomValues } from 'crypto';
 import { fetchProducts } from '@/services/ProductService';
 <script setup lang="ts">
 import { IBranchList } from '@/interfaces/IBranch';
-import { IDeliverable, IDeliverableErrors } from '@/interfaces/IDeliverable';
+import { IDeliverableErrors } from '@/interfaces/IDeliverable';
 import { IProductList } from '@/interfaces/IProduct';
+import { IReturnDeliverableEdit } from '@/interfaces/IReturnDeliverable';
 import { IStoreList } from '@/interfaces/IStore';
-import { fetchBranchesAndProductsByStoreID, fetchStores, saveDeliverable } from '@/services/Deliverable';
+import { fetchBranchesAndProductsByStoreID, fetchStores } from '@/services/Deliverable';
+import { fetchReturnDeliverableByID, updateReturnDeliverable } from '@/services/ReturnDeliverable';
 import { toast } from 'vue3-toastify';
 import SelectedProducts from './selectedProducts.vue';
 const errorMessages = ref<IDeliverableErrors>({})
@@ -16,19 +18,31 @@ const lstStores = ref<IStoreList>()
 const lstBranches = ref<IBranchList>()
 const loading = ref<boolean>(false)
 const searchInput = ref<string>('')
-const form = ref<IDeliverable>({
-    date:new Date().toISOString().slice(0,10),
-    order_date:new Date().toISOString().slice(0,10),
+const route = useRoute()
+const router = useRouter();
+const form = ref<IReturnDeliverableEdit>({
+    date:'',
+    order_date:'',
     sr_number:'',
     total_qty:'',
+    return_type:'',
     store_id: '',
     remarks: '',
     products:[],
-    product_id:'',
-    branch_id: ''
+    branch_id: '',
+    invoice_sr_number:''
 })
 onMounted(() => {
     doFetchStores()
+
+    const id :number = route.params.id
+    fetchReturnDeliverableByID(id).then((res:any) => {
+                form.value = res.data.data;
+                initBranchesAndProducts(res.data.data.store_id)
+            }).catch((err:any) => {
+                toast.error(err.message)
+            })
+           
 })
 
 const doFetchStores = () => {
@@ -37,6 +51,8 @@ const doFetchStores = () => {
     }).catch((err:any) => {
         toast.error(err.message)
     })
+
+
 }
 const handleSelectedProducts = () => {
     const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
@@ -75,14 +91,11 @@ const handleTotalQty = (qty:number) => {
 
 const handleSubmit = () => {
     loading.value = true;
-    saveDeliverable(form.value).then((res:any) => {
-        reset();
-        doFetchStores();
-        const id = res.data;
-        toast.success('Deliverable created successfully');
+    const id :number = route.params.id
+    updateReturnDeliverable(id,form.value).then((res:any) => {
+        toast.success('Return Deliverable updated successfully');
         loading.value = false
-        let url = '/print/'+id+"?type="+"deliverable";
-        window.open(url, '_blank');
+        window.open('/print/'+id+'?type=return-deliverable','_blank')
     }).catch((err:any) => {
         loading.value = false
         if(err.response.status == "422"){
@@ -97,6 +110,22 @@ const handleSubmit = () => {
 
 const getBranchesAndProducts = (id:number) => {
     if(id){
+        form.value.products = []
+        fetchBranchesAndProductsByStoreID(id).then((res:any) => {
+        lstBranches.value = res.data.branches
+        lstProducts.value = res.data.products
+        form.value.branch_id = ''
+        }).catch((err:any) => {
+            toast.error(err.message)
+        })
+    }else{
+        lstBranches.value = []
+    }
+    
+}
+
+const initBranchesAndProducts = (id:number) => {
+    if(id){
         fetchBranchesAndProductsByStoreID(id).then((res:any) => {
         lstBranches.value = res.data.branches
         lstProducts.value = res.data.products
@@ -109,24 +138,13 @@ const getBranchesAndProducts = (id:number) => {
     
 }
 
-const reset = () => {
-    form.value.store_id = ''
-    form.value.branch_id = ''
-    form.value.sr_number = ''
-    form.value.date = new Date().toISOString().slice(0,10)
-    form.value.order_date = new Date().toISOString().slice(0,10)
-    form.value.total_qty = 0
-    form.value.products = []
-    lstBranches.value = []
-    lstStores.value = []
-}
 </script>
-<template>
-    <VCard title="New Deliverable">
+<template v-if="form.value">
+    <VCard :title="'Edit Return Deliverable#'+form.invoice_sr_number">
            <VCardText>
              <VForm @submit.prevent="handleSubmit">
      <VRow>
-        <VCol cols="4">
+        <VCol cols="3">
              <label for="date">Date</label>
              <VTextField
                id="date"
@@ -138,7 +156,7 @@ const reset = () => {
              />
 
        </VCol>
-       <VCol cols="4">
+       <VCol cols="3">
              <label for="order_date">Order Date</label>
              <VTextField
                id="order_date"
@@ -150,7 +168,7 @@ const reset = () => {
              />
 
        </VCol>
-       <VCol cols="4">
+       <VCol cols="3">
              <label for="sr_number">Sr #</label>
              <VTextField
                id="sr_number"
@@ -160,6 +178,17 @@ const reset = () => {
                v-model="form.sr_number"
                persistent-placeholder
              />
+
+       </VCol>
+       <VCol cols="3">
+             <label for="sr_number">Return Type</label>
+             <v-select
+                v-model="form.return_type"         
+                :items="['RETURN','DEMADGE']"
+                :error-messages="errorMessages.return_type"
+                variant="outlined"
+                >
+            </v-select>
 
        </VCol>
         <VCol cols="6">
@@ -243,7 +272,7 @@ const reset = () => {
          color="primary"
          :loading="loading"
          >
-           Save
+           update
          </VBtn>
        </VCol>
      </VRow>
