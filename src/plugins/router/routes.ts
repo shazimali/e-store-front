@@ -103,6 +103,16 @@ export const routes = [
         component: () => import('@/pages/purchases/edit.vue'),
       },
       {
+        path: 'invoices',
+        name: 'invoices',
+        component: () => import('@/pages/invoices/index.vue'),
+      },
+      {
+        path: 'invoices/create',
+        name: 'invoices-create',
+        component: () => import('@/pages/invoices/create.vue'),
+      },
+      {
         path: 'deliverables',
         name: 'deliverables',
         component: () => import('@/pages/deliverables/index.vue'),
@@ -136,6 +146,11 @@ export const routes = [
         path: 'company',
         name: 'company',
         component: () => import('@/pages/company/index.vue'),
+      },
+      {
+        path: 'stocks',
+        name: 'stocks',
+        component: () => import('@/pages/stocks/index.vue'),
       },
       {
         path: 'account-settings',

@@ -1,11 +1,13 @@
-export interface IDeliverable{
+export interface InfInvoice{
     date:string,
-    order_date:string,
     sr_number:string,
     store_id:number,
+    discount:number,
     remarks:string,
     branch_id:number,
     total_qty:number | string,
+    total_price:number | string,
+    is_ex_tax:boolean,
     product_id:number | string,
     products:IProductObj[]
 }
@@ -22,11 +24,11 @@ export interface IDeliverableEdit{
     products:IProductObj[]
 }
 
-export interface IDeliverableErrors {
+export interface InfInvoiceErrors {
     date:string,
     sr_number:string,
     branch_id:number,
-    order_date:string,
+    remarks:string,
     store_id:string,
     products:[]
 }
@@ -45,9 +47,11 @@ export  interface IDeliverableList {
 export interface IProductObj {
     id:number,
     name:string,
-    available_qty:number,
     code:string,
+    sale_tax:number,
+    ext_tax:number,
     sku:string,
+    price:number,
     qty:number
 }
 

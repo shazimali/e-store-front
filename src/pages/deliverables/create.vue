@@ -22,6 +22,7 @@ const form = ref<IDeliverable>({
     sr_number:'',
     total_qty:'',
     store_id: '',
+    available_qty: '',
     remarks: '',
     products:[],
     product_id:'',
@@ -40,20 +41,33 @@ const doFetchStores = () => {
 }
 const handleSelectedProducts = () => {
     const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
+    const available_qty = lstProducts.value[selectedIdx].available_qty;
      if (selectedIdx != -1){ 
         const isProductAlreadyExistsIndex = form.value.products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
-
+        // check product already  exist in the list
         if(isProductAlreadyExistsIndex != -1){
-            form.value.products[isProductAlreadyExistsIndex].qty += 1 
-        }else{
-            form.value.products.push({
-                id :lstProducts.value[selectedIdx].id,
-                name:lstProducts.value[selectedIdx].name,
-                code:lstProducts.value[selectedIdx].code,
-                sku:lstProducts.value[selectedIdx].sku,
-                price:0,
-                qty:1
-             })
+            if(available_qty <= form.value.products[isProductAlreadyExistsIndex].qty){
+                alert('Available Quantity Exceeded');
+            }else{
+                form.value.products[isProductAlreadyExistsIndex].qty = parseInt(form.value.products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
+            }
+        }
+        //  push new product into the list
+        else{
+            if(available_qty < 1){
+                alert("No Available Product");
+                return false
+            }
+                form.value.products.push({
+                    id :lstProducts.value[selectedIdx].id,
+                    name:lstProducts.value[selectedIdx].name,
+                    code:lstProducts.value[selectedIdx].code,
+                    sku:lstProducts.value[selectedIdx].sku,
+                    available_qty:lstProducts.value[selectedIdx].available_qty,
+                    price:0,
+                    qty:1
+                 })
+            
         }
      }
     searchInput.value = "";

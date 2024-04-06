@@ -12,10 +12,8 @@ declare module 'vue' {
     CardStatisticsWithImages: typeof import('./src/@core/components/cards/CardStatisticsWithImages.vue')['default']
     ErrorHeader: typeof import('./src/components/ErrorHeader.vue')['default']
     MoreBtn: typeof import('./src/@core/components/MoreBtn.vue')['default']
-    Notification: typeof import('./src/components/Notification.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ThemeSwitcher: typeof import('./src/@core/components/ThemeSwitcher.vue')['default']
-    UpgradeToPro: typeof import('./src/components/UpgradeToPro.vue')['default']
   }
 }

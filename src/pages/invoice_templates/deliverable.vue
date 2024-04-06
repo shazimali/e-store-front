@@ -20,12 +20,12 @@ onMounted(() => {
   <div v-if="deliverable && deliverable.customer && deliverable.products">
     <v-container>
       <v-row no-gutters>
-        <v-col cols="6" offset="3">
+        <v-col cols="6" offset="1">
           <v-row>
-            <v-col cols="2">
+            <v-col cols="4">
               <v-img :src="logo"></v-img>
             </v-col>
-            <v-col cols="8">
+            <v-col cols="8" class="mt-5">
           <h5>Every Day Plastic Industry</h5>
           <h6 style="margin-left: 45px;">Delivery Challan</h6>
             </v-col>

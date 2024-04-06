@@ -12,10 +12,12 @@ const form = ref<IStore>({
     ntn:'',sale_tax_number:'',
     address:'',status:'',
     city_id: '',phone: '',
-    is_sr:1
+    is_sr:1,discount:0
 })
 
-const sr_arr = ref([
+const discount_value = Array.from(Array(100+1).keys()).slice(1) ;
+
+const is_sr = ref([
     {'name':'Yes',id: 1},
     {'name':'No',id: 0},
 ]);
@@ -175,7 +177,7 @@ const handleSubmit = () => {
                         </VCol>
                         </VRow>
                     </VCol>
-                    <VCol cols="6">
+                    <VCol cols="4">
                         <VRow no-gutters>
                         <VCol
                             cols="12"
@@ -198,7 +200,7 @@ const handleSubmit = () => {
 
                         </VRow>
                     </VCol>
-                    <VCol cols="6">
+                    <VCol cols="4">
                         <VRow no-gutters>
                         <VCol
                             cols="12"
@@ -215,6 +217,27 @@ const handleSubmit = () => {
                                 item-title="title"
                                 item-value="id"
                                 :error-messages="errorMessages.city_id"
+                                variant="outlined"
+                                >
+                                </v-select>
+                            </VCol>
+
+                        </VRow>
+                    </VCol>
+                    <VCol cols="4">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="status">Discount %</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <v-select
+                                v-model="form.discount"
+                                :items="discount_value"
                                 variant="outlined"
                                 >
                                 </v-select>
@@ -256,10 +279,9 @@ const handleSubmit = () => {
                         >
                             <v-select
                                 v-model="form.is_sr"         
-                                :items="sr_arr"
+                                :items="is_sr"
                                 item-value="id"
                                 item-title="name"
-                                :error-messages="errorMessages.status"
                                 selected="ACTIVE"
                                 variant="outlined"
                                 >

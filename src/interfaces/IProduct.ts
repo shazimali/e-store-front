@@ -4,6 +4,7 @@ export interface IProduct {
     sale_price : number,
     store_id : number,
     code : string | number,
+    available_qty : number,
     status: string
 }
 

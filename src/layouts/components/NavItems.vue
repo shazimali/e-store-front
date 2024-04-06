@@ -56,18 +56,49 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
         badgeClass: 'bg-light-primary text-primary',
       }"
     />
+  </VerticalNavGroup>
+  <VerticalNavGroup
+  v-if="canAccess('return_deliverable_access') ||  canAccess('return_deliverable_create')"
+    :item="{
+      title: 'Return Deliverables',
+      icon: 'ri-text-wrap',
+    }"
+  >
     <VerticalNavLink
     v-if="canAccess('return_deliverable_access')"
       :item="{
-        title: 'All R-Deliverables',
+        title: 'All Return Deliverables',
         to: '/return-deliverables',
       }"
     />
     <VerticalNavLink
     v-if="canAccess('return_deliverable_create')"
       :item="{
-        title: 'New R-Deliverable',
+        title: 'New Return Deliverable',
         to: '/return-deliverables/create',
+        badgeClass: 'bg-light-primary text-primary',
+      }"
+    />
+  </VerticalNavGroup>
+  <VerticalNavGroup
+  v-if="canAccess('return_deliverable_access') ||  canAccess('return_deliverable_create')"
+    :item="{
+      title: 'Invoices',
+      icon: 'ri-profile-line',
+    }"
+  >
+    <VerticalNavLink
+    v-if="canAccess('return_deliverable_access')"
+      :item="{
+        title: 'All Invoices',
+        to: '/invoices',
+      }"
+    />
+    <VerticalNavLink
+    v-if="canAccess('return_deliverable_create')"
+      :item="{
+        title: 'New Invoice',
+        to: '/invoices/create',
         badgeClass: 'bg-light-primary text-primary',
       }"
     />
@@ -99,6 +130,14 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       title: 'Branches',
       icon: 'ri-git-merge-line',
       to: '/branches'
+    }"
+  />
+  <VerticalNavLink
+    v-if="canAccess('store_access')"
+    :item="{
+      title: 'Stocks',
+      icon: 'ri-stock-line',
+      to: '/stocks'
     }"
   />
   <VerticalNavSectionTitle

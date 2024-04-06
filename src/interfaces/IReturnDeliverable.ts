@@ -49,6 +49,7 @@ export  interface IReturnDeliverableList {
 export interface IProductObj {
     id:number,
     name:string,
+    available_qty:number,
     code:string,
     sku:string,
     qty:number

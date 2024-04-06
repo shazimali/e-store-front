@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { commaFormate } from '@/@core/utils/helpers';
-import { IProductObj } from '@/interfaces/IPurchase';
+import { IProductObj } from '@/interfaces/IDeliverable';
 const props = defineProps({
   products : {
     type:  Array as () => IProductObj[],
@@ -23,6 +23,7 @@ interface InputFileEvent extends Event {
 }
 
 const handleChangeQty = (e :InputFileEvent, id:number) => {
+
   emit('update-qty',{
     id:id,
     val: e.target.value
@@ -77,7 +78,7 @@ const totalQty = computed(()=>{
             type="number"
             v-model="item.qty"
             persistent-placeholder
-            oninput="if(this.value < 0 || this.value == '') this.value = 1;" 
+            oninput="if(Number(this.value) > Number(this.max)) this.value = this.max; if(this.value < 0 || this.value == '') this.value = 1;" :max="item.available_qty" 
             @keyup=" (event) =>  handleChangeQty(event, item.id)" />
         </td>
         <td>

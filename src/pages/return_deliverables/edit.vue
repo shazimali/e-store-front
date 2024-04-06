@@ -8,9 +8,10 @@ import { IDeliverableErrors } from '@/interfaces/IDeliverable';
 import { IProductList } from '@/interfaces/IProduct';
 import { IReturnDeliverableEdit } from '@/interfaces/IReturnDeliverable';
 import { IStoreList } from '@/interfaces/IStore';
-import { fetchBranchesAndProductsByStoreID, fetchStores } from '@/services/Deliverable';
+import { fetchStores } from '@/services/Deliverable';
 import { fetchReturnDeliverableByID, updateReturnDeliverable } from '@/services/ReturnDeliverable';
 import { toast } from 'vue3-toastify';
+import { fetchBranchesByStoreID, fetchProductsByBranchID } from '../../services/ReturnDeliverable';
 import SelectedProducts from './selectedProducts.vue';
 const errorMessages = ref<IDeliverableErrors>({})
 const lstProducts = ref<IProductList>([])
@@ -37,8 +38,8 @@ onMounted(() => {
 
     const id :number = route.params.id
     fetchReturnDeliverableByID(id).then((res:any) => {
-                form.value = res.data.data;
-                initBranchesAndProducts(res.data.data.store_id)
+                form.value = res.data;
+                initBranchesAndProducts(res.data.store_id, res.data.branch_id)
             }).catch((err:any) => {
                 toast.error(err.message)
             })
@@ -56,20 +57,33 @@ const doFetchStores = () => {
 }
 const handleSelectedProducts = () => {
     const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
+    const available_qty = lstProducts.value[selectedIdx].available_qty;
      if (selectedIdx != -1){ 
         const isProductAlreadyExistsIndex = form.value.products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
-
+        // check product already  exist in the list
         if(isProductAlreadyExistsIndex != -1){
-            form.value.products[isProductAlreadyExistsIndex].qty += 1 
-        }else{
-            form.value.products.push({
-                id :lstProducts.value[selectedIdx].id,
-                name:lstProducts.value[selectedIdx].name,
-                code:lstProducts.value[selectedIdx].code,
-                sku:lstProducts.value[selectedIdx].sku,
-                price:0,
-                qty:1
-             })
+            if(available_qty <= form.value.products[isProductAlreadyExistsIndex].qty){
+                alert('Available Quantity Exceeded');
+            }else{
+                form.value.products[isProductAlreadyExistsIndex].qty = parseInt(form.value.products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
+            }
+        }
+        //  push new product into the list
+        else{
+            if(available_qty < 1){
+                alert("No Available Product");
+                return false
+            }
+                form.value.products.push({
+                    id :lstProducts.value[selectedIdx].id,
+                    name:lstProducts.value[selectedIdx].name,
+                    code:lstProducts.value[selectedIdx].code,
+                    sku:lstProducts.value[selectedIdx].sku,
+                    available_qty:lstProducts.value[selectedIdx].available_qty,
+                    price:0,
+                    qty:1
+                 })
+            
         }
      }
     searchInput.value = "";
@@ -108,13 +122,12 @@ const handleSubmit = () => {
     })
 }
 
-const getBranchesAndProducts = (id:number) => {
+const getBranches = (id:number) => {
     if(id){
-        form.value.products = []
-        fetchBranchesAndProductsByStoreID(id).then((res:any) => {
-        lstBranches.value = res.data.branches
-        lstProducts.value = res.data.products
-        form.value.branch_id = ''
+        form.value.branch_id='';
+        lstProducts.value = [];
+        fetchBranchesByStoreID(id).then((res:any) => {
+        lstBranches.value = res.data.data
         }).catch((err:any) => {
             toast.error(err.message)
         })
@@ -124,17 +137,38 @@ const getBranchesAndProducts = (id:number) => {
     
 }
 
-const initBranchesAndProducts = (id:number) => {
+const getProducts = (id:number) => {
     if(id){
-        fetchBranchesAndProductsByStoreID(id).then((res:any) => {
-        lstBranches.value = res.data.branches
-        lstProducts.value = res.data.products
+        lstProducts.value = [];
+        fetchProductsByBranchID(id).then((res:any) => {
+        lstProducts.value = res.data
         }).catch((err:any) => {
             toast.error(err.message)
         })
     }else{
-        lstBranches.value = []
+        lstProducts.value = []
     }
+    
+}
+
+const initBranchesAndProducts = (store_id:number, branch_id:number) => {
+
+        //fetch stores
+
+        fetchBranchesByStoreID(store_id).then((res:any) => {
+        lstBranches.value = res.data.data
+        }).catch((err:any) => {
+            toast.error(err.message)
+        })
+
+        //fetch Products as per selected branch
+
+        fetchProductsByBranchID(branch_id).then((res:any) => {
+        lstProducts.value = res.data
+        }).catch((err:any) => {
+            toast.error(err.message)
+        })
+
     
 }
 
@@ -201,7 +235,7 @@ const initBranchesAndProducts = (id:number) => {
             tabindex="4 "
             :error-messages="errorMessages.store_id"
             variant="outlined"
-            @update:menu="getBranchesAndProducts(form.store_id)"
+            @update:menu="getBranches(form.store_id)"
             >
             </v-autocomplete>
 
@@ -215,6 +249,7 @@ const initBranchesAndProducts = (id:number) => {
             :item-title="item => item? `${item.code}-${item.name}`: ''"
             item-value="id"
             tabindex="5"
+            @update:menu="getProducts(form.branch_id)"
             :error-messages="errorMessages.branch_id"
             variant="outlined"
             >
@@ -222,7 +257,7 @@ const initBranchesAndProducts = (id:number) => {
 
        </VCol>
 
-       <VCol v-if="lstBranches && lstBranches.length > 0" cols="12">
+       <VCol v-if="lstProducts && lstProducts.length > 0" cols="12">
              <label for="branches">Remarks</label>
              <VTextField
                id="remarks"
@@ -235,7 +270,7 @@ const initBranchesAndProducts = (id:number) => {
 
        </VCol>
        
-       <VCol v-if="lstBranches && lstBranches.length > 0" cols="12">
+       <VCol v-if="lstProducts && lstProducts.length > 0" cols="12">
             
             <label for="products">Products</label>
             <v-autocomplete
@@ -252,7 +287,7 @@ const initBranchesAndProducts = (id:number) => {
             </v-autocomplete>
         </VCol>
         
-        <VCol v-if="lstBranches && lstBranches.length > 0" cols="12">
+        <VCol v-if="lstProducts && lstProducts.length > 0" cols="12">
             <SelectedProducts 
             v-bind="form"
             @delete-product="handleProductDelete"
@@ -263,7 +298,7 @@ const initBranchesAndProducts = (id:number) => {
         </VCol>
         
        <VCol
-        v-if="lstBranches && lstBranches.length > 0"
+        v-if="lstProducts && lstProducts.length > 0"
          cols="12"
          class="d-flex gap-4 justify-end align-center flex-wrap"
        >

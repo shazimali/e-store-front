@@ -3,6 +3,7 @@ export interface IStore {
     status: string,
     ntn: string,
     is_sr: boolean,
+    discount: number,
     sale_tax_number: string,
     address: string,
     city_id: number|string ,

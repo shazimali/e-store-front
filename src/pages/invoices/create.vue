@@ -4,83 +4,63 @@ import { getRandomValues } from 'crypto';
 import { fetchProducts } from '@/services/ProductService';
 <script setup lang="ts">
 import { IBranchList } from '@/interfaces/IBranch';
-import { IDeliverableEdit, IDeliverableErrors } from '@/interfaces/IDeliverable';
-import { IProductList } from '@/interfaces/IProduct';
-import { IStoreList } from '@/interfaces/IStore';
-import { fetchBranchesAndProductsByStoreID, fetchStores, updateDeliverable } from '@/services/Deliverable';
+import { IStore, IStoreList } from '@/interfaces/IStore';
+import { InfInvoice } from '@/interfaces/InfInvoice.ts';
+import { InvoiceProductList } from '@/interfaces/InvoiceProduct.ts';
+import { fetchBranchesAndProductsByStoreID, fetchStoresAndCompany, saveInvoice } from '@/services/InvoiceService.ts';
 import { toast } from 'vue3-toastify';
-import { fetchDeliverableByID } from '../../services/Deliverable';
+import { ICompany } from '../../interfaces/ICompany';
 import SelectedProducts from './selectedProducts.vue';
 const errorMessages = ref<IDeliverableErrors>({})
-const lstProducts = ref<IProductList>([])
+const lstProducts = ref<InvoiceProductList>([])
 const lstStores = ref<IStoreList>()
+const selectedStore = ref<IStore>()
+const companyInfo = ref<ICompany>()
 const lstBranches = ref<IBranchList>()
 const loading = ref<boolean>(false)
 const searchInput = ref<string>('')
-const route = useRoute()
-const router = useRouter();
-const form = ref<IDeliverableEdit>({
-    date:'',
-    order_date:'',
+const form = ref<InfInvoice>({
+    date:new Date().toISOString().slice(0,10),
     sr_number:'',
     total_qty:'',
+    is_ex_tax:false,
+    total_price:'',
     store_id: '',
     remarks: '',
-    available_qty: '',
     products:[],
-    branch_id: '',
-    invoice_sr_number:''
+    product_id:'',
+    discount:0,
+    branch_id: ''
 })
 onMounted(() => {
     doFetchStores()
-
-    const id :number = route.params.id
-    fetchDeliverableByID(id).then((res:any) => {
-                form.value = res.data.data;
-                initBranchesAndProducts(res.data.data.store_id)
-            }).catch((err:any) => {
-                toast.error(err.message)
-            })
-           
 })
 
 const doFetchStores = () => {
-    fetchStores().then((res:any) => {
-        lstStores.value = res.data
+    fetchStoresAndCompany().then((res:any) => {
+        lstStores.value = res.data.stores
+        companyInfo.value = res.data.company
     }).catch((err:any) => {
         toast.error(err.message)
     })
-
-
 }
 const handleSelectedProducts = () => {
-    
     const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
-    const available_qty = lstProducts.value[selectedIdx].available_qty;
-    
-    if (selectedIdx != -1){ 
+     if (selectedIdx != -1){ 
         const isProductAlreadyExistsIndex = form.value.products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
-        // check product already  exist in the list
+
         if(isProductAlreadyExistsIndex != -1){
-            if(available_qty <= form.value.products[isProductAlreadyExistsIndex].qty){
-                alert('Available Quantity Exceeded');
-            }else{
-                form.value.products[isProductAlreadyExistsIndex].qty = parseInt(form.value.products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
-            }
-        }
-        //  push new product into the list
-        else{
-            if(available_qty < 1){
-                alert("No Available Product");
-                return false
-            }
+            form.value.products[isProductAlreadyExistsIndex].qty = parseInt(form.value.products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
+
+        }else{
             form.value.products.push({
                 id :lstProducts.value[selectedIdx].id,
                 name:lstProducts.value[selectedIdx].name,
                 code:lstProducts.value[selectedIdx].code,
                 sku:lstProducts.value[selectedIdx].sku,
-                available_qty:lstProducts.value[selectedIdx].available_qty,
-                price:0,
+                sale_tax:lstProducts.value[selectedIdx].sale_tax,
+                ext_tax:lstProducts.value[selectedIdx].ext_tax,
+                price:lstProducts.value[selectedIdx].sale_price,
                 qty:1
              })
         }
@@ -89,11 +69,15 @@ const handleSelectedProducts = () => {
     form.value.product_id = "";
 }
 const handleProductDelete = (id:number) => {
-    form.value.products =  form.value.products.filter((item) => item.id !== id )
+    form.value.products =  form.value.products.filter((item:any) => item.id !== id )
 }
 const handleProductQty = (payload:{id:number,val:number}) => {
-    const  qtyIdx = form.value.products.findIndex((item)=> item.id == payload.id);
+    const  qtyIdx = form.value.products.findIndex((item:any)=> item.id == payload.id);
     form.value.products[qtyIdx].qty=payload.val
+}
+const handleProductPrice = (payload:{id:number,val:number}) => {
+    const  qtyIdx = form.value.products.findIndex((item:any)=> item.id == payload.id);
+    form.value.products[qtyIdx].price=payload.val
 }
 
 
@@ -101,14 +85,22 @@ const handleTotalQty = (qty:number) => {
     form.value.total_qty = qty;
 }
 
+const handleTotalPrice = (price:number) => {
+    form.value.total_price = price;
+}
+
 
 const handleSubmit = () => {
     loading.value = true;
-    const id :number = route.params.id
-    updateDeliverable(id,form.value).then((res:any) => {
-        toast.success('Deliverable updated successfully');
+    console.log(form.value);
+    saveInvoice(form.value).then((res:any) => {
+        reset();
+        doFetchStores();
+        const id = res.data;
+        toast.success('Invoice created successfully');
         loading.value = false
-        window.open('/print/'+id+'?type=deliverable','_blank')
+        let url = '/print/'+id+"?type="+"invoice";
+        window.open(url, '_blank');
     }).catch((err:any) => {
         loading.value = false
         if(err.response.status == "422"){
@@ -123,11 +115,11 @@ const handleSubmit = () => {
 
 const getBranchesAndProducts = (id:number) => {
     if(id){
-        form.value.products = []
         fetchBranchesAndProductsByStoreID(id).then((res:any) => {
         lstBranches.value = res.data.branches
         lstProducts.value = res.data.products
-        form.value.branch_id = ''
+        selectedStore.value = lstStores.value.filter((item:any) => item.id === id);
+        form.value.discount = selectedStore.value[0].discount
         }).catch((err:any) => {
             toast.error(err.message)
         })
@@ -137,27 +129,25 @@ const getBranchesAndProducts = (id:number) => {
     
 }
 
-const initBranchesAndProducts = (id:number) => {
-    if(id){
-        fetchBranchesAndProductsByStoreID(id).then((res:any) => {
-        lstBranches.value = res.data.branches
-        lstProducts.value = res.data.products
-        }).catch((err:any) => {
-            toast.error(err.message)
-        })
-    }else{
-        lstBranches.value = []
-    }
-    
+const reset = () => {
+    form.value.store_id = ''
+    form.value.branch_id = ''
+    form.value.is_ex_tax = false
+    form.value.sr_number = ''
+    form.value.date = new Date().toISOString().slice(0,10)
+    form.value.order_date = new Date().toISOString().slice(0,10)
+    form.value.total_qty = 0
+    form.value.products = []
+    lstBranches.value = []
+    lstStores.value = []
 }
-
 </script>
-<template v-if="form.value">
-    <VCard :title="'Edit Deliverable#'+form.invoice_sr_number">
+<template>
+    <VCard title="New Invoice">
            <VCardText>
              <VForm @submit.prevent="handleSubmit">
      <VRow>
-        <VCol cols="4">
+        <VCol cols="6">
              <label for="date">Date</label>
              <VTextField
                id="date"
@@ -169,19 +159,7 @@ const initBranchesAndProducts = (id:number) => {
              />
 
        </VCol>
-       <VCol cols="4">
-             <label for="order_date">Order Date</label>
-             <VTextField
-               id="order_date"
-               type="date"
-               tabindex="2"
-               :error-messages="errorMessages.order_date"
-               v-model="form.order_date"
-               persistent-placeholder
-             />
-
-       </VCol>
-       <VCol cols="4">
+       <VCol cols="6">
              <label for="sr_number">Sr #</label>
              <VTextField
                id="sr_number"
@@ -193,6 +171,13 @@ const initBranchesAndProducts = (id:number) => {
              />
 
        </VCol>
+       <!-- <vCol cols="2">
+        <VCheckbox
+        class="mt-5"
+            v-model="form.is_ex_tax"
+              label="Extra Tax"
+            />
+      </vCol> -->
         <VCol cols="6">
              <label for="name">Main Store</label>
             <v-autocomplete
@@ -257,10 +242,14 @@ const initBranchesAndProducts = (id:number) => {
         <VCol v-if="lstBranches && lstBranches.length > 0" cols="12">
             <SelectedProducts 
             v-bind="form"
+            :companyInfo="companyInfo"
+            :selectedStore="selectedStore"
             @delete-product="handleProductDelete"
             @update-qty="handleProductQty"
+            @update-price="handleProductPrice"
             :error-messages="errorMessages.products"
             @total-qty="handleTotalQty"
+            @total-price="handleTotalPrice"
             />
         </VCol>
         
@@ -274,7 +263,7 @@ const initBranchesAndProducts = (id:number) => {
          color="primary"
          :loading="loading"
          >
-           update
+           Save
          </VBtn>
        </VCol>
      </VRow>

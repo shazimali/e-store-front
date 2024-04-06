@@ -7,6 +7,8 @@ const form = ref<ICompany>({
     ntn:'',
     strn:'',
     address:'',
+    sale_tax:'',
+    ext_tax:'',
     del_px:'',
     phone:''
 })
@@ -108,6 +110,48 @@ const handleSubmit = () => {
                             type="text"
                             v-model="form.del_px"
                             placeholder="Please enter deliverable prefix"
+                            persistent-placeholder
+                            />
+                        </VCol>
+                        </VRow>
+                    </VCol>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="sale_tax">Sale Tax</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="sale_tax"
+                            type="number"
+                            v-model="form.sale_tax"
+                            placeholder="Please enter sale tax"
+                            persistent-placeholder
+                            />
+                        </VCol>
+                        </VRow>
+                    </VCol>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="sale_tax">Extra Tax</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="sale_tax"
+                            type="number"
+                            v-model="form.ext_tax"
+                            placeholder="Please enter extra tax"
                             persistent-placeholder
                             />
                         </VCol>

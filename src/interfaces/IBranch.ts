@@ -1,5 +1,6 @@
 export interface IBranch {
     name: string,
+    id: number,
     status: string,
     ntn: string,
     store_id: number,

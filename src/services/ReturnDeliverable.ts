@@ -9,8 +9,12 @@ export const fetchStores = async () => {
     return await axios.get('/return-deliverables/create')
 }
 
-export const fetchBranchesAndProductsByStoreID = async (id:number) => {
-    return await axios.get('/return-deliverables/store-branches-products/'+id)
+export const fetchBranchesByStoreID = async (id:number) => {
+    return await axios.get('/return-deliverables/store-branches/'+id)
+}
+
+export const fetchProductsByBranchID = async (id:number) => {
+    return await axios.get('/return-deliverables/branch-products/'+id)
 }
 
 export const fetchReturnDeliverableByIDForPrint = async (id:number) => {
