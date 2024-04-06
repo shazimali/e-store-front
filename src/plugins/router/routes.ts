@@ -152,30 +152,6 @@ export const routes = [
         name: 'stocks',
         component: () => import('@/pages/stocks/index.vue'),
       },
-      {
-        path: 'account-settings',
-        component: () => import('@/pages/account-settings.vue'),
-      },
-      {
-        path: 'typography',
-        component: () => import('@/pages/typography.vue'),
-      },
-      {
-        path: 'icons',
-        component: () => import('@/pages/icons.vue'),
-      },
-      {
-        path: 'cards',
-        component: () => import('@/pages/cards.vue'),
-      },
-      {
-        path: 'tables',
-        component: () => import('@/pages/tables.vue'),
-      },
-      {
-        path: 'form-layouts',
-        component: () => import('@/pages/form-layouts.vue'),
-      },
     ],
   },
   {
@@ -185,9 +161,6 @@ export const routes = [
       {
         path: 'login',
         name: 'login',
-        // meta : {
-        //   middleware: auth
-        // },
         component: () => import('@/pages/login.vue'),
       },
       {
