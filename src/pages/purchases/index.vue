@@ -32,12 +32,17 @@
            item-key="id"
            @update:options ="doFetchProducts"
            class="elevation-1"
-       >
-
+       >    
+                <template v-slot:item.invoice_id="{item}">
+                    <a :href="`/print/${item.id}/?type=purchase`" target="_blank">
+                purchase#{{ item.invoice_id }}
+                    </a>
+                </template>
                 <template 
                     v-slot:item.actions="{ item }">
                     <v-icon v-if="canAccess('purchase_edit')"  @click="handleEdit(item.id)" class="mr-2 ri-pencil-line"/>
                 </template>
+               
             </v-data-table-server>
        </VCard>
        </VCol>

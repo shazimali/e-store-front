@@ -7,10 +7,10 @@ import { IBranchList } from '@/interfaces/IBranch';
 import { IStore, IStoreList } from '@/interfaces/IStore';
 import { InfInvoice } from '@/interfaces/InfInvoice.ts';
 import { InvoiceProductList } from '@/interfaces/InvoiceProduct.ts';
-import { fetchBranchesByStoreID, fetchStoresAndCompany, saveInvoice } from '@/services/InvoiceService.ts';
+import { fetchBranchesByStoreID, fetchStoresAndCompany } from '@/services/InvoiceService.ts';
 import { toast } from 'vue3-toastify';
 import { ICompany } from '../../interfaces/ICompany';
-import { fetchProductsByBranchID } from '../../services/InvoiceService';
+import { fetchEditProductsByBranchID, fetchInvoiceByID, updateInvoice } from '../../services/InvoiceService';
 import SelectedProducts from './selectedProducts.vue';
 const errorMessages = ref<IDeliverableErrors>({})
 const lstProducts = ref<InvoiceProductList>([])
@@ -33,8 +33,18 @@ const form = ref<InfInvoice>({
     discount:0,
     branch_id: ''
 })
+const route = useRoute();
+const router = useRouter();
 onMounted(() => {
     doFetchStores()
+    const id :number = route.params.id
+    fetchInvoiceByID(id).then((res:any) => {
+                getBranches(res.data.store_id);
+                getProducts(res.data.branch_id);
+                form.value = res.data;
+            }).catch((err:any) => {
+                toast.error(err.message)
+            })
 })
 
 const doFetchStores = () => {
@@ -104,13 +114,12 @@ const handleTotalPrice = (price:number) => {
 
 const handleSubmit = () => {
     loading.value = true;
-    saveInvoice(form.value).then((res:any) => {
-        reset();
-        doFetchStores();
-        const id = res.data;
-        toast.success('Invoice created successfully');
+    const id :number = route.params.id
+    updateInvoice(id,form.value).then((res:any) => {
+        const invoice_id = res.data;
+        toast.success('Invoice updated successfully');
         loading.value = false
-        let url = '/print/'+id+"?type="+"invoice";
+        let url = '/print/'+invoice_id+"?type="+"invoice";
         window.open(url, '_blank');
     }).catch((err:any) => {
         loading.value = false
@@ -140,11 +149,12 @@ const getBranches = (id:number) => {
     
 }
 
-const getProducts = (id:number) => {
-    if(id){
+const getProducts = (branch_id:number) => {
+    const invoice_id :number = route.params.id
+    if(branch_id){
         lstProducts.value = []
         form.value.products = []
-        fetchProductsByBranchID(id).then((res:any) => {
+        fetchEditProductsByBranchID(branch_id,invoice_id).then((res:any) => {
         lstProducts.value = res.data
         }).catch((err:any) => {
             toast.error(err.message)
@@ -159,7 +169,6 @@ const reset = () => {
     form.value.is_ex_tax = false
     form.value.sr_number = ''
     form.value.date = new Date().toISOString().slice(0,10)
-    form.value.order_date = new Date().toISOString().slice(0,10)
     form.value.total_qty = 0
     form.value.products = []
     lstBranches.value = []
@@ -288,7 +297,7 @@ const reset = () => {
          color="primary"
          :loading="loading"
          >
-           Save
+           Update
          </VBtn>
        </VCol>
      </VRow>

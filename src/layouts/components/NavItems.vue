@@ -81,24 +81,70 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     />
   </VerticalNavGroup>
   <VerticalNavGroup
-  v-if="canAccess('return_deliverable_access') ||  canAccess('return_deliverable_create')"
+  v-if="canAccess('invoice_access') ||  canAccess('invoice_create')"
     :item="{
       title: 'Invoices',
       icon: 'ri-profile-line',
     }"
   >
     <VerticalNavLink
-    v-if="canAccess('return_deliverable_access')"
+    v-if="canAccess('invoice_access')"
       :item="{
         title: 'All Invoices',
         to: '/invoices',
       }"
     />
     <VerticalNavLink
-    v-if="canAccess('return_deliverable_create')"
+    v-if="canAccess('invoice_create')"
       :item="{
         title: 'New Invoice',
         to: '/invoices/create',
+        badgeClass: 'bg-light-primary text-primary',
+      }"
+    />
+  </VerticalNavGroup>
+  <VerticalNavGroup
+  v-if="canAccess('invoice_access') ||  canAccess('invoice_create')"
+    :item="{
+      title: 'Vouchers',
+      icon: 'ri-file-list-3-line',
+    }"
+  >
+    <VerticalNavLink
+    v-if="canAccess('invoice_access')"
+      :item="{
+        title: 'All Vouchers',
+        to: '/vouchers',
+      }"
+    />
+    <VerticalNavLink
+    v-if="canAccess('invoice_create')"
+      :item="{
+        title: 'New Voucher',
+        to: '/vouchers/create',
+        badgeClass: 'bg-light-primary text-primary',
+      }"
+    />
+  </VerticalNavGroup>
+  <VerticalNavGroup
+  v-if="canAccess('invoice_access') ||  canAccess('invoice_create')"
+    :item="{
+      title: 'Reports',
+      icon: 'ri-file-chart-line',
+    }"
+  >
+    <VerticalNavLink
+    v-if="canAccess('invoice_access')"
+      :item="{
+        title: 'Ledgers',
+        to: '/reports/ledgers',
+      }"
+    />
+    <VerticalNavLink
+    v-if="canAccess('invoice_create')"
+      :item="{
+        title: 'Profit & Loss',
+        to: '/reports/profitloss',
         badgeClass: 'bg-light-primary text-primary',
       }"
     />
@@ -133,7 +179,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     }"
   />
   <VerticalNavLink
-    v-if="canAccess('store_access')"
+    v-if="canAccess('stock_access')"
     :item="{
       title: 'Stocks',
       icon: 'ri-stock-line',

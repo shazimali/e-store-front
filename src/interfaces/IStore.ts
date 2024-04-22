@@ -2,6 +2,7 @@ export interface IStore {
     name: string,
     status: string,
     ntn: string,
+    sku_name: string,
     is_sr: boolean,
     discount: number,
     sale_tax_number: string,

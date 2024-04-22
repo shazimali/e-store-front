@@ -50,6 +50,7 @@ export interface IProductObj {
     code:string,
     sale_tax:number,
     ext_tax:number,
+    available_qty:number,
     sku:string,
     price:number,
     qty:number

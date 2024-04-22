@@ -6,6 +6,7 @@ export interface InvoiceProduct {
     sale_tax : number,
     ext_tax : number,
     qty : number,
+    available_qty : number,
     price : number,
     code : string | number,
     status: string

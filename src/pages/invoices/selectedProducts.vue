@@ -21,7 +21,6 @@ const props = defineProps({
     required: true
   }
 })
- console.log(props.selectedStore[0].discount);
 const emit  = defineEmits([
   'delete-product',
   'update-qty',
@@ -124,7 +123,7 @@ const total = computed(()=>{
             type="number"
             v-model="item.qty"
             persistent-placeholder
-            oninput="if(this.value < 0 || this.value == '') this.value = 1;" 
+            oninput="if(Number(this.value) > Number(this.max)) this.value = this.max; if(this.value < 0 || this.value == '') this.value = 1;" :max="item.available_qty" 
             @keyup=" (event) =>  handleChangeQty(event, item.id)" />
         </td>
         <td>

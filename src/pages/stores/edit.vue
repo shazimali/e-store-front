@@ -13,7 +13,7 @@ const form = ref<IStore>({
     ntn:'',sale_tax_number:'',
     address:'',status:'',
     city_id: '',phone: '',
-    is_sr:'',discount:0
+    is_sr:'',discount:0, sku_name:''
 })
 const discount_value = Array.from(Array(100+1).keys()).slice(1) ;
 const is_sr = ref([
@@ -55,7 +55,7 @@ const handleSubmit = () => {
         <VCardText>
             <VForm @submit.prevent="handleSubmit">
                 <VRow>
-                    <VCol cols="6">
+                    <VCol cols="4">
                         <VRow no-gutters>
                         <VCol
                             cols="12"
@@ -76,7 +76,7 @@ const handleSubmit = () => {
                         </VCol>
                         </VRow>
                     </VCol>
-                    <VCol cols="6">
+                    <VCol cols="4">
                         <VRow no-gutters>
                         <VCol
                             cols="12"
@@ -92,6 +92,27 @@ const handleSubmit = () => {
                             v-model="form.code"
                             :error-messages="errorMessages.code"
                             placeholder="Please enter code"
+                            persistent-placeholder
+                            />
+                        </VCol>
+                        </VRow>
+                    </VCol>
+                    <VCol cols="4">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="code">Sku Display Name</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="code"
+                            v-model="form.sku_name"
+                            :error-messages="errorMessages.sku_name"
+                            placeholder="Please enter sku display name"
                             persistent-placeholder
                             />
                         </VCol>

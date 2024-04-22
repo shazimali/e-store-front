@@ -7,6 +7,16 @@ const route = useRoute();
 const id :number = route.params.id
 const dispatched_name = localStorage.getItem('user_name');
 const  deliverable = ref<any>({});
+  const styleForCode = reactive({
+  padding: '4px',
+})
+const styleForDesc = reactive({
+  padding: '1px',
+})
+
+const styleObject = reactive({
+  textTransform:'none'
+})
 onMounted(() => {
     fetchReturnDeliverableByIDForPrint(id).then((res:any) => {
         deliverable.value = res.data.data
@@ -21,10 +31,10 @@ onMounted(() => {
       <v-row no-gutters>
         <v-col cols="6" offset="3">
           <v-row>
-            <v-col cols="2">
+            <v-col cols="4">
               <v-img :src="logo"></v-img>
             </v-col>
-            <v-col cols="8">
+            <v-col cols="8"  class="mt-5">
           <h5>Every Day Plastic Industry</h5>
           <h6 style="margin-left: 45px;">Return Challan</h6>
             </v-col>
@@ -111,19 +121,19 @@ onMounted(() => {
   <v-table>
     <thead>
       <tr>
-        <th class="text-left">
-          Sr#
+        <th :style="styleObject">
+          Sr
         </th>
-        <th class="text-left">
-          Item Cat
+        <th :style="styleObject">
+          Cat
         </th>
-        <th class="text-left">
+        <th :style="styleObject">
           MPN
         </th>
-        <th class="text-left">
-          Item Description
+        <th :style="styleObject">
+          Description
         </th>
-        <th class="text-left">
+        <th :style="styleObject">
           Quantity
         </th>
       </tr>

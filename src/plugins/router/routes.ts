@@ -113,6 +113,11 @@ export const routes = [
         component: () => import('@/pages/invoices/create.vue'),
       },
       {
+        path: 'invoices/:id',
+        name: 'invoices-edit',
+        component: () => import('@/pages/invoices/edit.vue'),
+      },
+      {
         path: 'deliverables',
         name: 'deliverables',
         component: () => import('@/pages/deliverables/index.vue'),
@@ -151,6 +156,31 @@ export const routes = [
         path: 'stocks',
         name: 'stocks',
         component: () => import('@/pages/stocks/index.vue'),
+      },
+      {
+        path: 'vouchers',
+        name: 'vouchers',
+        component: () => import('@/pages/vouchers/index.vue'),
+      },
+      {
+        path: 'vouchers/create',
+        name: 'vouchers-create',
+        component: () => import('@/pages/vouchers/create.vue'),
+      },
+      {
+        path: 'vouchers/:id',
+        name: 'vouchers-edit',
+        component: () => import('@/pages/vouchers/edit.vue'),
+      },
+      {
+        path: 'reports/ledgers',
+        name: 'reports-ledgers',
+        component: () => import('@/pages/reports/ledgers.vue'),
+      },
+      {
+        path: 'reports/profitloss',
+        name: 'reports-profitloss',
+        component: () => import('@/pages/reports/profit_loss.vue'),
       },
     ],
   },

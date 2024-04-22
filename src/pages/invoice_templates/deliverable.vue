@@ -4,9 +4,18 @@ import { fetchDeliverableByIDForPrint } from '@/services/Deliverable';
 import logo from '@images/avatars/e-logo.png';
 import { toast } from 'vue3-toastify';
 const route = useRoute();
-console.log(route.query.type)
 const id :number = route.params.id
 const dispatched_name = localStorage.getItem('user_name');
+const styleForCode = reactive({
+  padding: '4px',
+})
+const styleForDesc = reactive({
+  padding: '1px',
+})
+
+const styleObject = reactive({
+  textTransform:'none'
+})
 const  deliverable = ref<any>({});
 onMounted(() => {
     fetchDeliverableByIDForPrint(id).then((res:any) => {
@@ -20,7 +29,7 @@ onMounted(() => {
   <div v-if="deliverable && deliverable.customer && deliverable.products">
     <v-container>
       <v-row no-gutters>
-        <v-col cols="6" offset="1">
+        <v-col cols="6" offset="3">
           <v-row>
             <v-col cols="4">
               <v-img :src="logo"></v-img>
@@ -103,25 +112,25 @@ onMounted(() => {
   <v-table>
     <thead>
       <tr>
-        <th class="text-left">
-          Sr#
+        <th  :style="styleObject">
+          Sr
         </th>
-        <th class="text-left">
-          Item Cat
+        <th  :style="styleObject">
+          {{ deliverable.store.sku_name }}
         </th>
-        <th class="text-left">
+        <th  :style="styleObject">
           MPN
         </th>
-        <th class="text-left">
-          Item Description
+        <th  :style="styleObject">
+          Description
         </th>
-        <th class="text-left">
+        <th  :style="styleObject">
           Quantity
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(product, index) in deliverable.products">
+      <tr v-for="(product, index) in deliverable.products" :style="styleObject">
         <td>{{ index+1 }}</td>
         <td>{{ product.sku }}</td>
         <td>{{ product.code }}</td>

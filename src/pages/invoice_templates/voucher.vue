@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { commaFormate } from '@/@core/utils/helpers';
-import { fetchInvoiceByIDForPrint } from '@/services/InvoiceService';
+import { fetchVoucherByID } from '@/services/VoucherService';
 // import { numberToWords } from '@core/utils/numberToWords';
 import { numberToWords } from "amount-to-words";
 import { toast } from 'vue3-toastify';
@@ -8,7 +8,7 @@ import { toast } from 'vue3-toastify';
 const route = useRoute();
 const id :number = route.params.id
 const dispatched_name = localStorage.getItem('user_name');
-const  invoice = ref<any>({});
+const  voucher = ref<any>({});
 const styleForCode = reactive({
   padding: '4px',
 })
@@ -21,25 +21,25 @@ const styleObject = reactive({
 })
 
 onMounted(() => {
-    fetchInvoiceByIDForPrint(id).then((res:any) => {
-        invoice.value = res.data.data
+    fetchVoucherByID(id).then((res:any) => {
+        voucher.value = res.data
     }).catch((err:any) => {
         toast.error(err.message)
     })
 })
 </script>
 <template>
-  <div v-if="invoice && invoice.customer && invoice.products">
+  <div v-if="voucher && voucher.customer">
     <v-container>
       <v-row no-gutters>
         <v-col cols="6">
-          <h3>Sale Tax Invoice</h3>
+          <h3>Sale Tax Voucher</h3>
         </v-col>
       </v-row>
       <v-row no-gutters>
-        <v-col cols="6">Invoice#{{ invoice.invoice_id }}</v-col>
-        <v-col cols="6">Date: {{ invoice.date }}</v-col>
-        <v-col cols="12">{{ invoice.store.is_sr ? 'SR#:' : 'RV#:' }}: {{ invoice.sr_number }}</v-col>
+        <v-col cols="6">voucher#{{ voucher.voucher_id }}</v-col>
+        <v-col cols="6">Date: {{ voucher.date }}</v-col>
+        <v-col cols="12">{{ voucher.store.is_sr ? 'SR#:' : 'RV#:' }}: {{ voucher.sr_number }}</v-col>
       </v-row>
       <v-row no-gutters class="mt-3">
         <v-col cols="5">
@@ -50,19 +50,19 @@ onMounted(() => {
             </tr>
             <tr>
               <td style="vertical-align: top;">Address:</td>
-              <td>{{ invoice.company.address}}</td>
+              <td>{{ voucher.company.address}}</td>
             </tr>
             <tr>
               <td>N.T.N:</td>
-              <td>{{ invoice.company.ntn }}</td>
+              <td>{{ voucher.company.ntn }}</td>
             </tr>
             <tr>
               <td>STRN:</td>
-              <td>{{ invoice.company.strn }}</td>
+              <td>{{ voucher.company.strn }}</td>
             </tr>
             <tr>
               <td>Tel:</td>
-              <td>{{ invoice.company.phone }}</td>
+              <td>{{ voucher.company.phone }}</td>
             </tr>
           </table>
         </v-col>
@@ -74,25 +74,25 @@ onMounted(() => {
               <td>Buyer:</td>
               <td>
                 <strong>
-                  {{ invoice.customer.code +' '+ invoice.customer.name }}
+                  {{ voucher.customer.code +' '+ voucher.customer.name }}
                 </strong>
               </td>
             </tr>
             <tr>
               <td style="vertical-align: top;">Address:</td>
-              <td>{{ invoice.customer.address}}, {{invoice.city.title  }}</td>
+              <td>{{ voucher.customer.address}}</td>
             </tr>
             <tr>
               <td>N.T.N:</td>
-              <td>{{ invoice.customer.ntn }}</td>
+              <td>{{ voucher.customer.ntn }}</td>
             </tr>
             <tr>
               <td>STRN:</td>
-              <td>{{ invoice.customer.sale_tax_number }}</td>
+              <td>{{ voucher.customer.sale_tax_number }}</td>
             </tr>
             <tr>
               <td>Phone:</td>
-              <td>{{ invoice.customer.phone }}</td>
+              <td>{{ voucher.customer.phone }}</td>
             </tr>
           </table>
         </v-col>
@@ -105,74 +105,27 @@ onMounted(() => {
             <thead>
               <tr>
                 <th  :style="styleObject">
-                  Sr
+                  Store
                 </th>
                 <th  :style="styleObject">
-                  Cat
+                  Branch
                 </th>
                 <th  :style="styleObject">
-                  MPN
-                </th>
-                <th  :style="styleObject">
-                  Description
-                </th>
-                <th  :style="styleObject">
-                  Quantity
-                </th>
-                <th  :style="styleObject">
-                  Rate
-                </th>
-                <th  :style="styleObject">
-                  SaleTax
-                </th>
-                <th v-if="invoice.is_ex_tax"  :style="styleObject">
-                  Ex.Sale Tax<sup><small>({{ invoice.company.ext_tax }}%)</small></sup>
-                </th>
-                <th>
-                  Total
+                  Amount
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in invoice.products" :style="styleObject">
-                <td>{{ index+1 }}</td>
-                <td>{{ item.sku }}</td>
-                <td :style="styleForCode">{{ item.code }}</td>
-                <td :style="styleForDesc">{{ item.name }}</td>
-                <td>{{ commaFormate( item.qty) }}</td>
-                <td>{{ commaFormate( item.price) }}</td>
-                <td>
-                  {{ commaFormate(((item.price * item.qty)/100*item.sale_tax).toFixed(2)) }}
-                </td>
-                <td>
-                  {{ invoice.is_ex_tax ? 
-                    commaFormate((((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty)) + parseFloat(((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty))/100*item.ext_tax)).toFixed(2))
-                  :
-                  commaFormate(((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty)).toFixed(2))
-
-                  }}
-                </td>
-              </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                  <strong>{{ commaFormate( invoice.total_qty) }}</strong>
-                </td>
-                <td></td>
-                <td></td>
-                <td>
-                  <strong>{{ commaFormate( invoice.total_price) }}</strong>
-                </td>
+              <tr :style="styleObject">
+                <td>{{ voucher.customer.name }}</td>
+                <td>{{ voucher.store.name }}</td>
+                <td>{{ commaFormate(voucher.amount)  }}</td>
               </tr>
             </tbody>
           </v-table>
         </v-col>
       </v-row>
-  <div> <strong>Value in words: </strong> {{  numberToWords(invoice.total_price) }}</div>
-  <span v-if="invoice.remarks"> <strong>Remarks: </strong>{{ invoice.remarks }}</span>
+  <div> <strong>Value in words: </strong> {{  numberToWords(voucher.amount) }}</div>
      
             <VRow cols="12" class="text-center" 
             style="    position: absolute;

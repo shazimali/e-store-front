@@ -12,6 +12,10 @@ export const savePurchase = async (params:IPurchase) => {
     return await axios.post('/purchases/store',{...params})
 }
 
+export const fetchPurchaseForPrintByID = async (id:number) => {
+    return await axios.get('/purchases/fetch-for-print/'+id)
+}
+
 export const fetchPurchaseByID = async (id:number) => {
     return await axios.get('/purchases/edit/'+id)
 }
