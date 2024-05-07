@@ -37,9 +37,9 @@ onMounted(() => {
         </v-col>
       </v-row>
       <v-row no-gutters>
-        <v-col cols="6">Invoice#{{ invoice.invoice_id }}</v-col>
+        <v-col cols="6">Invoice: {{ invoice.invoice_id }}</v-col>
         <v-col cols="6">Date: {{ invoice.date }}</v-col>
-        <v-col cols="12">{{ invoice.store.is_sr ? 'SR#:' : 'RV#:' }}: {{ invoice.sr_number }}</v-col>
+        <v-col cols="12">{{ invoice.store.is_sr ? 'SR:' : 'RV:' }} {{ invoice.sr_number }}</v-col>
       </v-row>
       <v-row no-gutters class="mt-3">
         <v-col cols="5">
@@ -80,11 +80,7 @@ onMounted(() => {
             </tr>
             <tr>
               <td style="vertical-align: top;">Address:</td>
-              <td>{{ invoice.customer.address}}, {{invoice.city.title  }}</td>
-            </tr>
-            <tr>
-              <td>N.T.N:</td>
-              <td>{{ invoice.customer.ntn }}</td>
+              <td>{{ invoice.customer.address}}</td>
             </tr>
             <tr>
               <td>STRN:</td>

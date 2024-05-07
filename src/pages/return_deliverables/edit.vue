@@ -191,7 +191,7 @@ const initBranchesAndProducts = (store_id:number, branch_id:number) => {
 
        </VCol>
        <VCol cols="3">
-             <label for="order_date">Order Date</label>
+             <label for="order_date">Return Date</label>
              <VTextField
                id="order_date"
                type="date"

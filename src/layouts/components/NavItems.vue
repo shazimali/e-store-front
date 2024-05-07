@@ -129,6 +129,29 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
   <VerticalNavGroup
   v-if="canAccess('invoice_access') ||  canAccess('invoice_create')"
     :item="{
+      title: 'Discounts',
+      icon: 'ri-scissors-cut-line',
+    }"
+  >
+    <VerticalNavLink
+    v-if="canAccess('invoice_access')"
+      :item="{
+        title: 'All Discounts',
+        to: '/discounts',
+      }"
+    />
+    <VerticalNavLink
+    v-if="canAccess('invoice_create')"
+      :item="{
+        title: 'New Discount',
+        to: '/discounts/create',
+        badgeClass: 'bg-light-primary text-primary',
+      }"
+    />
+  </VerticalNavGroup>
+  <VerticalNavGroup
+  v-if="canAccess('invoice_access') ||  canAccess('invoice_create')"
+    :item="{
       title: 'Reports',
       icon: 'ri-file-chart-line',
     }"

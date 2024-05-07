@@ -6,16 +6,20 @@ import { onMounted, ref } from 'vue';
 import { toast } from 'vue3-toastify';
 import { IBranchList } from '../../interfaces/IBranch';
 import { IStoreList } from '../../interfaces/IStore';
+import { IDiscount, InfInvoiceList } from '@/interfaces/IDiscount';
+import { editDiscount, fetchBalanceAndInvoicesByBranchID, updateDiscount } from '@/services/DiscountService';
 
-const errorMessages = ref<IVoucher>({});
+const errorMessages = ref<IDiscount>({});
 const lstStores = ref<IStoreList>();
+const lstInvoices = ref<InfInvoiceList>();
 const balance = ref<number>();
 const lstBranches = ref<IBranchList>();
 const route = useRoute()
 const router = useRouter();
-const form = ref<IVoucher>({
+const form = ref<IDiscount>({
     store_id:'',
     branch_id:'',
+    invoice_id:'',
     amount:'',
     remarks:'',
     date:'',
@@ -29,7 +33,7 @@ onMounted(() => {
     }).catch((err:any) => {
         toast.error(err.message);
     })
-    editVoucher(id).then((res:any) => {
+    editDiscount(id).then((res:any) => {
         form.value = res.data
         getBranches(res.data.store_id)
         getBalance(res.data.branch_id)
@@ -50,8 +54,9 @@ const getBranches = (id:number) => {
 
 const getBalance = (id:number) => {
     if(id){
-        fetchBranchBalanceByBranchID(id).then((res:any) => {
-            balance.value = res.data;
+        fetchBalanceAndInvoicesByBranchID(id).then((res:any) => {
+            balance.value = res.data.balance;
+            lstInvoices.value = res.data.invoices;
         }).catch((err:any) => {
             toast.error(err.message)
         })
@@ -60,11 +65,11 @@ const getBalance = (id:number) => {
 
 const handleSubmit = () => {
     const id :number = route.params.id
-    updateVoucher(id,form.value).then((res:any)=>{
+    updateDiscount(id,form.value).then((res:any)=>{
         // let url = '/print/'+res.data+"?type="+"voucher";
         // window.open(url, '_blank');
-        toast.success('Voucher updated successfully!')
-        router.push('/vouchers')
+        toast.success('Discount updated successfully!')
+        router.push('/discounts')
     }).catch((err:any)=>{
         if(err.response.status == "422"){
         errorMessages.value =  err.response.data.errors
@@ -77,7 +82,7 @@ const handleSubmit = () => {
 }
  </script>
 <template>
-    <VCard :title=" balance > 0 ? 'Create Voucher ('+ commaFormate(balance) + ')' : 'Create Voucher' ">
+    <VCard :title=" balance > 0 ? 'Edit Voucher ('+ commaFormate(balance) + ')' : 'Edit Voucher' ">
         <VCardText>
             <VForm @submit.prevent="handleSubmit">
                 <VRow>
@@ -153,7 +158,31 @@ const handleSubmit = () => {
 
                         </VRow>
                     </VCol>
-                    <VCol cols="6" v-if="balance && balance > 0">
+                    <VCol cols="6" v-if="lstInvoices && lstInvoices.length > 0">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="status">Invoices</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <v-select
+                                v-model="form.invoice_id"
+                                :items="lstInvoices"
+                                item-title="invoice_id"
+                                item-value="invoice_id"
+                                :error-messages="errorMessages.invoice_id"
+                                variant="outlined"
+                                >
+                                </v-select>
+                            </VCol>
+
+                        </VRow>
+                    </VCol>
+                    <VCol cols="12" v-if="balance && balance > 0">
                         <VRow no-gutters>
                         <VCol
                             cols="12"

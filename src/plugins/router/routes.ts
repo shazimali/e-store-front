@@ -173,6 +173,21 @@ export const routes = [
         component: () => import('@/pages/vouchers/edit.vue'),
       },
       {
+        path: 'discounts',
+        name: 'discounts',
+        component: () => import('@/pages/discounts/index.vue'),
+      },
+      {
+        path: 'discounts/create',
+        name: 'discounts-create',
+        component: () => import('@/pages/discounts/create.vue'),
+      },
+      {
+        path: 'discounts/:id',
+        name: 'discounts-edit',
+        component: () => import('@/pages/discounts/edit.vue'),
+      },
+      {
         path: 'reports/ledgers',
         name: 'reports-ledgers',
         component: () => import('@/pages/reports/ledgers.vue'),

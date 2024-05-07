@@ -19,7 +19,7 @@ const form = ref<ILedgerForm>({
 })
 
 const headers = [
-               { title: "Invoice#", value: "invoice_id" },
+               { title: "Invoice#", value: "data_id" },
                { title: "Description", value: "type" },
                { title: "Date", value: "date" },
                { title: "Amount", value: "amount"},
@@ -56,15 +56,16 @@ const handleSubmit  =  () => {
     const paramString = router.replace({ query:form.value });
     const searchParams = new URLSearchParams(form.value);
     fetchLedger(searchParams.toString()).then((res: any)=>{
+        // let ledgersArr  = Object.keys(res.data).map((key) => res.data[key]);
         let ledgersArr =  res.data.sort((a, b) => new Date(a.date) - new Date(b.date));
             ledgersArr.forEach((item, index) => {
                 index == 0 ?
                 item['total'] = item.amount 
                 :
                     item['type'] == 'invoice' ?
-                        item['total'] =  parseFloat(ledgersArr[index-1].total) + parseFloat(item.amount)
+                        item['total'] =  (parseFloat(ledgersArr[index-1].total) + parseFloat(item.amount)).toFixed(2)
                         :
-                        item['total'] =  parseFloat(ledgersArr[index-1].total) - parseFloat(item.amount)
+                        item['total'] =  (parseFloat(ledgersArr[index-1].total) - parseFloat(item.amount)).toFixed(2)
 
             });
             lstLedgers.value = ledgersArr;
@@ -187,6 +188,7 @@ const handleSubmit  =  () => {
            :items="lstLedgers"
            :loading="loading"
            item-key="id"
+           return-object
            class="elevation-1"
        >
 

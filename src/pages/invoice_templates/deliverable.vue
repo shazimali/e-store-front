@@ -58,7 +58,11 @@ onMounted(() => {
             </tr>
             <tr>
               <td style="vertical-align: top;">Address:</td>
-              <td>{{ deliverable.customer.address}}, {{deliverable.city.title  }}</td>
+              <td>{{ deliverable.customer.address}},</td>
+            </tr>
+            <tr>
+              <td  style="vertical-align: top;"></td>
+              <td> {{deliverable.city.title  }}</td>
             </tr>
             <tr>
               <td>N.T.N:</td>
@@ -72,6 +76,11 @@ onMounted(() => {
               <td>Phone:</td>
               <td>{{ deliverable.customer.phone }}</td>
             </tr>
+            <tr></tr>
+            <tr>
+              <td><strong>Remarks: </strong>{{ deliverable.remarks }}</td>
+            </tr>
+            
           </table>
         </v-col>
         <v-col cols="2"></v-col>
@@ -150,7 +159,7 @@ onMounted(() => {
       </tr>
     </tbody>
   </v-table>
-  <span> <strong>Remarks: </strong>{{ deliverable.remarks }}</span>
+  <!-- <span> <strong>Remarks: </strong>{{ deliverable.remarks }}</span> -->
         </v-col>
       </v-row>
       <v-row>

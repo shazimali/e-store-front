@@ -68,8 +68,9 @@ import { toast } from 'vue3-toastify';
        const router = useRouter();
        const headers = [
                { title: "Sr#", align: "start",value: "sr" },
-               { title: "Invoice#",value: "invoice_id" },
+               { title: "Deliverable#",value: "invoice_id" },
                { title: "Store", value: "store"},
+               { title: "Branch", value: "branch"},
                { title: "Total Quantity", value: "total_qty"},
                { title: "Date", value: "date"},
                { title: "Created At", value: "created_at"},

@@ -30,15 +30,15 @@
            v-model:page="current_page"
            v-model:items-per-page="item_per_page"
            item-key="id"
-           @update:options ="doFetchStores"
+           @update:options ="doFetchVouchers"
            class="elevation-1"
        >
 
-       <template v-slot:item.invoice_id="{item}">
+       <!-- <template v-slot:item.invoice_id="{item}">
             <a :href="`/print/${item.id}/?type=voucher`" target="_blank">
           vc#{{ item.invoice_id }}
             </a>
-        </template>
+        </template> -->
                 <template 
                     v-slot:item.actions="{ item }">
                     <v-icon v-if="canAccess('store_edit')"  @click="handleEdit(item.id)" class="mr-2 ri-pencil-line"/>

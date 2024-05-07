@@ -169,7 +169,7 @@ const reset = () => {
 
        </VCol>
        <VCol cols="3">
-             <label for="order_date">Order Date</label>
+             <label for="order_date">Return Date</label>
              <VTextField
                id="order_date"
                type="date"

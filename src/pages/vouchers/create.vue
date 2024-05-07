@@ -16,6 +16,7 @@ const form = ref<IVoucher>({
     store_id:'',
     branch_id:'',
     amount:'',
+    remarks:'',
     date:'',
    
 })
@@ -50,8 +51,9 @@ const getBalance = (id:number) => {
 
 const handleSubmit = () => {
     saveVoucher(form.value).then((res:any)=>{
-        let url = '/print/'+res.data+"?type="+"voucher";
-        window.open(url, '_blank');
+        // let url = '/print/'+res.data+"?type="+"voucher";
+        // window.open(url, '_blank');
+        toast.success('Voucher created successfully!')
         router.push('/vouchers')
     }).catch((err:any)=>{
         if(err.response.status == "422"){
@@ -141,6 +143,7 @@ const handleSubmit = () => {
 
                         </VRow>
                     </VCol>
+                    
                     <VCol cols="6" v-if="balance && balance > 0">
                         <VRow no-gutters>
                         <VCol
@@ -158,6 +161,27 @@ const handleSubmit = () => {
                             v-model="form.amount"
                             :error-messages="errorMessages.amount"
                             placeholder="Please enter amount"
+                            persistent-placeholder
+                            />
+                        </VCol>
+                        </VRow>
+                    </VCol>
+                    <VCol cols="12" v-if="balance && balance > 0">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="sku">Remarks</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="remarks"
+                            v-model="form.remarks"
+                            :error-messages="errorMessages.remarks"
+                            placeholder="Please enter remarks"
                             persistent-placeholder
                             />
                         </VCol>

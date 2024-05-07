@@ -30,7 +30,7 @@
            v-model:page="current_page"
            v-model:items-per-page="item_per_page"
            item-key="id"
-           @update:options ="doFetchDeliverables"
+           @update:options ="doFetchInvoices"
            class="elevation-1"
        >
        <template v-slot:item.sr="{index}">
@@ -61,17 +61,17 @@ import { toast } from 'vue3-toastify';
 import { InfInvoice } from '../../interfaces/InfInvoice';
        const lstInvoices = ref<InfInvoice>([])
        const loading = ref<boolean>(false)
-       const item_per_page = ref<number>(5)
+       const item_per_page = ref<number>(10)
        const search = ref<string>('')
        const total_items = ref<number>()
        const current_page = ref<number>(1)
        const router = useRouter();
        const headers = [
                { title: "Sr#", align: "start",value: "sr" },
-               { title: "Invoice#",value: "invoice_id" },
+               { title: "Invoice#", value: "invoice_id"},
                { title: "Store", value: "store"},
+               { title: "Branch", value: "branch"},
                { title: "Total Quantity", value: "total_qty"},
-               { title: "Discount%", value: "discount"},
                { title: "Total Price", value: "total_price"},
                { title: "Date", value: "date"},
                { title: "Created At", value: "created_at"},

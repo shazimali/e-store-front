@@ -15,7 +15,7 @@ import { fetchBranchesByStoreID, fetchProfitLoss, fetchStores } from '../../serv
 const form = ref<IProfitLossForm>({
     store_id:'',
     branch_id:'',
-    item_per_page:2,
+    item_per_page:10,
     page:1
 })
 
