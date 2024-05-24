@@ -11,7 +11,9 @@ import { fetchBranchesByStoreID, fetchStoresAndCompany } from '@/services/Invoic
 import { toast } from 'vue3-toastify';
 import { ICompany } from '../../interfaces/ICompany';
 import { fetchEditProductsByBranchID, fetchInvoiceByID, updateInvoice } from '../../services/InvoiceService';
+import ReturnSelectedProducts from './returnSelectedProducts.vue';
 import SelectedProducts from './selectedProducts.vue';
+
 const errorMessages = ref<IDeliverableErrors>({})
 const lstProducts = ref<InvoiceProductList>([])
 const lstStores = ref<IStoreList>()
@@ -19,16 +21,23 @@ const selectedStore = ref<IStore>()
 const companyInfo = ref<ICompany>()
 const lstBranches = ref<IBranchList>()
 const loading = ref<boolean>(false)
+const returnSearchInput = ref<string>('')
 const searchInput = ref<string>('')
 const form = ref<InfInvoice>({
     date:new Date().toISOString().slice(0,10),
     sr_number:'',
-    total_qty:'',
+    total_qty:0,
+    return_total_qty:0,
+    inv_total_qty:0,
     is_ex_tax:false,
-    total_price:'',
+    is_return:false,
+    total_price:0,
+    return_total_price:0,
+    inv_total_price:0,
     store_id: '',
     remarks: '',
     products:[],
+    return_products:[],
     product_id:'',
     discount:0,
     branch_id: ''
@@ -90,31 +99,95 @@ const handleSelectedProducts = () => {
     searchInput.value = "";
     form.value.product_id = "";
 }
+const handleReturnSelectedProducts = () => {
+    const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
+    const available_qty = lstProducts.value[selectedIdx].available_qty;
+    if (selectedIdx != -1){ 
+        const isProductAlreadyExistsIndex = form.value.return_products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
+
+        if(isProductAlreadyExistsIndex != -1){
+            if(available_qty <= form.value.return_products[isProductAlreadyExistsIndex].qty){
+                alert('Available Quantity Exceeded');
+            }else{
+            form.value.return_products[isProductAlreadyExistsIndex].qty = parseInt(form.value.return_products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
+            }
+        }
+         //  push new product into the list
+        else{
+            if(available_qty < 1){
+                alert("No Available Product");
+                return false
+            }
+            form.value.return_products.push({
+                id :lstProducts.value[selectedIdx].id,
+                name:lstProducts.value[selectedIdx].name,
+                code:lstProducts.value[selectedIdx].code,
+                sku:lstProducts.value[selectedIdx].sku,
+                sale_tax:lstProducts.value[selectedIdx].sale_tax,
+                ext_tax:lstProducts.value[selectedIdx].ext_tax,
+                price:lstProducts.value[selectedIdx].sale_price,
+                available_qty:lstProducts.value[selectedIdx].available_qty,
+                qty:1
+             })
+        }
+     }
+     returnSearchInput.value = "";
+    form.value.product_id = "";
+}
 const handleProductDelete = (id:number) => {
     form.value.products =  form.value.products.filter((item:any) => item.id !== id )
+}
+const handleReturnProductDelete = (id:number) => {
+    form.value.return_products =  form.value.return_products.filter((item:any) => item.id !== id )
 }
 const handleProductQty = (payload:{id:number,val:number}) => {
     const  qtyIdx = form.value.products.findIndex((item:any)=> item.id == payload.id);
     form.value.products[qtyIdx].qty=payload.val
 }
+const handleReturnProductQty = (payload:{id:number,val:number}) => {
+    const  qtyIdx = form.value.return_products.findIndex((item:any)=> item.id == payload.id);
+    form.value.return_products[qtyIdx].qty=payload.val
+}
 const handleProductPrice = (payload:{id:number,val:number}) => {
     const  qtyIdx = form.value.products.findIndex((item:any)=> item.id == payload.id);
     form.value.products[qtyIdx].price=payload.val
 }
+const handleReturnProductPrice = (payload:{id:number,val:number}) => {
+    const  qtyIdx = form.value.return_products.findIndex((item:any)=> item.id == payload.id);
+    form.value.return_products[qtyIdx].price=payload.val
+}
 
 
 const handleTotalQty = (qty:number) => {
-    form.value.total_qty = qty;
+    form.value.inv_total_qty = qty;
 }
 
 const handleTotalPrice = (price:number) => {
-    form.value.total_price = price;
+    form.value.inv_total_price = price;
+}
+
+const handleReturnTotalQty = (qty:number) => {
+    form.value.return_total_qty = qty;
+}
+
+const handleReturnTotalPrice = (price:number) => {
+    form.value.return_total_price = price;
+}
+
+const handleReturnInvoiceOption = (val:boolean) => {
+    if(!val){
+        form.value.return_products = [];
+        form.value.return_total_qty = 0;
+        form.value.return_total_price = 0;
+    }
 }
 
 
 const handleSubmit = () => {
     loading.value = true;
     const id :number = route.params.id
+    form.value.total_qty = parseFloat(form.value.inv_total_qty)  +  parseFloat(form.value.return_total_qty) 
+    form.value.total_price = parseFloat(form.value.inv_total_price)  - parseFloat(form.value.return_total_price) 
     updateInvoice(id,form.value).then((res:any) => {
         const invoice_id = res.data;
         toast.success('Invoice updated successfully');
@@ -180,7 +253,7 @@ const reset = () => {
            <VCardText>
              <VForm @submit.prevent="handleSubmit">
      <VRow>
-        <VCol cols="6">
+        <VCol cols="5">
              <label for="date">Date</label>
              <VTextField
                id="date"
@@ -192,7 +265,7 @@ const reset = () => {
              />
 
        </VCol>
-       <VCol cols="6">
+       <VCol cols="5">
              <label for="sr_number">Sr #</label>
              <VTextField
                id="sr_number"
@@ -204,13 +277,16 @@ const reset = () => {
              />
 
        </VCol>
-       <!-- <vCol cols="2">
-        <VCheckbox
-        class="mt-5"
-            v-model="form.is_ex_tax"
-              label="Extra Tax"
-            />
-      </vCol> -->
+       <vCol cols="2">
+        <v-switch
+    v-model="form.is_return"
+    :label="`Return Invoice`"
+    class="mt-5"
+    @change="handleReturnInvoiceOption(form.is_return)"
+    hide-details
+    inset
+  ></v-switch>
+      </vCol>
         <VCol cols="6">
              <label for="name">Main Store</label>
             <v-autocomplete
@@ -255,6 +331,37 @@ const reset = () => {
              />
 
        </VCol>
+
+       <VCol v-if="lstProducts && lstProducts.length > 0 && form.is_return" cols="12">
+            
+            <label for="products">Return Products</label>
+            <v-autocomplete
+                v-model="form.product_id"
+                v-model:search="returnSearchInput"
+                :items="lstProducts"
+                tabindex="6"
+                :item-title="item => item? `${item.code}-${item.sku}-${item.name}`: ''"
+                item-value="id"
+                :error-messages="errorMessages.return_products"
+                variant="outlined"
+                @keyup.enter="handleReturnSelectedProducts"
+                >
+            </v-autocomplete>
+        </VCol>
+        
+        <VCol v-if="lstProducts && lstProducts.length > 0 && form.is_return" cols="12">
+            <ReturnSelectedProducts 
+            v-bind="form"
+            :companyInfo="companyInfo"
+            :selectedStore="selectedStore"
+            @r-delete-product="handleReturnProductDelete"
+            @r-update-qty="handleReturnProductQty"
+            @r-update-price="handleReturnProductPrice"
+            :error-messages="errorMessages.return_products"
+            @r-total-qty="handleReturnTotalQty"
+            @r-total-price="handleReturnTotalPrice"
+            />
+        </VCol>
        
        <VCol v-if="lstProducts && lstProducts.length > 0" cols="12">
             

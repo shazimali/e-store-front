@@ -7,9 +7,15 @@ export interface InfInvoice{
     branch_id:number,
     total_qty:number | string,
     total_price:number | string,
+    return_total_qty:number | string,
+    return_total_price:number | string,
+    inv_total_qty:number | string,
+    inv_total_price:number | string,
     is_ex_tax:boolean,
+    is_return:boolean,
     product_id:number | string,
-    products:IProductObj[]
+    products:IProductObj[],
+    return_products:IProductObj[],
 }
 
 export interface IDeliverableEdit{
@@ -21,7 +27,7 @@ export interface IDeliverableEdit{
     remarks:string,
     branch_id:number,
     total_qty:number | string,
-    products:IProductObj[]
+    products:IProductObj[],
 }
 
 export interface InfInvoiceErrors {
@@ -30,7 +36,9 @@ export interface InfInvoiceErrors {
     branch_id:number,
     remarks:string,
     store_id:string,
-    products:[]
+    products:[],
+    return_products:[],
+
 }
 
 export  interface IDeliverableList {

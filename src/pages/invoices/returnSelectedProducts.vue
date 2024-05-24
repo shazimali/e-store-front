@@ -4,7 +4,7 @@ import { InvoiceProduct } from '@/interfaces/InvoiceProduct';
 import { ICompany } from '../../interfaces/ICompany';
 import { IStore } from '../../interfaces/IStore';
 const props = defineProps({
-  products : {
+  return_products : {
     type:  Array as () => InvoiceProduct[],
     required: true
   },
@@ -22,16 +22,16 @@ const props = defineProps({
   }
 })
 const emit  = defineEmits([
-  'delete-product',
-  'update-qty',
-  'update-price',
-  'total-qty',
-  'total-price',
+  'r-delete-product',
+  'r-update-qty',
+  'r-update-price',
+  'r-total-qty',
+  'r-total-price',
 ]);
 
 const handleDelete = (id :number) => {
   if(confirm("Do you really want to delete?")){
-      emit('delete-product', id);
+      emit('r-delete-product', id);
   }
 }
 interface InputFileEvent extends Event {
@@ -39,14 +39,14 @@ interface InputFileEvent extends Event {
 }
 
 const handleChangeQty = (e :InputFileEvent, id:number) => {
-  emit('update-qty',{
+  emit('r-update-qty',{
     id:id,
     val: e.target.value
   });
 }
 
 const handleChangePrice = (e :InputFileEvent, id:number) => {
-  emit('update-price',{
+  emit('r-update-price',{
     id:id,
     val: e.target.value
   });
@@ -54,21 +54,21 @@ const handleChangePrice = (e :InputFileEvent, id:number) => {
 
 const totalQty = computed(()=>{
   let sum=0;
-  for(let i of props.products){
+  for(let i of props.return_products){
     sum+= parseInt(i.qty) || 0 ;
   }
-  emit('total-qty',sum);
+  emit('r-total-qty',sum);
   return sum;
 });
 const total = computed(()=>{
   let sum=0;
-  for(let i of props.products){
+  for(let i of props.return_products){
     props.is_ex_tax ? 
     sum += parseFloat((i.price * i.qty)/100*i.sale_tax) + parseFloat(i.price * i.qty) + parseFloat(((i.price * i.qty)/100*i.sale_tax + parseFloat(i.price * i.qty))/100*i.ext_tax)
     :
     sum+= (parseInt(i.price*i.qty) + parseFloat((i.price * i.qty)/100*i.sale_tax)) || 0 ;
   }
-  emit('total-price',sum);
+  emit('r-total-price',sum);
   return sum.toFixed(2);
 });
 </script>
@@ -106,7 +106,7 @@ const total = computed(()=>{
     </thead>
 
     <tbody>
-      <tr v-for="item in props.products"
+      <tr v-for="item in props.return_products"
         :key="item.id">
         
         <td>
@@ -123,7 +123,7 @@ const total = computed(()=>{
             type="number"
             v-model="item.qty"
             persistent-placeholder
-            oninput="if(Number(this.value) > Number(this.max)) this.value = this.max; if(this.value < 0 || this.value == '') this.value = 1;" :max="item.available_qty" 
+            oninput="if(this.value < 0 || this.value == '') this.value = 1;" 
             @keyup=" (event) =>  handleChangeQty(event, item.id)" />
         </td>
         <td>

@@ -9,6 +9,8 @@ const route = useRoute();
 const id :number = route.params.id
 const dispatched_name = localStorage.getItem('user_name');
 const  invoice = ref<any>({});
+const  total_qty = ref<number>(0);
+const  total_price = ref<number>(0);
 const styleForCode = reactive({
   padding: '4px',
 })
@@ -22,7 +24,15 @@ const styleObject = reactive({
 
 onMounted(() => {
     fetchInvoiceByIDForPrint(id).then((res:any) => {
-        invoice.value = res.data.data
+        let data = res.data.data;
+        let ind_price = 0
+        invoice.value = res.data.data;
+        total_qty.value =data.products.reduce((n, {qty}) => n + qty, 0);
+        data.products.forEach((pr, index) => {
+          let price = pr.qty * pr.price;
+          let tax = (pr.price * pr.qty)/100*pr.sale_tax;
+          total_price.value =  parseFloat(total_price.value) + parseFloat(price) + parseFloat(tax)
+        });
     }).catch((err:any) => {
         toast.error(err.message)
     })
@@ -131,6 +141,80 @@ onMounted(() => {
             </thead>
             <tbody>
               <tr v-for="(item, index) in invoice.products" :style="styleObject">
+                <td>{{ index+1 }}</td>
+                <td>{{ item.sku }}</td>
+                <td :style="styleForCode">{{ item.code }}</td>
+                <td :style="styleForDesc">{{ item.name }}</td>
+                <td>{{ commaFormate( item.qty) }}</td>
+                <td>{{ commaFormate( item.price) }}</td>
+                <td>
+                  {{ commaFormate(((item.price * item.qty)/100*item.sale_tax).toFixed(2)) }}
+                </td>
+                <td>
+                  {{ invoice.is_ex_tax ? 
+                    commaFormate((((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty)) + parseFloat(((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty))/100*item.ext_tax)).toFixed(2))
+                  :
+                  commaFormate(((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty)).toFixed(2))
+
+                  }}
+                </td>
+              </tr>
+              <!-- <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                  <strong>{{ commaFormate( total_qty) }}</strong>
+                </td>
+                <td></td>
+                <td></td>
+                <td>
+                  <strong>{{ commaFormate( total_price) }}</strong>
+                </td>
+              </tr> -->
+            </tbody>
+          </v-table>
+        </v-col>
+        <v-col cols="12">
+          <h5>Return Items</h5>
+        </v-col>
+        <v-col cols="12">
+          <v-table>
+            <thead>
+              <tr>
+                <th  :style="styleObject">
+                  Sr
+                </th>
+                <th  :style="styleObject">
+                  Cat
+                </th>
+                <th  :style="styleObject">
+                  MPN
+                </th>
+                <th  :style="styleObject">
+                  Description
+                </th>
+                <th  :style="styleObject">
+                  Quantity
+                </th>
+                <th  :style="styleObject">
+                  Rate
+                </th>
+                <th  :style="styleObject">
+                  SaleTax
+                </th>
+                <th v-if="invoice.is_ex_tax"  :style="styleObject">
+                  Ex.Sale Tax<sup><small>({{ invoice.company.ext_tax }}%)</small></sup>
+                </th>
+                <th>
+                  Total
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+             
+              <tr v-for="(item, index) in invoice.return_products" :style="styleObject">
                 <td>{{ index+1 }}</td>
                 <td>{{ item.sku }}</td>
                 <td :style="styleForCode">{{ item.code }}</td>
