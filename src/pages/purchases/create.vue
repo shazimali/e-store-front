@@ -3,13 +3,13 @@ import { getRandomValues } from 'crypto';
 
 import { fetchProducts } from '@/services/ProductService';
 <script setup lang="ts">
-import { IProductList } from '@/interfaces/IProduct';
 import { IPurchase } from '@/interfaces/IPurchase';
 import { fetchProducts, savePurchase } from '@/services/PurchaseService';
 import { toast } from 'vue3-toastify';
+import { IProductPurchaseList } from '../../interfaces/IProduct';
 import SelectedProducts from './selectedProducts.vue';
 const errorMessages = ref<[date:string,products:[]]>([])
-const lstProducts = ref<IProductList>([])
+const lstProducts = ref<IProductPurchaseList>([])
 const loading = ref<boolean>(false)
 const searchInput = ref<string>('')
 const form = ref<IPurchase>({
@@ -38,6 +38,7 @@ const handleSelectedProducts = () => {
             form.value.products.push({
                 id :lstProducts.value[selectedIdx].id,
                 name:lstProducts.value[selectedIdx].name,
+                store_name:lstProducts.value[selectedIdx].store,
                 code:lstProducts.value[selectedIdx].code,
                 sku:lstProducts.value[selectedIdx].sku,
                 price:0,
@@ -118,7 +119,7 @@ const reset = () => {
                 v-model="form.product_id"
                 v-model:search="searchInput"
                 :items="lstProducts"
-                :item-title="item => item? `${item.code}-${item.name}`: ''"
+                :item-title="item => item? `${item.code}-${item.name}-${item.store}`: ''"
                 item-value="id"
                 :error-messages="errorMessages.products"
                 variant="outlined"

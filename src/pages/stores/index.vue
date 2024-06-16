@@ -45,6 +45,7 @@
                 <template 
                     v-slot:item.actions="{ item }">
                     <v-icon v-if="canAccess('store_edit')"  @click="handleEdit(item.id)" class="mr-2 ri-pencil-line"/>
+                    <v-icon v-if="canAccess('store_edit')"  @click="handleDashboard(item.id)" class="mr-2 ri-dashboard-2-line"/>
                 </template>
             </v-data-table-server>
        </VCard>
@@ -79,6 +80,10 @@ import { toast } from 'vue3-toastify';
 
        const handleEdit = (id:number) => {
             router.push('stores/'+id)
+        } 
+
+        const handleDashboard = (id:number) => {
+            router.push('store/dashboard/'+id)
         } 
 
         const doFetchStores = () => {

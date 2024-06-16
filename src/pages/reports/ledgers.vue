@@ -57,7 +57,7 @@ const handleSubmit  =  () => {
     const searchParams = new URLSearchParams(form.value);
     fetchLedger(searchParams.toString()).then((res: any)=>{
         // let ledgersArr  = Object.keys(res.data).map((key) => res.data[key]);
-        let ledgersArr =  res.data.sort((a, b) => new Date(a.date) - new Date(b.date));
+        let ledgersArr =  res.data.data.sort((a, b) => new Date(a.date) - new Date(b.date));
             ledgersArr.forEach((item, index) => {
                 index == 0 ?
                 item['total'] = item.amount 
@@ -73,6 +73,12 @@ const handleSubmit  =  () => {
     }).catch((err:any) => {
         toast.error(err.message)
     })
+}
+const handlePrint = () => {
+    const searchParams = new URLSearchParams(form.value);
+    let url = 'print/?type=ledger&'+searchParams.toString();
+        window.open(url, '_blank');
+    
 }
   
 </script>
@@ -178,6 +184,9 @@ const handleSubmit  =  () => {
                     >
                         <VBtn type="submit">
                         Search
+                        </VBtn>
+                        <VBtn v-if="Object.keys(form).length > 0" @click="handlePrint">
+                        Print
                         </VBtn>
                     </VCol>
                 </VRow>

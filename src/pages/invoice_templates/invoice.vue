@@ -11,6 +11,8 @@ const dispatched_name = localStorage.getItem('user_name');
 const  invoice = ref<any>({});
 const  total_qty = ref<number>(0);
 const  total_price = ref<number>(0);
+const  margin_adjustment = ref<any>('');
+
 const styleForCode = reactive({
   padding: '4px',
 })
@@ -27,6 +29,7 @@ onMounted(() => {
         let data = res.data.data;
         let ind_price = 0
         invoice.value = res.data.data;
+        margin_adjustment.value = res.data.data.company.del_adjust
         total_qty.value =data.products.reduce((n, {qty}) => n + qty, 0);
         data.products.forEach((pr, index) => {
           let price = pr.qty * pr.price;
@@ -39,7 +42,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div v-if="invoice && invoice.customer && invoice.products">
+  <div :style="{'margin': margin_adjustment}"  v-if="invoice && invoice.customer && invoice.products">
     <v-container>
       <v-row no-gutters>
         <v-col cols="6">
@@ -176,12 +179,12 @@ onMounted(() => {
             </tbody>
           </v-table>
         </v-col>
-        <v-col cols="12">
+        <v-col cols="12"  v-if="invoice.return_products.length > 0">
           <h5>Return Items</h5>
         </v-col>
         <v-col cols="12">
           <v-table>
-            <thead>
+            <thead   v-if="invoice.return_products.length > 0">
               <tr>
                 <th  :style="styleObject">
                   Sr
@@ -214,7 +217,7 @@ onMounted(() => {
             </thead>
             <tbody>
              
-              <tr v-for="(item, index) in invoice.return_products" :style="styleObject">
+              <tr   v-if="invoice.return_products.length > 0"  v-for="(item, index) in invoice.return_products" :style="styleObject">
                 <td>{{ index+1 }}</td>
                 <td>{{ item.sku }}</td>
                 <td :style="styleForCode">{{ item.code }}</td>

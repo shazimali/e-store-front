@@ -61,11 +61,17 @@ const getBranchesAndStock = (id:number) => {
 const getStockByBranchID = (id:number) => {
     if(id){
         fetchStockByBranchID(id).then((res:any) => {
-            lstStocks.value = res.data
+            lstStocks.value = res.data.data
         }).catch((err:any) => {
             toast.error(err.message);
         })
     }
+}
+
+const handlePrint = () => {
+    const searchParams = new URLSearchParams(form.value);
+    let url = 'reports/print/?type=stock&'+searchParams.toString();
+        window.open(url, '_blank');
 }
   
 </script>
@@ -97,6 +103,8 @@ const getStockByBranchID = (id:number) => {
             variant="outlined"
             >
             </v-autocomplete>
+            <v-spacer></v-spacer>
+            <v-btn v-if="form.branch_id" color="primary" @click="handlePrint">Print</v-btn>
         </v-subheader>
        <VCard>
            <v-data-table-server

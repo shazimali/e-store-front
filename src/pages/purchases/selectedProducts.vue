@@ -14,7 +14,6 @@ const emit  = defineEmits([
   'total-qty',
   'total-amount'
 ]);
-
 const handleDelete = (id :number) => {
   if(confirm("Do you really want to delete?")){
       emit('delete-product', id);
@@ -61,6 +60,9 @@ const totalQty = computed(()=>{
           Name
         </th>
         <th class="text-uppercase">
+          Store
+        </th>
+        <th class="text-uppercase">
           Code
         </th>
         <th class="text-uppercase">
@@ -86,6 +88,9 @@ const totalQty = computed(()=>{
         
         <td>
           {{ item.name }}
+        </td>
+        <td>
+          {{ item.store_name }}
         </td>
         <td>
           {{ item.code }}

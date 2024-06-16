@@ -7,7 +7,7 @@ import { IBranchList } from '@/interfaces/IBranch';
 import { IDeliverableEdit, IDeliverableErrors } from '@/interfaces/IDeliverable';
 import { IProductList } from '@/interfaces/IProduct';
 import { IStoreList } from '@/interfaces/IStore';
-import { fetchBranchesAndProductsByStoreID, fetchStores, updateDeliverable } from '@/services/Deliverable';
+import { fetchBranchesAndProductsByStoreID, fetchBranchesAndProductsByStoreIDEdit, fetchStores, updateDeliverable } from '@/services/Deliverable';
 import { toast } from 'vue3-toastify';
 import { fetchDeliverableByID } from '../../services/Deliverable';
 import SelectedProducts from './selectedProducts.vue';
@@ -137,9 +137,11 @@ const getBranchesAndProducts = (id:number) => {
     
 }
 
-const initBranchesAndProducts = (id:number) => {
-    if(id){
-        fetchBranchesAndProductsByStoreID(id).then((res:any) => {
+const initBranchesAndProducts = (store_id:number) => {
+    if(store_id){
+        const deliverable_id :number = route.params.id
+
+        fetchBranchesAndProductsByStoreIDEdit(store_id,deliverable_id).then((res:any) => {
         lstBranches.value = res.data.branches
         lstProducts.value = res.data.products
         }).catch((err:any) => {

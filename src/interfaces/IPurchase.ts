@@ -17,6 +17,7 @@ export  interface IPurchaseList {
 export interface IProductObj {
     id:number,
     name:string,
+    store_name:string,
     code:string,
     sku:string,
     price:number,

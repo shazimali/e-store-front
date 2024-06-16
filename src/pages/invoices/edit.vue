@@ -101,23 +101,23 @@ const handleSelectedProducts = () => {
 }
 const handleReturnSelectedProducts = () => {
     const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
-    const available_qty = lstProducts.value[selectedIdx].available_qty;
+    // const available_qty = lstProducts.value[selectedIdx].available_qty;
     if (selectedIdx != -1){ 
-        const isProductAlreadyExistsIndex = form.value.return_products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
+        // const isProductAlreadyExistsIndex = form.value.return_products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
 
-        if(isProductAlreadyExistsIndex != -1){
-            if(available_qty <= form.value.return_products[isProductAlreadyExistsIndex].qty){
-                alert('Available Quantity Exceeded');
-            }else{
-            form.value.return_products[isProductAlreadyExistsIndex].qty = parseInt(form.value.return_products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
-            }
-        }
-         //  push new product into the list
-        else{
-            if(available_qty < 1){
-                alert("No Available Product");
-                return false
-            }
+        // if(isProductAlreadyExistsIndex != -1){
+        //     if(available_qty <= form.value.return_products[isProductAlreadyExistsIndex].qty){
+        //         alert('Available Quantity Exceeded');
+        //     }else{
+        //     form.value.return_products[isProductAlreadyExistsIndex].qty = parseInt(form.value.return_products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
+        //     }
+        // }
+        //  //  push new product into the list
+        // else{
+        //     if(available_qty < 1){
+        //         alert("No Available Product");
+        //         return false
+        //     }
             form.value.return_products.push({
                 id :lstProducts.value[selectedIdx].id,
                 name:lstProducts.value[selectedIdx].name,
@@ -129,7 +129,7 @@ const handleReturnSelectedProducts = () => {
                 available_qty:lstProducts.value[selectedIdx].available_qty,
                 qty:1
              })
-        }
+        // }
      }
      returnSearchInput.value = "";
     form.value.product_id = "";
@@ -186,7 +186,7 @@ const handleReturnInvoiceOption = (val:boolean) => {
 const handleSubmit = () => {
     loading.value = true;
     const id :number = route.params.id
-    form.value.total_qty = parseFloat(form.value.inv_total_qty)  +  parseFloat(form.value.return_total_qty) 
+    form.value.total_qty = parseFloat(form.value.inv_total_qty)  -  parseFloat(form.value.return_total_qty) 
     form.value.total_price = parseFloat(form.value.inv_total_price)  - parseFloat(form.value.return_total_price) 
     updateInvoice(id,form.value).then((res:any) => {
         const invoice_id = res.data;

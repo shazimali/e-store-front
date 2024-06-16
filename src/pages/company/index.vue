@@ -10,6 +10,8 @@ const form = ref<ICompany>({
     sale_tax:'',
     ext_tax:'',
     del_px:'',
+    del_adjust:'',
+    inv_adjust:'',
     phone:''
 })
 onMounted(() => {
@@ -152,6 +154,48 @@ const handleSubmit = () => {
                             type="number"
                             v-model="form.ext_tax"
                             placeholder="Please enter extra tax"
+                            persistent-placeholder
+                            />
+                        </VCol>
+                        </VRow>
+                    </VCol>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="del_adjust">Deliverable Adjustment (top_px space right_px space bottom_px space left_px)</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="del_adjust"
+                            type="text"
+                            v-model="form.del_adjust"
+                            placeholder="Please enter deliverable margin adjustment"
+                            persistent-placeholder
+                            />
+                        </VCol>
+                        </VRow>
+                    </VCol>
+                    <VCol cols="6">
+                        <VRow no-gutters>
+                        <VCol
+                            cols="12"
+                        >
+                            <label for="inv_adjust">Invoice Adjustment  (top_px space right_px space bottom_px space left_px)</label>
+                        </VCol>
+                
+                        <VCol
+                            cols="12"
+                        >
+                            <VTextField
+                            id="inv_adjust"
+                            type="text"
+                            v-model="form.inv_adjust"
+                            placeholder="Please enter invoice margin adjustment"
                             persistent-placeholder
                             />
                         </VCol>

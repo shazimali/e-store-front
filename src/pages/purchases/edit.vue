@@ -1,14 +1,14 @@
 
 <script setup lang="ts">
 
-import { IProductList } from '@/interfaces/IProduct';
 import { IPurchase } from '@/interfaces/IPurchase';
 import { fetchProducts, fetchPurchaseByID, updatePurchase } from '@/services/PurchaseService';
 import { toast } from 'vue3-toastify';
+import { IProductPurchaseList } from '../../interfaces/IProduct';
 import SelectedProducts from './selectedProducts.vue';
 
 const errorMessages = ref<[date:string,products:[]]>([])
-const lstProducts = ref<IProductList>([])
+const lstProducts = ref<IProductPurchaseList>([])
 const loading = ref<boolean>(false)
 const searchInput = ref<string>('')
 const router = useRouter();
@@ -53,6 +53,7 @@ const handleSelectedProducts = () => {
             form.value.products.push({
                 id :lstProducts.value[selectedIdx].id,
                 name:lstProducts.value[selectedIdx].name,
+                store_name:lstProducts.value[selectedIdx].store,
                 code:lstProducts.value[selectedIdx].code,
                 sku:lstProducts.value[selectedIdx].sku,
                 price:0,
@@ -108,7 +109,7 @@ const reset = () => {
 }
 </script>
 <template>
-    <VCard title="Edit Purchase Invouce">
+    <VCard title="Edit Purchase Invoice">
            <VCardText>
              <VForm @submit.prevent="handleSubmit">
      <VRow>
@@ -130,7 +131,7 @@ const reset = () => {
                 v-model="form.product_id"
                 v-model:search="searchInput"
                 :items="lstProducts"
-                item-title="name"
+                :item-title="item => item? `${item.code}-${item.name}-${item.store}`: ''"
                 item-value="id"
                 :error-messages="errorMessages.products"
                 variant="outlined"

@@ -21,7 +21,7 @@ const handleDelete = (id :number) => {
 interface InputFileEvent extends Event {
     target: HTMLInputElement;
 }
-
+console.log(props.products);
 const handleChangeQty = (e :InputFileEvent, id:number) => {
 
   emit('update-qty',{

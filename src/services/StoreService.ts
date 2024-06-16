@@ -18,3 +18,7 @@ export const fetchStoreByID = async (id:number) => {
 export  const updateStore = async (id:number,params: IStore) => {
     return await  axios.put("/stores/update/"+id, {...params})
 }
+
+export  const getDashboard = async (id:number) => {
+    return await  axios.get("/stores/dashboard/"+id)
+}

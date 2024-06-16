@@ -66,7 +66,8 @@ const total = computed(()=>{
     props.is_ex_tax ? 
     sum += parseFloat((i.price * i.qty)/100*i.sale_tax) + parseFloat(i.price * i.qty) + parseFloat(((i.price * i.qty)/100*i.sale_tax + parseFloat(i.price * i.qty))/100*i.ext_tax)
     :
-    sum+= (parseInt(i.price*i.qty) + parseFloat((i.price * i.qty)/100*i.sale_tax)) || 0 ;
+     // sum+= (parseInt(i.price*i.qty) + parseFloat((i.price * i.qty)/100*i.sale_tax)) || 0 ;
+     sum+= ((i.price * i.qty)/100*i.sale_tax + parseFloat(i.price * i.qty)) || 0 ;
   }
   emit('r-total-price',sum);
   return sum.toFixed(2);

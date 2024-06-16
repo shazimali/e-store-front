@@ -13,6 +13,10 @@ export const fetchBranchesAndProductsByStoreID = async (id:number) => {
     return await axios.get('/deliverables/store-branches-products/'+id)
 }
 
+export const fetchBranchesAndProductsByStoreIDEdit = async (store_id:number, deliverable_id:number) => {
+    return await axios.get('/deliverables/store-branches-products-edit/'+store_id+'/'+deliverable_id)
+}
+
 export const fetchDeliverableByIDForPrint = async (id:number) => {
     return await axios.get('/deliverables/fetch-deliverable-for-print/'+id)
 }

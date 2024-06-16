@@ -8,6 +8,7 @@ export const   fetchBranchesByStoreID = async (id:number) => {
 }
 
 export const   fetchLedger = async (params:any) => {
+    console.log(params);
     return await axios.get('/ledgers?'+params) ; 
 }
 

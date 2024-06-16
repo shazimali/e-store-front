@@ -45,6 +45,9 @@ onMounted(() => {
           MPN
         </th>
         <th class="text-left">
+          Store
+        </th>
+        <th class="text-left">
           Description
         </th>
         <th class="text-left">
@@ -63,6 +66,7 @@ onMounted(() => {
         <td>{{ index+1 }}</td>
         <td>{{ product.sku }}</td>
         <td>{{ product.code }}</td>
+        <td>{{ product.store_name }}</td>
         <td>{{ product.name }}</td>
         <td>{{ commaFormate( product.price) }}</td>
         <td>{{ commaFormate( product.qty) }}</td>

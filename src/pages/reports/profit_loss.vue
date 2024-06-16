@@ -69,14 +69,24 @@ const doFetchProfitLoss = () => {
         res.data.data.forEach((item, index) => {
                 
                 let sales = 0;
+                let return_sales = 0;
                 // let purchases = 0;
                 let invoice_qty = 0
+                let return_invoice_qty = 0
                 let mean_sale_price = fetchMeanPrice(item.invoices);
                 
                 //calculate qty sold by multiplying quantity with price per unit
                 item.invoices.length > 0 ?  item.invoices.map((inv,index) => {
                   invoice_qty = parseFloat(invoice_qty)  + parseFloat(inv.qty)
                   sales =  parseFloat(sales)  + parseFloat(mean_sale_price * inv.qty)
+                })
+                :
+                []
+
+                //calculate qty sold by multiplying quantity with price per unit
+                item.return_invoices.length > 0 ?  item.return_invoices.map((r_inv,index) => {
+                    return_invoice_qty = parseFloat(return_invoice_qty)  + parseFloat(r_inv.qty)
+                  return_sales =  parseFloat(return_sales)  + parseFloat(mean_sale_price * r_inv.qty)
                 })
                 :
                 []
@@ -93,9 +103,9 @@ const doFetchProfitLoss = () => {
                 // []
                 let obj = {
                   name:item.name,
-                  sales:sales,
+                  sales: parseFloat(sales) - parseFloat(return_sales),
                   purchases:purchases,
-                  diff:parseFloat(Math.abs(sales - purchases)).toFixed(2),
+                  diff:parseFloat(Math.abs((sales - return_sales) - purchases)).toFixed(2),
                   }
                   dataSet.push(obj);
             });

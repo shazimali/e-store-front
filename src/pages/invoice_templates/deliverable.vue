@@ -17,16 +17,19 @@ const styleObject = reactive({
   textTransform:'none'
 })
 const  deliverable = ref<any>({});
+const  margin_adjustment = ref<any>('');
 onMounted(() => {
     fetchDeliverableByIDForPrint(id).then((res:any) => {
         deliverable.value = res.data.data
+        margin_adjustment.value = res.data.data.company.del_adjust;
     }).catch((err:any) => {
         toast.error(err.message)
     })
 })
+
 </script>
 <template>
-  <div v-if="deliverable && deliverable.customer && deliverable.products">
+  <div :style="{'margin': margin_adjustment}" v-if="deliverable && deliverable.customer && deliverable.products">
     <v-container>
       <v-row no-gutters>
         <v-col cols="6" offset="3">
@@ -163,9 +166,11 @@ onMounted(() => {
         </v-col>
       </v-row>
       <v-row>
-        <table style="    position: absolute;
-    right: 10px;
-    bottom: 10px;">
+        <v-col col="10"></v-col>
+        <v-col col="2">
+          
+        </v-col>
+        <table style="">
           <tr>
         <td></td>
         <td></td>

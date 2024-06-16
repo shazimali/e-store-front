@@ -10,6 +10,8 @@ export const updateCompanyDetail =async (params:ICompany) => {
         'address':params.address,
         'strn':params.strn,
         'sale_tax':params.sale_tax,
+        'del_adjust':params.del_adjust,
+        'inv_adjust':params.inv_adjust,
         'ext_tax':params.ext_tax,
         'phone':params.phone,
         'del_px':params.del_px

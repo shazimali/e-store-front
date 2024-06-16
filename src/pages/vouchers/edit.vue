@@ -153,7 +153,7 @@ const handleSubmit = () => {
 
                         </VRow>
                     </VCol>
-                    <VCol cols="6" v-if="balance && balance > 0">
+                    <VCol cols="6">
                         <VRow no-gutters>
                         <VCol
                             cols="12"
@@ -175,7 +175,7 @@ const handleSubmit = () => {
                         </VCol>
                         </VRow>
                     </VCol>
-                    <VCol cols="12" v-if="balance && balance > 0">
+                    <VCol cols="12">
                         <VRow no-gutters>
                         <VCol
                             cols="12"

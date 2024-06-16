@@ -73,6 +73,12 @@ export const routes = [
         component: () => import('@/pages/stores/edit.vue'),
       },
       {
+        path: 'store/dashboard/:id',
+        name: 'store-dashboard',
+        component: () => import('@/pages/stores/dashboard/index.vue'),
+        
+      },
+      {
         path: 'branches',
         name: 'branches',
         component: () => import('@/pages/branches/index.vue'),
@@ -214,6 +220,10 @@ export const routes = [
       },
       {
         path: 'print/:id',
+        component: () => import('@/pages/print.vue'),
+      },
+      {
+        path: 'reports/print',
         component: () => import('@/pages/print.vue'),
       },
       {

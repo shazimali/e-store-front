@@ -11,6 +11,14 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       heading: 'Apps & Pages',
     }"
   /> -->
+  <VerticalNavLink
+    v-if="canAccess('stock_access')"
+    :item="{
+      title: 'Dashboard',
+      icon: 'ri-dashboard-2-line',
+      to: '/dashboard'
+    }"
+  />
   <VerticalNavGroup
   v-if="canAccess('purchase_access') ||  canAccess('purchase_create')"
     :item="{
@@ -189,7 +197,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     v-if="canAccess('store_access')"
     :item="{
       title: 'Stores',
-      icon: 'ri-article-line',
+      icon: 'ri-building-line',
       to: '/stores'
     }"
   />
