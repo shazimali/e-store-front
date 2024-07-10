@@ -30,6 +30,6 @@ export interface ILedgerForm {
 export interface IProfitLossForm {
     store_id: string | number,
     branch_id: string | number,
-    item_per_page: string | number,
-    page: string | number,
+    // item_per_page: string | number,
+    // page: string | number,
 }

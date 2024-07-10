@@ -79,6 +79,7 @@ onMounted(() => {
         <td>
         </td>
         <td></td>
+        <td></td>
         <td>
           <strong>{{ commaFormate( purchase.total_qty) }}</strong>
         </td>

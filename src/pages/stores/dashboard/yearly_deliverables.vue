@@ -22,7 +22,7 @@ import { Bar } from 'vue-chartjs';
           labels: this.server_data.map((a) => a.year),
           datasets: [ 
               {
-                  label: 'Yearly Deliverables',
+                  label: 'Yearly Items',
                   backgroundColor: '#A99D35',
                   data: this.server_data.map((a) => a.total)
               }

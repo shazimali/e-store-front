@@ -19,11 +19,11 @@ import { Bar } from 'vue-chartjs';
     data() {
       return {
         chartData: {
-          labels: this.server_data.map((a) => a.month),
+          labels: this.server_data.map((a) => a.store),
           datasets: [ 
               {
-                  label: 'Monthly Items',
-                  backgroundColor: '#371022',
+                  label: 'Stores',
+                  backgroundColor: '#A99D35',
                   data: this.server_data.map((a) => a.total)
               }
            ]

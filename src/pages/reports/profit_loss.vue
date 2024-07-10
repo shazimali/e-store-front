@@ -11,13 +11,13 @@ import { fetchBranchesByStoreID, fetchProfitLoss, fetchStores } from '../../serv
         const lstProfitLoss = ref<IProfitLossList>([])
         const loading = ref<boolean>(false)
         const total_items = ref<number>()
+        const total_discount = ref<number>(0)
+        const total_profit_loss = ref<number>(0)
         const router = useRouter();
 const form = ref<IProfitLossForm>({
     store_id:'',
-    branch_id:'',
-    item_per_page:10,
-    page:1
-})
+    branch_id:''
+});
 
 const headers = [
                { title: "name", value: "name" },
@@ -64,9 +64,12 @@ const doFetchProfitLoss = () => {
     const paramString = router.replace({ query:form.value });
     const searchParams = new URLSearchParams(form.value);
     fetchProfitLoss(searchParams.toString()).then((res: any)=>{
-        total_items.value= res.data.total
+        // total_items.value= res.data.total
+        total_discount.value = res.data.discount;
+        total_profit_loss.value = 0;
         let  dataSet = [] as Array<IProfitLossList> ;
-        res.data.data.forEach((item, index) => {
+      
+        res.data.products.forEach((item, index) => {
                 
                 let sales = 0;
                 let return_sales = 0;
@@ -78,7 +81,8 @@ const doFetchProfitLoss = () => {
                 //calculate qty sold by multiplying quantity with price per unit
                 item.invoices.length > 0 ?  item.invoices.map((inv,index) => {
                   invoice_qty = parseFloat(invoice_qty)  + parseFloat(inv.qty)
-                  sales =  parseFloat(sales)  + parseFloat(mean_sale_price * inv.qty)
+                  sales =  (parseFloat(sales)  + parseFloat(mean_sale_price * inv.qty))
+                //   total_discount.value += parseFloat(inv.discount.amount)
                 })
                 :
                 []
@@ -108,6 +112,8 @@ const doFetchProfitLoss = () => {
                   diff:parseFloat(Math.abs((sales - return_sales) - purchases)).toFixed(2),
                   }
                   dataSet.push(obj);
+                  total_profit_loss.value += parseFloat(obj.diff);
+                //   dataSet.forEach((el) => total_profit_loss.value += parseFloat(el.diff) )
             });
         lstProfitLoss.value = dataSet;
         loading.value = false;
@@ -184,7 +190,44 @@ const handleSubmit  =  () => {
                     </VCol>
                 </VRow>
             </VForm>
-            <v-data-table-server
+            <v-table>
+                <thead>
+                    <tr>
+                        <th class="text-left">Name</th>
+                        <th class="text-left">Purchase</th>
+                        <th class="text-left">Sale</th>
+                        <th class="text-left">Profit/Loss</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in lstProfitLoss">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.purchases }}</td>
+                        <td>{{ item.sales }}</td>
+                        <td>{{ item.diff }}</td>
+                    </tr>
+                    <tr v-if="total_discount > 0">
+                        <td></td>
+                        <td></td>
+                        <td><b>Total Before Discount = </b></td>
+                        <td> {{ commaFormate(total_profit_loss) }}</td>
+                    </tr>
+                    <tr v-if="total_discount > 0">
+                        <td></td>
+                        <td></td>
+                        <td><b>Discount = </b></td>
+                        <td> {{ commaFormate(total_discount) }}</td>
+                    </tr>
+                    <tr v-if="total_profit_loss > 0">
+                        <td></td>
+                        <td></td>
+                        <td><b>Total = </b></td>
+                        <td> {{ commaFormate(total_profit_loss - total_discount) }}</td>
+                    </tr>
+
+                </tbody>
+            </v-table>
+            <!-- <v-data-table-server
            :headers="headers"
            :items="lstProfitLoss"
            :items-length="total_items"
@@ -208,7 +251,7 @@ const handleSubmit  =  () => {
         <template v-slot:item.total="{item}">
           {{ commaFormate(item.total ) }}
         </template>
-            </v-data-table-server>
+            </v-data-table-server> -->
        </VCard>
        </VCol>
     </VRow>

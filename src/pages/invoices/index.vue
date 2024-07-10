@@ -14,8 +14,29 @@
         hide-details
         variant="solo-filled"
       ></v-text-field>
-      <v-spacer></v-spacer>
-
+            <v-spacer></v-spacer>
+                <v-autocomplete
+                v-model="form.store_id"
+                :items="lstStores"
+                label="stores"
+                :item-title="item => item? `${item.code}-${item.name}`: ''"
+                 @update:menu="getBranchesByStoreID(form.store_id)"
+                item-value="id"
+                variant="outlined"
+                >
+                </v-autocomplete>
+            <v-spacer></v-spacer>
+                <v-autocomplete
+                v-model="form.branch_id"
+                :items="lstBranches"
+                label="Branches"
+                :item-title="item => item? `${item.code}-${item.name}`: ''"
+                 @update:menu="doFetchInvoices()"
+                item-value="id"
+                variant="outlined"
+                >
+                </v-autocomplete>
+            <v-spacer></v-spacer>
             <v-btn v-if="canAccess('invoice_create')" color="primary" to="/invoices/create">
                 New Invoice
             </v-btn>
@@ -55,9 +76,12 @@
 </template>
 <script setup lang="ts">
 
-import { fetchInvoices } from '@/services/InvoiceService';
+import { IBranchList } from '@/interfaces/IBranch';
+import { IStoreList } from '@/interfaces/IStore';
+import { fetchBranchesByStoreID, fetchInvoices, fetchStoresAndCompany } from '@/services/InvoiceService';
 import { canAccess, commaFormate } from '@core/utils/helpers';
 import { toast } from 'vue3-toastify';
+import { IStockForm } from '../../interfaces/IStock';
 import { InfInvoice } from '../../interfaces/InfInvoice';
        const lstInvoices = ref<InfInvoice>([])
        const loading = ref<boolean>(false)
@@ -65,7 +89,13 @@ import { InfInvoice } from '../../interfaces/InfInvoice';
        const search = ref<string>('')
        const total_items = ref<number>()
        const current_page = ref<number>(1)
+        const lstStores = ref<IStoreList>()
+       const lstBranches = ref<IBranchList>([])
        const router = useRouter();
+       const form = ref<IStockForm>({
+            store_id:'',
+            branch_id:''
+        })
        const headers = [
                { title: "Sr#", align: "start",value: "sr" },
                { title: "Invoice#", value: "invoice_id"},
@@ -79,7 +109,27 @@ import { InfInvoice } from '../../interfaces/InfInvoice';
            ]
        onMounted(() => {
         doFetchInvoices()
+        doFetchStores()
        })
+
+       const doFetchStores = () => {
+            fetchStoresAndCompany().then((res:any) => {
+                lstStores.value = res.data.stores
+            }).catch((err:any) => {
+                toast.error(err.message)
+            })
+        }
+
+        const getBranchesByStoreID = (id:any) => {
+            doFetchInvoices();
+            if(id){
+                fetchBranchesByStoreID(id).then((res:any) => {
+                lstBranches.value = res.data
+            }).catch((err:any) => {
+                toast.error(err.message)
+            })
+            }
+        }
 
        const handleEdit = (id:number) => {
             router.push('invoices/'+id)
@@ -87,7 +137,7 @@ import { InfInvoice } from '../../interfaces/InfInvoice';
 
         const doFetchInvoices = () => {
             loading.value = true;
-            fetchInvoices(current_page.value,item_per_page.value,search.value).then((res : any) => {
+            fetchInvoices(current_page.value,item_per_page.value,search.value,form.value.store_id,form.value.branch_id).then((res : any) => {
                 lstInvoices.value = res.data.data
                 total_items.value= res.data.meta.total
                 loading.value = false;

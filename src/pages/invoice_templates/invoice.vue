@@ -29,7 +29,7 @@ onMounted(() => {
         let data = res.data.data;
         let ind_price = 0
         invoice.value = res.data.data;
-        margin_adjustment.value = res.data.data.company.del_adjust
+        margin_adjustment.value = res.data.data.company.inv_adjust
         total_qty.value =data.products.reduce((n, {qty}) => n + qty, 0);
         data.products.forEach((pr, index) => {
           let price = pr.qty * pr.price;
@@ -162,7 +162,7 @@ onMounted(() => {
                   }}
                 </td>
               </tr>
-              <!-- <tr>
+              <tr v-if="invoice.return_products.length == 0">
                 <td></td>
                 <td></td>
                 <td></td>
@@ -173,9 +173,9 @@ onMounted(() => {
                 <td></td>
                 <td></td>
                 <td>
-                  <strong>{{ commaFormate( total_price) }}</strong>
+                  <strong>{{ commaFormate( total_price.toFixed(2)) }}</strong>
                 </td>
-              </tr> -->
+              </tr>
             </tbody>
           </v-table>
         </v-col>
@@ -236,7 +236,7 @@ onMounted(() => {
                   }}
                 </td>
               </tr>
-              <tr>
+              <tr  v-if="invoice.return_products.length > 0">
                 <td></td>
                 <td></td>
                 <td></td>
@@ -257,9 +257,7 @@ onMounted(() => {
   <div> <strong>Value in words: </strong> {{  numberToWords(invoice.total_price) }}</div>
   <span v-if="invoice.remarks"> <strong>Remarks: </strong>{{ invoice.remarks }}</span>
      
-            <VRow cols="12" class="text-center" 
-            style="    position: absolute;
-    bottom: 50px; left:80px">
+            <VRow cols="12" class="text-center my-10">
               <VCol >
                 <div>
                   <strong>_________________________</strong>

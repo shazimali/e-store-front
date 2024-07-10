@@ -1,8 +1,8 @@
 import { IDeliverable, IDeliverableEdit } from "@/interfaces/IDeliverable"
 import axios from "axios"
 
-export const fetchDeliverables = async (current_page :number,item_per_page :number,search: string) => {
-    return await axios.get('/deliverables?page='+current_page+'&item_per_page='+item_per_page+'&search='+search)  
+export const fetchDeliverables = async (current_page :number,item_per_page :number,search: string, store_id: number, branch_id: number) => {
+    return await axios.get('/deliverables?page='+current_page+'&item_per_page='+item_per_page+'&search='+search+'&store_id='+store_id+'&branch_id='+branch_id)  
 }
 
 export const fetchStores = async () => {

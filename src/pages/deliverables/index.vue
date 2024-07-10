@@ -15,6 +15,28 @@
         variant="solo-filled"
       ></v-text-field>
       <v-spacer></v-spacer>
+                <v-autocomplete
+                v-model="form.store_id"
+                :items="lstStores"
+                label="stores"
+                :item-title="item => item? `${item.code}-${item.name}`: ''"
+                 @update:menu="getBranchesByStoreID(form.store_id)"
+                item-value="id"
+                variant="outlined"
+                >
+                </v-autocomplete>
+            <v-spacer></v-spacer>
+                <v-autocomplete
+                v-model="form.branch_id"
+                :items="lstBranches"
+                label="Branches"
+                :item-title="item => item? `${item.code}-${item.name}`: ''"
+                 @update:menu="doFetchDeliverables()"
+                item-value="id"
+                variant="outlined"
+                >
+                </v-autocomplete>
+            <v-spacer></v-spacer>
 
             <v-btn v-if="canAccess('deliverable_create')" color="primary" to="/deliverables/create">
                 New Deliverable
@@ -55,17 +77,27 @@
 </template>
 <script setup lang="ts">
 
+import { IBranchList } from '@/interfaces/IBranch';
 import { IDeliverableList } from '@/interfaces/IDeliverable';
-import { fetchDeliverables } from '@/services/Deliverable';
+import { IStoreList } from '@/interfaces/IStore';
+import { fetchDeliverables, fetchStores } from '@/services/Deliverable';
+import { fetchBranchesByStoreID } from '@/services/InvoiceService';
 import { canAccess, commaFormate } from '@core/utils/helpers';
 import { toast } from 'vue3-toastify';
+import { IStockForm } from '../../interfaces/IStock';
        const lstDeliverables = ref<IDeliverableList>([])
        const loading = ref<boolean>(false)
        const item_per_page = ref<number>(5)
        const search = ref<string>('')
        const total_items = ref<number>()
        const current_page = ref<number>(1)
+        const lstStores = ref<IStoreList>()
+        const lstBranches = ref<IBranchList>([])
        const router = useRouter();
+       const form = ref<IStockForm>({
+            store_id:'',
+            branch_id:''
+        })
        const headers = [
                { title: "Sr#", align: "start",value: "sr" },
                { title: "Deliverable#",value: "invoice_id" },
@@ -78,7 +110,27 @@ import { toast } from 'vue3-toastify';
            ]
        onMounted(() => {
         doFetchDeliverables()
+        doFetchStores()
        })
+
+       const doFetchStores = () => {
+            fetchStores().then((res:any) => {
+                lstStores.value = res.data
+            }).catch((err:any) => {
+                toast.error(err.message)
+            })
+        }
+
+        const getBranchesByStoreID = (id:any) => {
+            doFetchDeliverables();
+            if(id){
+                fetchBranchesByStoreID(id).then((res:any) => {
+                lstBranches.value = res.data
+            }).catch((err:any) => {
+                toast.error(err.message)
+            })
+            }
+        }
 
        const handleEdit = (id:number) => {
             router.push('deliverables/'+id)
@@ -86,7 +138,7 @@ import { toast } from 'vue3-toastify';
 
         const doFetchDeliverables = () => {
             loading.value = true;
-            fetchDeliverables(current_page.value,item_per_page.value,search.value).then((res : any) => {
+            fetchDeliverables(current_page.value,item_per_page.value,search.value,form.value.store_id,form.value.branch_id).then((res : any) => {
                 lstDeliverables.value = res.data.data
                 total_items.value= res.data.meta.total
                 loading.value = false;

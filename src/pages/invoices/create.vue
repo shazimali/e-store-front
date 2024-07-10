@@ -92,8 +92,23 @@ const handleReturnSelectedProducts = () => {
     const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
     // const available_qty = lstProducts.value[selectedIdx].available_qty;
     if (selectedIdx != -1){ 
-        // const isProductAlreadyExistsIndex = form.value.return_products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
+        const isProductAlreadyExistsIndex = form.value.return_products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
+        if(isProductAlreadyExistsIndex != -1){
+            form.value.return_products[isProductAlreadyExistsIndex].qty = parseInt(form.value.return_products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
+        }else{
+            form.value.return_products.push({
+                id :lstProducts.value[selectedIdx].id,
+                name:lstProducts.value[selectedIdx].name,
+                code:lstProducts.value[selectedIdx].code,
+                sku:lstProducts.value[selectedIdx].sku,
+                sale_tax:lstProducts.value[selectedIdx].sale_tax,
+                ext_tax:lstProducts.value[selectedIdx].ext_tax,
+                price:lstProducts.value[selectedIdx].sale_price,
+                available_qty:lstProducts.value[selectedIdx].available_qty,
+                qty:1
+             })
 
+        }
         // if(isProductAlreadyExistsIndex != -1){
         //     if(available_qty <= form.value.return_products[isProductAlreadyExistsIndex].qty){
         //         alert('Available Quantity Exceeded');
@@ -107,17 +122,17 @@ const handleReturnSelectedProducts = () => {
         //         alert("No Available Product");
         //         return false
         //     }
-            form.value.return_products.push({
-                id :lstProducts.value[selectedIdx].id,
-                name:lstProducts.value[selectedIdx].name,
-                code:lstProducts.value[selectedIdx].code,
-                sku:lstProducts.value[selectedIdx].sku,
-                sale_tax:lstProducts.value[selectedIdx].sale_tax,
-                ext_tax:lstProducts.value[selectedIdx].ext_tax,
-                price:lstProducts.value[selectedIdx].sale_price,
-                available_qty:lstProducts.value[selectedIdx].available_qty,
-                qty:1
-             })
+            // form.value.return_products.push({
+            //     id :lstProducts.value[selectedIdx].id,
+            //     name:lstProducts.value[selectedIdx].name,
+            //     code:lstProducts.value[selectedIdx].code,
+            //     sku:lstProducts.value[selectedIdx].sku,
+            //     sale_tax:lstProducts.value[selectedIdx].sale_tax,
+            //     ext_tax:lstProducts.value[selectedIdx].ext_tax,
+            //     price:lstProducts.value[selectedIdx].sale_price,
+            //     available_qty:lstProducts.value[selectedIdx].available_qty,
+            //     qty:1
+            //  })
         // }
      }
      returnSearchInput.value = "";

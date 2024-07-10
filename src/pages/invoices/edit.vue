@@ -103,8 +103,23 @@ const handleReturnSelectedProducts = () => {
     const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
     // const available_qty = lstProducts.value[selectedIdx].available_qty;
     if (selectedIdx != -1){ 
-        // const isProductAlreadyExistsIndex = form.value.return_products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
+        const isProductAlreadyExistsIndex = form.value.return_products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
+        if(isProductAlreadyExistsIndex != -1){
+            form.value.return_products[isProductAlreadyExistsIndex].qty = parseInt(form.value.return_products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
+        }else{
+            form.value.return_products.push({
+                id :lstProducts.value[selectedIdx].id,
+                name:lstProducts.value[selectedIdx].name,
+                code:lstProducts.value[selectedIdx].code,
+                sku:lstProducts.value[selectedIdx].sku,
+                sale_tax:lstProducts.value[selectedIdx].sale_tax,
+                ext_tax:lstProducts.value[selectedIdx].ext_tax,
+                price:lstProducts.value[selectedIdx].sale_price,
+                available_qty:lstProducts.value[selectedIdx].available_qty,
+                qty:1
+             })
 
+        }
         // if(isProductAlreadyExistsIndex != -1){
         //     if(available_qty <= form.value.return_products[isProductAlreadyExistsIndex].qty){
         //         alert('Available Quantity Exceeded');
@@ -118,17 +133,17 @@ const handleReturnSelectedProducts = () => {
         //         alert("No Available Product");
         //         return false
         //     }
-            form.value.return_products.push({
-                id :lstProducts.value[selectedIdx].id,
-                name:lstProducts.value[selectedIdx].name,
-                code:lstProducts.value[selectedIdx].code,
-                sku:lstProducts.value[selectedIdx].sku,
-                sale_tax:lstProducts.value[selectedIdx].sale_tax,
-                ext_tax:lstProducts.value[selectedIdx].ext_tax,
-                price:lstProducts.value[selectedIdx].sale_price,
-                available_qty:lstProducts.value[selectedIdx].available_qty,
-                qty:1
-             })
+            // form.value.return_products.push({
+            //     id :lstProducts.value[selectedIdx].id,
+            //     name:lstProducts.value[selectedIdx].name,
+            //     code:lstProducts.value[selectedIdx].code,
+            //     sku:lstProducts.value[selectedIdx].sku,
+            //     sale_tax:lstProducts.value[selectedIdx].sale_tax,
+            //     ext_tax:lstProducts.value[selectedIdx].ext_tax,
+            //     price:lstProducts.value[selectedIdx].sale_price,
+            //     available_qty:lstProducts.value[selectedIdx].available_qty,
+            //     qty:1
+            //  })
         // }
      }
      returnSearchInput.value = "";
@@ -186,8 +201,13 @@ const handleReturnInvoiceOption = (val:boolean) => {
 const handleSubmit = () => {
     loading.value = true;
     const id :number = route.params.id
-    form.value.total_qty = parseFloat(form.value.inv_total_qty)  -  parseFloat(form.value.return_total_qty) 
-    form.value.total_price = parseFloat(form.value.inv_total_price)  - parseFloat(form.value.return_total_price) 
+    if(form.value.is_return){
+        form.value.total_qty = parseFloat(form.value.inv_total_qty)  -  parseFloat(form.value.return_total_qty) 
+        form.value.total_price = parseFloat(form.value.inv_total_price)  - parseFloat(form.value.return_total_price) 
+    }else{
+        form.value.total_qty = form.value.inv_total_qty
+        form.value.total_price = form.value.inv_total_price
+    }
     updateInvoice(id,form.value).then((res:any) => {
         const invoice_id = res.data;
         toast.success('Invoice updated successfully');

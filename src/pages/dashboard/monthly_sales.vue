@@ -15,16 +15,16 @@ import { Bar } from 'vue-chartjs';
   export default {
     name: 'BarChart',
     components: { Bar },
-    props:['server_data'],
+    props: ['server_data'],
     data() {
       return {
         chartData: {
-          labels: this.server_data.map((a) => a.month),
+          labels:this.server_data.map((a) => a.month),
           datasets: [ 
               {
-                  label: 'Monthly Items',
-                  backgroundColor: '#371022',
-                  data: this.server_data.map((a) => a.total)
+                  label: 'Monthly Sales',
+                  backgroundColor: '#A170FE',
+                  data:this.server_data.map((a) => a.total),
               }
            ]
         },

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { commaFormate } from '@/@core/utils/helpers';
 const props = defineProps(['title','server_data'])
-console.log(props);
 </script>
 <template>
     <VCard :title="props.title">
@@ -28,10 +27,10 @@ console.log(props);
 
         <div class="d-flex flex-column">
           <div class="text-body-1">
-            Sales
+            Purchase
           </div>
           <h5 class="text-h5">
-            {{ commaFormate((props.server_data.sales).toFixed(2)) }}
+            {{ commaFormate(props.server_data.purchases) }}
           </h5>
         </div>
       </div>
@@ -89,10 +88,10 @@ console.log(props);
 
         <div class="d-flex flex-column">
           <div class="text-body-1">
-            Sale Invoices
+            Sales
           </div>
           <h5 class="text-h5">
-            {{ commaFormate(props.server_data.sales_invoices) }}
+            {{ commaFormate(props.server_data.sales) }}
           </h5>
         </div>
       </div>
@@ -118,16 +117,16 @@ console.log(props);
 
         <div class="d-flex flex-column">
           <div class="text-body-1">
-            Items
+            Active stores
           </div>
           <h5 class="text-h5">
-            {{ commaFormate(props.server_data.deliverables) }}
+            {{ commaFormate(props.server_data.stores) }}
           </h5>
         </div>
       </div>
       
     </VCol>
-    <VCol
+    <!-- <VCol
       cols="12"
       sm="6"
       md="3"
@@ -155,7 +154,7 @@ console.log(props);
         </div>
       </div>
       
-    </VCol>
+    </VCol> -->
     <!-- <VCol
       cols="12"
       sm="6"

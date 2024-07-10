@@ -1,8 +1,8 @@
 import { InfInvoice } from "@/interfaces/InfInvoice"
 import axios from "axios"
 
-export const fetchInvoices = async (current_page :number,item_per_page :number,search: string) => {
-    return await axios.get('/invoices?page='+current_page+'&item_per_page='+item_per_page+'&search='+search)  
+export const fetchInvoices = async (current_page :number,item_per_page :number,search: string, store_id: number, branch_id: number) => {
+    return await axios.get('/invoices?page='+current_page+'&item_per_page='+item_per_page+'&search='+search+'&store_id='+store_id+'&branch_id='+branch_id)  
 }
 
 export const fetchStoresAndCompany = async () => {

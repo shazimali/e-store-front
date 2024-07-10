@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { commaFormate } from '@/@core/utils/helpers';
-import { IVoucher } from '@/interfaces/IVoucher';
-import { editVoucher, fetchBranchBalanceByBranchID, fetchBranchByStoreID, fetchStores, updateVoucher } from '@/services/VoucherService';
+import { IDiscount, InfInvoiceList } from '@/interfaces/IDiscount';
+import { editDiscount, fetchBalanceAndInvoicesByBranchID, updateDiscount } from '@/services/DiscountService';
+import { fetchBranchByStoreID, fetchStores } from '@/services/VoucherService';
 import { onMounted, ref } from 'vue';
 import { toast } from 'vue3-toastify';
 import { IBranchList } from '../../interfaces/IBranch';
 import { IStoreList } from '../../interfaces/IStore';
-import { IDiscount, InfInvoiceList } from '@/interfaces/IDiscount';
-import { editDiscount, fetchBalanceAndInvoicesByBranchID, updateDiscount } from '@/services/DiscountService';
 
 const errorMessages = ref<IDiscount>({});
 const lstStores = ref<IStoreList>();
@@ -82,7 +81,7 @@ const handleSubmit = () => {
 }
  </script>
 <template>
-    <VCard :title=" balance > 0 ? 'Edit Voucher ('+ commaFormate(balance) + ')' : 'Edit Voucher' ">
+    <VCard :title=" balance > 0 ? 'Edit Discount ('+ commaFormate(balance) + ')' : 'Edit Voucher' ">
         <VCardText>
             <VForm @submit.prevent="handleSubmit">
                 <VRow>

@@ -9,7 +9,7 @@ export const routes = [
       {
         path: 'dashboard',
         name: 'dashboard',
-        component: () => import('@/pages/dashboard.vue'),
+        component: () => import('@/pages/dashboard/index.vue'),
         
       },
       {
