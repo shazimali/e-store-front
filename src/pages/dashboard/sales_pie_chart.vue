@@ -16,16 +16,16 @@ ChartJS.register(ArcElement, Tooltip, Legend)
   export default {
     name: 'DoughnutChart',
     components: { Doughnut },
-    props:['title','credit','debit'],
+    props:['title','sales','purchases','profits','discounts'],
     data() {
       return {
         chartData: {
-          labels: [ 'Credit', 'Debit', 'Difference' ],
+          labels: [ 'Sales', 'Purchases', 'Profits', 'Discounts' ],
           datasets: [ 
               {
                   label: this.title,
-                  backgroundColor: ['#E46651', '#41B883', '#A99D35'],
-                  data: [this.credit, this.debit, this.credit - this.debit] 
+                  backgroundColor: ['#41B883','#FFA500', '#A99D35','#E46651'],
+                  data: [this.sales, this.purchases, this.profits, this.discounts] 
               }
            ]
         },

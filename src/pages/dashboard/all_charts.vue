@@ -41,22 +41,28 @@ import { toast } from 'vue3-toastify';
         <v-col cols="4">
           <SalesPieChart 
           :title="'Total Sales'" 
-          :credit="dashboard.total_states.credit"
-          :debit="dashboard.total_states.debit"
+          :sales="dashboard.total_states.sales[0].total"
+          :profits="parseFloat(dashboard.total_states.sales[0].total -  dashboard.total_states.purchases[0].total)"
+          :discounts="dashboard.total_states.discounts[0].total"
+          :purchases="dashboard.total_states.purchases[0].total"
           />
         </v-col>
         <v-col cols="4">
           <SalesPieChart 
           :title="'Yearly Sales'"
-          :credit="dashboard.yearly_states.credit"
-          :debit="dashboard.yearly_states.debit"
+          :sales="dashboard.yearly_states.sales[0].total"
+          :profits="parseFloat(dashboard.yearly_states.sales[0].total -  dashboard.total_states.purchases[0].total)"
+          :discounts="dashboard.yearly_states.discounts[0].total"
+          :purchases="dashboard.yearly_states.purchases[0].total"
           />
         </v-col>
         <v-col cols="4">
           <SalesPieChart 
           :title="'Monthly Sales'"
-          :credit="dashboard.monthly_states.credit"
-          :debit="dashboard.monthly_states.debit"
+          :sales="dashboard.monthly_states.sales[0].total"
+          :profits="parseFloat(dashboard.monthly_states.sales[0].total -  dashboard.monthly_states.purchases[0].total)"
+          :discounts="dashboard.monthly_states.discounts[0].total"
+          :purchases="dashboard.monthly_states.purchases[0].total"
           />
         </v-col>
       </v-row>
