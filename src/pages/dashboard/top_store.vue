@@ -12,7 +12,7 @@ const props = defineProps(['server_data'])
           Congratulations {{props.server_data.name}}! <span class="text-high-emphasis">🎉</span>
         </h5>
         <div class="text-body-1">
-          Best seller of the month
+          Best seller
         </div>
       </div>
       <h4 class="text-h4 text-primary">
@@ -21,9 +21,9 @@ const props = defineProps(['server_data'])
       <div class="text-body-1 mb-2">
         Achieved highest target <span class="text-high-emphasis">🚀</span>
       </div>
-      <VBtn size="small">
+      <!-- <VBtn size="small">
         View Sales
-      </VBtn>
+      </VBtn> -->
     </VCardText>
 
     <!-- Trophy -->

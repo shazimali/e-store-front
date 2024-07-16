@@ -58,11 +58,8 @@ const props = defineProps(['title','server_data'])
           <div class="text-body-1">
             Profit/Loss
           </div>
-          <h5 v-if="props.server_data.sales[0].total" class="text-h5 text-danger">
-            {{ (props.server_data.sales[0].total - props.server_data.purchases[0].total).toFixed(2) }}
-          </h5>
-          <h5 v-else class="text-h5 text-danger">
-            0
+          <h5 class="text-h5 text-danger">
+            {{ (props.server_data.profit).toFixed(2) }}
           </h5>
         </div>
       </div>
@@ -91,7 +88,7 @@ const props = defineProps(['title','server_data'])
             Purchase
           </div>
           <h5 class="text-h5">
-            {{ commaFormate(props.server_data.purchases[0].total) }}
+            {{ commaFormate(props.server_data.purchases) }}
           </h5>
         </div>
       </div>

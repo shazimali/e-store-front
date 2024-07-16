@@ -96,8 +96,7 @@ const doFetchProfitLoss = () => {
                 []
                 // set total purchase as per mean price
                 let mean_purchase_price = item.purchases && item.purchases.length > 0 ? fetchMeanPrice(item.purchases):0 ;
-                
-                let purchases = mean_purchase_price * invoice_qty;
+                let purchases = mean_purchase_price * (parseInt(invoice_qty) - parseInt(return_invoice_qty));
                 // let purchases = [];
 
                 // item.purchases.length > 0 ?  item.purchases.map((pr,index) => {
