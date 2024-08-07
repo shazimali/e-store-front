@@ -6,15 +6,31 @@ import { toast } from 'vue3-toastify';
 const route = useRoute();
 const id :number = route.params.id
 const dispatched_name = localStorage.getItem('user_name');
-const styleForCode = reactive({
-  padding: '4px',
+const styleForRight = reactive({
+  textAlign: 'right'
 })
-const styleForDesc = reactive({
-  padding: '1px',
+const styleForCenter = reactive({
+  textAlign: 'center'
+})
+const styleForLeft = reactive({
+  textAlign: 'left',
 })
 
-const styleObject = reactive({
-  textTransform:'none'
+const styleTableObject = reactive({
+  color:'black',
+  fontSize:'13px',
+  marginTop:'-20px',
+  width:'100%'
+})
+
+const styleRow = reactive({
+  textTransform:'none',
+  height:'5px',
+})
+
+const styleDV = reactive({
+  color:'black',
+  fontSize:'13px'
 })
 const  deliverable = ref<any>({});
 const  margin_adjustment = ref<any>('');
@@ -29,24 +45,24 @@ onMounted(() => {
 
 </script>
 <template>
-  <div :style="{'margin': margin_adjustment}" v-if="deliverable && deliverable.customer && deliverable.products">
+  <div :style="styleDV" v-if="deliverable && deliverable.customer && deliverable.products">
     <v-container>
       <v-row no-gutters>
-        <v-col cols="6" offset="3">
+        <v-col cols="12">
           <v-row>
-            <v-col cols="4">
+            <v-col cols="3">
               <v-img :src="logo"></v-img>
             </v-col>
-            <v-col cols="8" class="mt-5">
-          <h5>Every Day Plastic Industry</h5>
-          <h6 style="margin-left: 45px;">Delivery Challan</h6>
+            <v-col cols="9" class="mt-5">
+          <h1 :style="{'color': 'black'}">Every Day Plastic Industry</h1>
+          <h3 :style="{'margin-left': '85px','color': 'black'}">Delivery Challan</h3>
             </v-col>
           </v-row>
         </v-col>
       </v-row>
-      <v-row no-gutters>
-        <v-col cols="12">D/C#{{ deliverable.invoice_sr_number }}</v-col>
-        <v-col cols="12">D/C Date: {{ deliverable.date }}</v-col>
+      <v-row no-gutters class="mt-5">
+        <v-col cols="12">D/C#: <b class="ml-7">{{ deliverable.invoice_sr_number }}</b></v-col>
+        <v-col cols="12">D/C Date: <span class="ml-1">{{ deliverable.date }}</span></v-col>
       </v-row>
       <v-row no-gutters class="mt-3">
         <v-col cols="5">
@@ -80,8 +96,10 @@ onMounted(() => {
               <td>{{ deliverable.customer.phone }}</td>
             </tr>
             <tr></tr>
+            <tr></tr>
+            <tr></tr>
             <tr>
-              <td><strong>Remarks: </strong>{{ deliverable.remarks }}</td>
+              <td colspan="2"><strong>Remarks: </strong>{{ deliverable.remarks }}</td>
             </tr>
             
           </table>
@@ -121,47 +139,45 @@ onMounted(() => {
     <v-container>
       <v-row>
         <v-col cols="12">
-  <v-table>
+  <table  :style="styleTableObject">
     <thead>
       <tr>
-        <th  :style="styleObject">
+        <th  >
           Sr
         </th>
-        <th  :style="styleObject">
+        <th  >
           {{ deliverable.store.sku_name }}
         </th>
-        <th  :style="styleObject">
+        <th  >
           MPN
         </th>
-        <th  :style="styleObject">
+        <th  >
           Description
         </th>
-        <th  :style="styleObject">
+        <th  >
           Quantity
         </th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(product, index) in deliverable.products" :style="styleObject">
-        <td>{{ index+1 }}</td>
-        <td>{{ product.sku }}</td>
-        <td>{{ product.code }}</td>
+      <tr v-for="(product, index) in deliverable.products" >
+        <td :style="styleForCenter">{{ index+1 }}</td>
+        <td :style="styleForCenter">{{ product.sku }}</td>
+        <td :style="styleForCenter">{{ product.code }}</td>
         <td>{{ product.name }}</td>
-        <td>{{ commaFormate( product.qty) }}</td>
+        <td :style="styleForRight">{{ commaFormate( product.qty) }}</td>
       </tr>
       <tr>
         <td></td>
         <td></td>
         <td></td>
-        <td>
-          <strong>Total:</strong>
-        </td>
-        <td>
-          <strong>{{ commaFormate( deliverable.total_qty) }}</strong>
+        <td></td>
+        <td :style="styleForRight">
+          <strong>Total:{{ commaFormate( deliverable.total_qty) }}</strong>
         </td>
       </tr>
     </tbody>
-  </v-table>
+  </table>
   <!-- <span> <strong>Remarks: </strong>{{ deliverable.remarks }}</span> -->
         </v-col>
       </v-row>
@@ -170,19 +186,24 @@ onMounted(() => {
         <v-col col="2">
           
         </v-col>
-        <table style="">
+        <table style="position: absolute; bottom:20px; right: 10px;">
           <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
         <td>
-          <div class="mb-2">
-            Driver/Adda ___________
-          </div>
-          <div class="mb-2">
-            Checked ___________
-          </div>
+          <b>Courier/Driver/Adda: </b>
+        </td>
+        <td>
+          ___________________________________
+        </td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>
+          <b>Checked: </b>
+        </td>
+        <td>
+          ___________________________________
         </td>
       </tr>
         </table>

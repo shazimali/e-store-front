@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { commaFormate } from '@/@core/utils/helpers';
 import { toast } from 'vue3-toastify';
 import { IBranchList } from '../../interfaces/IBranch';
@@ -16,7 +15,9 @@ import { fetchBranchesByStoreID, fetchProfitLoss, fetchStores } from '../../serv
         const router = useRouter();
 const form = ref<IProfitLossForm>({
     store_id:'',
-    branch_id:''
+    branch_id:'',
+    from_date:'',
+    to_date:''
 });
 
 const headers = [
@@ -97,6 +98,10 @@ const doFetchProfitLoss = () => {
                 // set total purchase as per mean price
                 let mean_purchase_price = item.purchases && item.purchases.length > 0 ? fetchMeanPrice(item.purchases):0 ;
                 let purchases = mean_purchase_price * (parseInt(invoice_qty) - parseInt(return_invoice_qty));
+                console.log(mean_purchase_price);
+                console.log(invoice_qty);
+                console.log(return_invoice_qty);
+                console.log(purchases);
                 // let purchases = [];
 
                 // item.purchases.length > 0 ?  item.purchases.map((pr,index) => {
@@ -177,8 +182,31 @@ const handleSubmit  =  () => {
             >
             </v-autocomplete>
                         </VCol>
+                      
                         </VRow>
                     </VCol>
+        <VCol cols="6">
+             <label for="from_date">From Date</label>
+             <VTextField
+               id="from_date"
+               type="date"
+               tabindex="1"
+               v-model="form.from_date"
+               persistent-placeholder
+             />
+
+       </VCol>
+       <VCol cols="6">
+             <label for="to_date">To Date</label>
+             <VTextField
+               id="to_date"
+               type="date"
+               tabindex="1"
+               v-model="form.to_date"
+               persistent-placeholder
+             />
+
+       </VCol>
                     <VCol
                         cols="12"
                         class="d-flex gap-4"

@@ -44,7 +44,7 @@ import { toast } from 'vue3-toastify';
         <v-col cols="4">
           <SalesPieChart 
           :title="'Total Sales'" 
-          :sales="dashboard.total_states.sales[0].total"
+          :sales="dashboard.total_states.sale_without_tax"
           :profits="dashboard.total_states.profit"
           :discounts="dashboard.total_states.discounts"
           :purchases="dashboard.total_states.purchases"
@@ -53,8 +53,8 @@ import { toast } from 'vue3-toastify';
         <v-col cols="4">
           <SalesPieChart 
           :title="'Yearly Sales'"
-          :sales="dashboard.yearly_states.sales[0].total"
-          :profits="dashboard.total_states.profit"
+          :sales="dashboard.yearly_states.sale_without_tax"
+          :profits="dashboard.yearly_states.profit"
           :discounts="dashboard.yearly_states.discounts"
           :purchases="dashboard.yearly_states.purchases"
           />
@@ -62,8 +62,8 @@ import { toast } from 'vue3-toastify';
         <v-col cols="4">
           <SalesPieChart 
           :title="'Monthly Sales'"
-          :sales="dashboard.monthly_states.sales[0].total"
-          :profits="dashboard.total_states.profit"
+          :sales="dashboard.monthly_states.sale_without_tax"
+          :profits="dashboard.monthly_states.profit"
           :discounts="dashboard.monthly_states.discounts"
           :purchases="dashboard.monthly_states.purchases"
           />

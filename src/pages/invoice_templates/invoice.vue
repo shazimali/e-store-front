@@ -2,7 +2,6 @@
 import { commaFormate } from '@/@core/utils/helpers';
 import { fetchInvoiceByIDForPrint } from '@/services/InvoiceService';
 // import { numberToWords } from '@core/utils/numberToWords';
-import { numberToWords } from "amount-to-words";
 import { toast } from 'vue3-toastify';
 
 const route = useRoute();
@@ -10,18 +9,26 @@ const id :number = route.params.id
 const dispatched_name = localStorage.getItem('user_name');
 const  invoice = ref<any>({});
 const  total_qty = ref<number>(0);
+const  total_sale_tax = ref<number>(0);
 const  total_price = ref<number>(0);
 const  margin_adjustment = ref<any>('');
 
-const styleForCode = reactive({
-  padding: '4px',
+const styleForRight = reactive({
+  textAlign: 'right'
 })
-const styleForDesc = reactive({
-  padding: '1px',
+const styleForLeft = reactive({
+  textAlign: 'left',
 })
 
-const styleObject = reactive({
-  textTransform:'none'
+const styleTableObject = reactive({
+  color:'black',
+  fontSize:'13px',
+  marginTop:'-20px'
+})
+
+const styleRow = reactive({
+  textTransform:'none',
+  height:'5px',
 })
 
 onMounted(() => {
@@ -34,25 +41,29 @@ onMounted(() => {
         data.products.forEach((pr, index) => {
           let price = pr.qty * pr.price;
           let tax = (pr.price * pr.qty)/100*pr.sale_tax;
-          total_price.value =  parseFloat(total_price.value) + parseFloat(price) + parseFloat(tax)
+          total_price.value =  parseFloat(total_price.value) + parseFloat(price) + parseFloat(tax);
+          total_sale_tax.value +=  parseFloat((pr.price * pr.qty)/100*pr.sale_tax); 
         });
+        data.return_products.forEach((r_pr, index) => {
+          total_sale_tax.value -= parseFloat((r_pr.price * r_pr.qty)/100*r_pr.sale_tax)
+        })
     }).catch((err:any) => {
         toast.error(err.message)
     })
 })
 </script>
 <template>
-  <div :style="{'margin': margin_adjustment}"  v-if="invoice && invoice.customer && invoice.products">
+  <div :style="{'margin-top':'120px','color':'black','font-size':'13px'}"  v-if="invoice && invoice.customer && invoice.products">
     <v-container>
       <v-row no-gutters>
         <v-col cols="6">
-          <h3>Sale Tax Invoice</h3>
+          <h2 :style="{'color':'black'}">Sale Tax Invoice</h2>
         </v-col>
       </v-row>
       <v-row no-gutters>
-        <v-col cols="6">Invoice: {{ invoice.invoice_id }}</v-col>
-        <v-col cols="6">Date: {{ invoice.date }}</v-col>
-        <v-col cols="12">{{ invoice.store.is_sr ? 'SR:' : 'RV:' }} {{ invoice.sr_number }}</v-col>
+        <v-col cols="5">Invoice: <b class="ml-2">{{ invoice.invoice_id }}</b></v-col>
+        <v-col cols="7">Date: {{ invoice.date }}</v-col>
+        <v-col cols="12"><span class="">{{ invoice.store.is_sr ? 'SR:' : 'RV:' }}</span> <b class="ml-9">{{ invoice.sr_number }}</b></v-col>
       </v-row>
       <v-row no-gutters class="mt-3">
         <v-col cols="5">
@@ -108,33 +119,32 @@ onMounted(() => {
       </v-row>
     </v-container>
     <v-container>
-      <v-row>
         <v-col cols="12">
-          <v-table>
+          <table :style="styleTableObject" width="100%">
             <thead>
               <tr>
-                <th  :style="styleObject">
+                <th >
                   Sr
                 </th>
-                <th  :style="styleObject">
+                <th >
                   Cat
                 </th>
-                <th  :style="styleObject">
+                <th >
                   MPN
                 </th>
-                <th  :style="styleObject">
+                <th >
                   Description
                 </th>
-                <th  :style="styleObject">
+                <th >
                   Quantity
                 </th>
-                <th  :style="styleObject">
+                <th >
                   Rate
                 </th>
-                <th  :style="styleObject">
-                  SaleTax
+                <th >
+                  Sale Tax
                 </th>
-                <th v-if="invoice.is_ex_tax"  :style="styleObject">
+                <th v-if="invoice.is_ex_tax" >
                   Ex.Sale Tax<sup><small>({{ invoice.company.ext_tax }}%)</small></sup>
                 </th>
                 <th>
@@ -143,22 +153,21 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in invoice.products" :style="styleObject">
+              <tr v-for="(item, index) in invoice.products" :style="{'text-transform':'none','text-align':'center'}">
                 <td>{{ index+1 }}</td>
-                <td>{{ item.sku }}</td>
-                <td :style="styleForCode">{{ item.code }}</td>
-                <td :style="styleForDesc">{{ item.name }}</td>
-                <td>{{ commaFormate( item.qty) }}</td>
-                <td>{{ commaFormate( item.price) }}</td>
-                <td>
+                <td >{{ item.sku }}</td>
+                <td >{{ item.code }}</td>
+                <td :style="styleForLeft">{{ item.name }}</td>
+                <td :style="styleForRight">{{ commaFormate( item.qty) }}</td>
+                <td :style="styleForRight">{{ commaFormate( item.price) }}</td>
+                <td :style="styleForRight">
                   {{ commaFormate(((item.price * item.qty)/100*item.sale_tax).toFixed(2)) }}
                 </td>
-                <td>
+                <td :style="styleForRight">
                   {{ invoice.is_ex_tax ? 
                     commaFormate((((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty)) + parseFloat(((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty))/100*item.ext_tax)).toFixed(2))
                   :
-                  commaFormate(((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty)).toFixed(2))
-
+                    commaFormate(((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty)).toFixed(2))
                   }}
                 </td>
               </tr>
@@ -167,47 +176,49 @@ onMounted(() => {
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>
+                <td :style="styleForRight">
                   <strong>{{ commaFormate( total_qty) }}</strong>
                 </td>
                 <td></td>
-                <td></td>
-                <td>
+                <td :style="styleForRight">
+                  <strong>{{ commaFormate(total_sale_tax.toFixed(2)) }}</strong>
+                </td>
+                <td :style="styleForRight">
                   <strong>{{ commaFormate( total_price.toFixed(2)) }}</strong>
                 </td>
               </tr>
             </tbody>
-          </v-table>
+          </table>
         </v-col>
         <v-col cols="12"  v-if="invoice.return_products.length > 0">
           <h5>Return Items</h5>
         </v-col>
         <v-col cols="12">
-          <v-table>
+          <table :style="styleTableObject">
             <thead   v-if="invoice.return_products.length > 0">
               <tr>
-                <th  :style="styleObject">
+                <th >
                   Sr
                 </th>
-                <th  :style="styleObject">
+                <th >
                   Cat
                 </th>
-                <th  :style="styleObject">
+                <th >
                   MPN
                 </th>
-                <th  :style="styleObject">
+                <th >
                   Description
                 </th>
-                <th  :style="styleObject">
+                <th >
                   Quantity
                 </th>
-                <th  :style="styleObject">
+                <th >
                   Rate
                 </th>
-                <th  :style="styleObject">
+                <th >
                   SaleTax
                 </th>
-                <th v-if="invoice.is_ex_tax"  :style="styleObject">
+                <th v-if="invoice.is_ex_tax" >
                   Ex.Sale Tax<sup><small>({{ invoice.company.ext_tax }}%)</small></sup>
                 </th>
                 <th>
@@ -217,17 +228,17 @@ onMounted(() => {
             </thead>
             <tbody>
              
-              <tr   v-if="invoice.return_products.length > 0"  v-for="(item, index) in invoice.return_products" :style="styleObject">
+              <tr   v-if="invoice.return_products.length > 0"  v-for="(item, index) in invoice.return_products">
                 <td>{{ index+1 }}</td>
-                <td>{{ item.sku }}</td>
-                <td :style="styleForCode">{{ item.code }}</td>
-                <td :style="styleForDesc">{{ item.name }}</td>
-                <td>{{ commaFormate( item.qty) }}</td>
-                <td>{{ commaFormate( item.price) }}</td>
-                <td>
+                <td  >{{ item.sku }}</td>
+                <td >{{ item.code }}</td>
+                <td :style="styleForLeft">{{ item.name }}</td>
+                <td :style="styleForRight">{{ commaFormate( item.qty) }}</td>
+                <td  :style="styleForRight">{{ commaFormate( item.price) }}</td>
+                <td  :style="styleForRight">
                   {{ commaFormate(((item.price * item.qty)/100*item.sale_tax).toFixed(2)) }}
                 </td>
-                <td>
+                <td :style="styleForRight">
                   {{ invoice.is_ex_tax ? 
                     commaFormate((((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty)) + parseFloat(((item.price * item.qty)/100*item.sale_tax + parseFloat(item.price * item.qty))/100*item.ext_tax)).toFixed(2))
                   :
@@ -240,24 +251,85 @@ onMounted(() => {
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
                 <td>
+                </td>
+                <td  :style="styleForRight">
                   <strong>{{ commaFormate( invoice.total_qty) }}</strong>
                 </td>
                 <td></td>
-                <td></td>
-                <td>
+                <td  :style="styleForRight">
+                  <strong>{{ commaFormate(total_sale_tax.toFixed(2)) }}</strong>
+                </td>
+                <td  :style="styleForRight">
                   <strong>{{ commaFormate( invoice.total_price) }}</strong>
                 </td>
               </tr>
             </tbody>
-          </v-table>
+          </table>
         </v-col>
-      </v-row>
-  <div> <strong>Value in words: </strong> {{  numberToWords(invoice.total_price) }}</div>
+  <!-- <div> <strong>Value in words: </strong> {{  numberToWords(invoice.total_price) }}</div> -->
   <span v-if="invoice.remarks"> <strong>Remarks: </strong>{{ invoice.remarks }}</span>
-     
-            <VRow cols="12" class="text-center my-10">
+     <v-row class="text-center">
+      <table :style="{'border-spacing':'30px','text-align':'center','margin-left':'5%'}">
+      <tr>
+        <td>
+          <strong>_________________________</strong>
+          <br/>
+          <strong>
+                    <small>
+                      Checked By
+                    </small>
+                    </strong>
+          </td>
+        <td>
+          <strong>_________________________________</strong>
+          <br/>
+          <strong>
+                    <small>
+                      Every Day Plastic Industry
+                    </small>
+                    </strong>
+          </td>
+        <td><strong>_________________________</strong>
+          <br/>
+          <strong>
+                    <small>
+                      Prepared By
+                    </small>
+                    </strong>
+          </td>
+      </tr>
+      <!-- <tr>
+        <td>
+          <strong>
+                    <small>
+                      Checked By
+                    </small>
+                    </strong>
+        </td>
+        <td>
+          <strong>
+                    <small>
+                      Every Day Plastic Industry
+                    </small>
+                   </strong>
+        </td>
+        <td>
+          <strong>
+                    <small>
+                      Prepared By
+                    </small>
+                  </strong>
+        </td>
+      </tr> -->
+     </table>
+     </v-row>
+    
+            <!-- <VRow 
+              absolute
+              cols="12" class="my-10 text-center"
+              :style="{'position':'absolute','bottom':'60px', 'left':'10%'}"
+              >
               <VCol >
                 <div>
                   <strong>_________________________</strong>
@@ -294,7 +366,7 @@ onMounted(() => {
                   </strong>
                 </div>
               </VCol>
-            </VRow>
+            </VRow> -->
     </v-container>
   </div>
 </template>

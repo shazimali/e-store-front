@@ -196,7 +196,7 @@ const reset = () => {
              <label for="sr_number">Return Type</label>
              <v-select
                 v-model="form.return_type"         
-                :items="['RETURN','DEMADGE']"
+                :items="['RETURN','DAMAGE']"
                 :error-messages="errorMessages.return_type"
                 variant="outlined"
                 >
