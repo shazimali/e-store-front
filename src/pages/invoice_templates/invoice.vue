@@ -98,7 +98,7 @@ onMounted(() => {
               <td>Buyer:</td>
               <td>
                 <strong>
-                  {{ invoice.customer.code +' '+ invoice.customer.name }}
+                  {{ invoice.store.name }}
                 </strong>
               </td>
             </tr>
@@ -107,12 +107,12 @@ onMounted(() => {
               <td>{{ invoice.customer.address}}</td>
             </tr>
             <tr>
-              <td>STRN:</td>
-              <td>{{ invoice.customer.sale_tax_number }}</td>
+              <td>NTN:</td>
+              <td>{{ invoice.customer.ntn }}</td>
             </tr>
             <tr>
-              <td>Phone:</td>
-              <td>{{ invoice.customer.phone }}</td>
+              <td>STRN:</td>
+              <td>{{ invoice.customer.sale_tax_number }}</td>
             </tr>
           </table>
         </v-col>
@@ -194,7 +194,7 @@ onMounted(() => {
           <h5>Return Items</h5>
         </v-col>
         <v-col cols="12">
-          <table :style="styleTableObject">
+          <table  :style="styleTableObject" width="100%">
             <thead   v-if="invoice.return_products.length > 0">
               <tr>
                 <th >
@@ -216,7 +216,7 @@ onMounted(() => {
                   Rate
                 </th>
                 <th >
-                  SaleTax
+                  Sale Tax
                 </th>
                 <th v-if="invoice.is_ex_tax" >
                   Ex.Sale Tax<sup><small>({{ invoice.company.ext_tax }}%)</small></sup>
@@ -228,7 +228,7 @@ onMounted(() => {
             </thead>
             <tbody>
              
-              <tr   v-if="invoice.return_products.length > 0"  v-for="(item, index) in invoice.return_products">
+              <tr   v-if="invoice.return_products.length > 0"  v-for="(item, index) in invoice.return_products" :style="{'text-transform':'none','text-align':'center'}">
                 <td>{{ index+1 }}</td>
                 <td  >{{ item.sku }}</td>
                 <td >{{ item.code }}</td>
