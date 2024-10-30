@@ -77,6 +77,10 @@ onMounted(() => {
               <td>{{ invoice.company.address}}</td>
             </tr>
             <tr>
+              <td  style="vertical-align: top;"></td>
+              <td> Gujranwala</td>
+            </tr>
+            <tr>
               <td>N.T.N:</td>
               <td>{{ invoice.company.ntn }}</td>
             </tr>
@@ -105,6 +109,10 @@ onMounted(() => {
             <tr>
               <td style="vertical-align: top;">Address:</td>
               <td>{{ invoice.customer.address}}</td>
+            </tr>
+            <tr>
+              <td  style="vertical-align: top;"></td>
+              <td>{{ invoice.customer.city}}</td>
             </tr>
             <tr>
               <td>NTN:</td>
