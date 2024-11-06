@@ -2,6 +2,7 @@
 import { commaFormate } from '@/@core/utils/helpers';
 import trophy from '@images/misc/trophy.png';
 const props = defineProps(['server_data'])
+console.log(props.server_data);
 </script>
 
 <template>
@@ -12,14 +13,14 @@ const props = defineProps(['server_data'])
           Congratulations {{ props.server_data.name}}! <span class="text-high-emphasis">🎉</span>
         </h5>
         <div class="text-body-1">
-          Best seller
+          Last Month Best seller
         </div>
       </div>
       <h4 class="text-h4 text-primary">
         {{ commaFormate(props.server_data.total) }}
       </h4>
       <div class="text-body-1 mb-2">
-        Achieved highest target <span class="text-high-emphasis">🚀</span>
+        Achieved highest target last month<span class="text-high-emphasis">🚀</span>
       </div>
       <!-- <VBtn size="small">
         View Sales

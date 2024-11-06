@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import LastMonthTopStore from '@/pages/dashboard/last_month_top_store.vue';
 import Top_store from '@/pages/dashboard/top_store.vue';
+import CurrentLastMonthBranchSales from '@/pages/stores/dashboard/current_last_month_branch_sales.vue';
 import MonthlySales from '@/pages/stores/dashboard/monthly_sales.vue';
 import SalesPieChart from '@/pages/stores/dashboard/sales_pie_chart.vue';
 import States from '@/pages/stores/dashboard/states.vue';
@@ -24,9 +26,16 @@ import { toast } from 'vue3-toastify';
     <h1>{{ dashboard.store_name }} Dashboard</h1>
     <v-row>
       <VCol
-      cols="12"
+      cols="6"
+      v-if="dashboard.top_branch && dashboard.top_branch.length > 0"
     >
       <Top_store :server_data ="dashboard.top_branch[0]"/>
+    </VCol>
+    <VCol
+      cols="6"
+      v-if="dashboard.last_month_top_branch && dashboard.last_month_top_branch.length > 0"
+    >
+      <LastMonthTopStore :server_data ="dashboard.last_month_top_branch[0]"/>
     </VCol>
     </v-row>
     <v-row>
@@ -38,6 +47,9 @@ import { toast } from 'vue3-toastify';
     </v-col>
     <v-col cols="12">
       <States :title="'Current Month States'" :server_data="dashboard.monthly_states"/>
+    </v-col>
+    <v-col cols="12">
+      <States :title="'Last Month States'" :server_data="dashboard.last_month_states"/>
     </v-col>
     <v-col cols="12">
       <v-row>
@@ -81,6 +93,9 @@ import { toast } from 'vue3-toastify';
     </v-col>
     <v-col cols="12">
       <YearlyDeliverables :server_data="dashboard.lstBranches"/>
+    </v-col>
+    <v-col cols="12">
+      <CurrentLastMonthBranchSales :server_data="dashboard.current_last_month_branches_sale"/>
     </v-col>
     <!-- <v-col cols="6">
       <MonthlyDeliverables :server_data="dashboard.monthly_deliverables"/>
