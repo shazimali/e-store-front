@@ -11,19 +11,36 @@ const  invoice = ref<any>({});
 const  total_qty = ref<number>(0);
 const  total_sale_tax = ref<number>(0);
 const  total_price = ref<number>(0);
+  const  total_price_sx_sale_tax = ref<number>(0);
+    const  return_total_price_sx_sale_tax = ref<number>(0);
 const  margin_adjustment = ref<any>('');
 
 const styleForRight = reactive({
-  textAlign: 'right'
+  textAlign: 'right',
+  paddingRight:'10px'
 })
 const styleForLeft = reactive({
   textAlign: 'left',
 })
 
+const styleForOnlyRight = reactive({
+  textAlign: 'right',
+})
+
+const styleReturnHeading = reactive({
+  padding: '10px',
+})
+
+
 const styleTableObject = reactive({
   color:'black',
   fontSize:'13px',
   marginTop:'-20px'
+})
+
+const styleReturnTableObject = reactive({
+  color:'black',
+  fontSize:'13px',
 })
 
 const styleRow = reactive({
@@ -41,15 +58,18 @@ onMounted(() => {
         data.products.forEach((pr, index) => {
           let price = pr.qty * pr.price;
           let tax = (pr.price * pr.qty)/100*pr.sale_tax;
+          total_price_sx_sale_tax.value += parseFloat(price);
           total_price.value =  parseFloat(total_price.value) + parseFloat(price) + parseFloat(tax);
           total_sale_tax.value +=  parseFloat((pr.price * pr.qty)/100*pr.sale_tax); 
         });
         data.return_products.forEach((r_pr, index) => {
           total_sale_tax.value -= parseFloat((r_pr.price * r_pr.qty)/100*r_pr.sale_tax)
+          return_total_price_sx_sale_tax.value += parseFloat(r_pr.price * r_pr.qty);
         })
     }).catch((err:any) => {
         toast.error(err.message)
     })
+
 })
 </script>
 <template>
@@ -127,7 +147,6 @@ onMounted(() => {
       </v-row>
     </v-container>
     <v-container>
-        <v-col cols="12">
           <table :style="styleTableObject" width="100%">
             <thead>
               <tr>
@@ -144,10 +163,13 @@ onMounted(() => {
                   Description
                 </th>
                 <th >
-                  Quantity
+                  Qty
                 </th>
                 <th >
                   Rate
+                </th>
+                <th >
+                  Total<sub>(Ex S.T)</sub>
                 </th>
                 <th >
                   Sale Tax
@@ -168,6 +190,7 @@ onMounted(() => {
                 <td :style="styleForLeft">{{ item.name }}</td>
                 <td :style="styleForRight">{{ commaFormate( item.qty) }}</td>
                 <td :style="styleForRight">{{ commaFormate( item.price) }}</td>
+                <td :style="styleForRight">{{ commaFormate( item.price * item.qty) }}</td>
                 <td :style="styleForRight">
                   {{ commaFormate(((item.price * item.qty)/100*item.sale_tax).toFixed(2)) }}
                 </td>
@@ -188,6 +211,7 @@ onMounted(() => {
                   <strong>{{ commaFormate( total_qty) }}</strong>
                 </td>
                 <td></td>
+                <td :style="styleForRight"> <strong>{{ commaFormate( total_price_sx_sale_tax) }}</strong></td>
                 <td :style="styleForRight">
                   <strong>{{ commaFormate(total_sale_tax.toFixed(2)) }}</strong>
                 </td>
@@ -197,12 +221,8 @@ onMounted(() => {
               </tr>
             </tbody>
           </table>
-        </v-col>
-        <v-col cols="12"  v-if="invoice.return_products.length > 0">
-          <h5>Return Items</h5>
-        </v-col>
-        <v-col cols="12">
-          <table  :style="styleTableObject" width="100%">
+          <h5 :style="styleReturnHeading"  v-if="invoice.return_products.length > 0">Return Items</h5>
+          <table  :style="styleReturnTableObject" width="100%">
             <thead   v-if="invoice.return_products.length > 0">
               <tr>
                 <th >
@@ -218,10 +238,13 @@ onMounted(() => {
                   Description
                 </th>
                 <th >
-                  Quantity
+                  Qty
                 </th>
                 <th >
                   Rate
+                </th>
+                <th >
+                  Total<sub>(Ex S.T)</sub>
                 </th>
                 <th >
                   Sale Tax
@@ -243,6 +266,7 @@ onMounted(() => {
                 <td :style="styleForLeft">{{ item.name }}</td>
                 <td :style="styleForRight">{{ commaFormate( item.qty) }}</td>
                 <td  :style="styleForRight">{{ commaFormate( item.price) }}</td>
+                <td  :style="styleForRight">{{ commaFormate( item.price * item.qty) }}</td>
                 <td  :style="styleForRight">
                   {{ commaFormate(((item.price * item.qty)/100*item.sale_tax).toFixed(2)) }}
                 </td>
@@ -266,6 +290,9 @@ onMounted(() => {
                 </td>
                 <td></td>
                 <td  :style="styleForRight">
+                  <strong>{{ commaFormate(total_price_sx_sale_tax -  return_total_price_sx_sale_tax) }}</strong>  
+                </td>
+                <td  :style="styleForRight">
                   <strong>{{ commaFormate(total_sale_tax.toFixed(2)) }}</strong>
                 </td>
                 <td  :style="styleForRight">
@@ -274,11 +301,10 @@ onMounted(() => {
               </tr>
             </tbody>
           </table>
-        </v-col>
   <!-- <div> <strong>Value in words: </strong> {{  numberToWords(invoice.total_price) }}</div> -->
   <span v-if="invoice.remarks"> <strong>Remarks: </strong>{{ invoice.remarks }}</span>
      <v-row class="text-center">
-      <table :style="{'border-spacing':'30px','text-align':'center','margin-left':'5%'}">
+      <table :style="{'border-spacing':'30px','text-align':'center','margin-left':'5%','margin-top':'40px'}">
       <tr>
         <td>
           <strong>_________________________</strong>
