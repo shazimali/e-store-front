@@ -1,0 +1,69 @@
+name: CI/CD Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - uses: actions/checkout@v4
+
+      # 2️⃣ Setup Node
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # 3️⃣ Install pnpm
+      - run: npm install -g pnpm
+
+      # 4️⃣ Login to Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 5️⃣ Build Docker image
+      - name: Build Docker image
+        run: docker build -t shazimali/everyday-store-frontend:latest .
+
+      # 6️⃣ Push Docker image
+      - name: Push Docker image
+        run: docker push shazimali/everyday-store-frontend:latest
+
+      # 7️⃣ Deploy to VPS
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.6.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            cd /var/www/everyday_store/frontend
+
+            # Pull latest docker-compose.yml
+            curl -sL https://raw.githubusercontent.com/shazimali/e-store-front/main/docker-compose.yml -o docker-compose.yml
+
+            # Load .env for runtime variables
+            export $(grep -v '^#' .env | xargs)
+
+            # Pull latest image
+            docker pull shazimali/everyday-store-frontend:latest
+
+            # Stop old container safely
+            docker stop everyday-frontend || true
+            docker rm everyday-frontend || true
+
+            # Run new container on 8083
+            docker run -d \
+              --name everyday-frontend \
+              --env-file .env \
+              -p 8083:80 \
+              shazimali/everyday-store-frontend:latest

@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  frontend:
+    container_name: everyday-frontend
+    image: "shazimali/everyday-store-frontend:latest" # Fixed image and tag
+    restart: always
+    ports:
+      - "8083:80" # Apache reverse proxy
+    environment:
+      - NODE_ENV=production
