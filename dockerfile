@@ -6,8 +6,9 @@ FROM node:20-alpine AS build
 # Set working directory
 WORKDIR /app
 
-# Install global dependencies
-RUN npm install -g pnpm
+# Install global pnpm and build tools for Alpine
+RUN apk add --no-cache python3 make g++ \
+    && npm install -g pnpm
 
 # Copy package files
 COPY package.json pnpm-lock.yaml* ./
@@ -26,16 +27,16 @@ RUN pnpm run build
 # ------------------------------
 FROM nginx:alpine
 
-# Set container working directory to VPS path
+# Set container working directory to match VPS folder
 WORKDIR /var/www/everyday_store/frontend
 
-# Remove default nginx static files
+# Remove default Nginx static files
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built files from previous stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose port
+# Expose port 80 inside container
 EXPOSE 80
 
 # Start Nginx
