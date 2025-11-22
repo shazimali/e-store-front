@@ -58,12 +58,13 @@ jobs:
             docker pull shazimali/everyday-store-frontend:latest
 
             # Stop old container safely
-            docker stop everyday-frontend || true
-            docker rm everyday-frontend || true
+            docker stop everyday-store-frontend || true
+            docker rm everyday-store-frontend || true
 
             # Run new container on 8083
             docker run -d \
-              --name everyday-frontend \
-              --env-file .env \
-              -p 8083:80 \
-              shazimali/everyday-store-frontend:latest
+            --name everyday-store-frontend \
+            --env-file /var/www/everyday_store/frontend/.env \
+            -p 8083:80 \
+            -v /var/www/everyday_store/frontend:/var/www/everyday_store/frontend \
+            shazimali/everyday-store-frontend:latest

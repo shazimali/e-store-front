@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   frontend:
-    container_name: everyday-frontend
+    container_name: everyday-store-frontend
     image: "shazimali/everyday-store-frontend:latest" # Fixed image and tag
     restart: always
     ports:
