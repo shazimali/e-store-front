@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
-    "lint": "eslint . -c .eslintrc.cjs --fix --ext .ts,.js,.cjs,.vue,.tsx,.jsx"
+    "lint": "eslint . -c .eslintrc.cjs --fix --ext .ts,.js,.cjs,.vue,.tsx,.jsx",
+    "build:icons": "ts-node src/plugins/iconify/build-icons.ts",
+    "postinstall": "npm run build:icons"
   },
   "dependencies": {
     "@floating-ui/dom": "1.5.3",

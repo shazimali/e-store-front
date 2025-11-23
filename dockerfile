@@ -15,6 +15,9 @@ COPY package.json package-lock.json* ./
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
+# Install ts-node globally to run icon build
+RUN npm install -g ts-node typescript
+
 # Copy source code
 COPY . .
 
