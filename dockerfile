@@ -12,11 +12,12 @@ RUN apt-get update && apt-get install -y python3 make g++ git curl ca-certificat
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install ts-node and typescript first
+# Install ts-node globally to run icon build
 RUN npm install -g ts-node typescript
 
-# Install project dependencies without running postinstall
+# Install dependencies without running postinstall
 RUN npm install --legacy-peer-deps --ignore-scripts
+
 
 # Copy source code
 COPY . .
@@ -24,6 +25,9 @@ COPY . .
 # Accept API URL as build argument
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
+
+# Run icon build manually first
+RUN npm run build:icons
 
 # Build production output
 RUN npm run build
