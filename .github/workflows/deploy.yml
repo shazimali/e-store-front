@@ -48,7 +48,7 @@ jobs:
           script: |
             cd /var/www/everyday_store/frontend
 
-            # Pull latest docker-compose.yml
+            # Pull latest docker-compose.prod.yml
             curl -sL https://raw.githubusercontent.com/shazimali/e-store-front/main/docker-compose.yml -o docker-compose.yml
 
             # Load .env for runtime variables

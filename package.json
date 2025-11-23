@@ -4,13 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_OPTIONS=\"--import ./patch.mjs\" tsx node_modules/vite/bin/vite.js",
-    "build": "NODE_OPTIONS=\"--import ./patch.mjs\" tsx node_modules/vite/bin/vite.js build",
-    "preview": "NODE_OPTIONS=\"--import ./patch.mjs\" tsx node_modules/vite/bin/vite.js preview",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
-    "lint": "eslint . -c .eslintrc.cjs --fix --ext .ts,.js,.cjs,.vue,.tsx,.jsx",
-    "build:icons": "tsx src/plugins/iconify/build-icons.ts",
-    "postinstall": "npm run build:icons"
+    "lint": "eslint . -c .eslintrc.cjs --fix --ext .ts,.js,.cjs,.vue,.tsx,.jsx"
   },
   "dependencies": {
     "@floating-ui/dom": "1.5.3",
@@ -68,6 +66,7 @@
     "stylelint-config-idiomatic-order": "9.0.0",
     "stylelint-config-standard-scss": "11.1.0",
     "stylelint-use-logical-spec": "5.0.0",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "type-fest": "^4.8.3",
     "typescript": "^5.9.3",
@@ -85,6 +84,5 @@
   },
   "overrides": {
     "stylelint-order": "6.0.3"
-  },
-  "packageManager": "pnpm@8.6.2"
+  }
 }
