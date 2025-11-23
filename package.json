@@ -13,6 +13,9 @@
   "dependencies": {
     "@floating-ui/dom": "1.5.3",
     "@iconify-json/bxl": "^1.1.10",
+    "@iconify-json/ri": "^1.2.6",
+    "@iconify/tools": "^4.1.4",
+    "@iconify/utils": "^3.0.2",
     "@vueuse/core": "^10.5.0",
     "@vueuse/math": "^10.5.0",
     "amount-to-words": "^5.0.0",
@@ -35,6 +38,7 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "@vitejs/plugin-vue": "^5.0.2",
     "@vitejs/plugin-vue-jsx": "^3.0.2",
     "apexcharts": "^4.0.0",
@@ -42,6 +46,7 @@
     "postcss-html": "^1.5.0",
     "postcss-scss": "^4.0.9",
     "sass": "^1.69.4",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.6",
     "type-fest": "^4.8.3",
     "typescript": "^5.9.3",

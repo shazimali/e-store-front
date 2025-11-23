@@ -4,6 +4,9 @@
     "useDefineForClassFields": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "types": [
+      "node"
+    ],
     "isolatedModules": true,
     "strict": true,
     "jsx": "preserve",
