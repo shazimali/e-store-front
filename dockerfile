@@ -12,11 +12,11 @@ RUN apt-get update && apt-get install -y python3 make g++ git curl ca-certificat
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install dependencies
-RUN npm install --legacy-peer-deps
-
-# Install ts-node globally to run icon build
+# Install ts-node and typescript first
 RUN npm install -g ts-node typescript
+
+# Install project dependencies without running postinstall
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 # Copy source code
 COPY . .
