@@ -66,5 +66,4 @@ jobs:
             --name everyday-store-frontend \
             --env-file /var/www/everyday_store/frontend/.env \
             -p 8083:80 \
-            -v /var/www/everyday_store/frontend:/var/www/everyday_store/frontend \
             shazimali/everyday-store-frontend:latest
