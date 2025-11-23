@@ -29,9 +29,12 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      # 5️⃣ Build Docker image
+      # 5️⃣ Build Docker image with build argument
       - name: Build Docker image
-        run: docker build -t shazimali/everyday-store-frontend:latest .
+        run: |
+          docker build \
+            --build-arg VITE_API_URL=https://api.everydaypak.com \
+            -t shazimali/everyday-store-frontend:latest .
 
       # 6️⃣ Push Docker image
       - name: Push Docker image
