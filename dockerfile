@@ -14,8 +14,6 @@ RUN npm install
 COPY . .
 
 # Compile and run the iconify script
-RUN npx tsc -p tsconfig.scripts.json \
-    && node scripts-dist/build-icons.cjs
 
 # Accept API URL as build argument
 ARG VITE_API_URL
@@ -25,7 +23,9 @@ ENV VITE_API_URL=${VITE_API_URL}
 # RUN echo "VITE_API_URL=${VITE_API_URL}" > .env
 
 # Build production output
-RUN npm run build
+RUN npx tsc -p tsconfig.scripts.json \
+    && node scripts-dist/build-icons.cjs \
+    && npm run build
 
 # ------------------------------
 # Stage 2: Serve with Nginx
