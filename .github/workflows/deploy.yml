@@ -33,7 +33,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            --build-arg VITE_API_URL=https://api.everydaypak.com \
+            --build-arg VITE_API_URL=https://api.everydaypak.com/api \
             -t shazimali/everyday-store-frontend:latest .
 
       # 6️⃣ Push Docker image
