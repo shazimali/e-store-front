@@ -32,17 +32,14 @@ RUN npx tsc -p tsconfig.scripts.json \
 # ------------------------------
 FROM nginx:stable
 
-# Set working directory (maps to your VPS path)
-WORKDIR /var/www/everyday_store/frontend
-
 # Remove default Nginx static folder
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built files from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy custom nginx config if you have one
-COPY nginx.conf /etc/nginx/nginx.conf
+# Copy SPA nginx config to the correct location
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80
