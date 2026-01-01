@@ -1,72 +1,63 @@
-name: CI/CD Frontend
+name: 🚀 Frontend CI/CD (Fast)
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - '**.vue'
+      - '**.ts'
+      - '**.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'Dockerfile'
+      - 'nginx.conf'
+
+env:
+  IMAGE_NAME: shazimali/everyday-store-frontend
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout
       - uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+      # 2️⃣ Setup Docker Buildx
+      - uses: docker/setup-buildx-action@v3
 
-      # 3️⃣ Install pnpm
-      - run: npm install -g pnpm
-
-      # 4️⃣ Login to Docker Hub
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      # 3️⃣ Login Docker Hub
+      - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      # 5️⃣ Build Docker image with build argument
-      - name: Build Docker image
-        run: |
-          docker build \
-            --build-arg VITE_API_URL=https://api.everydaypak.com/api \
-            -t shazimali/everyday-store-frontend:latest .
+      # 4️⃣ Build & Push (WITH CACHE)
+      - name: Build & Push Image (Cached)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          pull: false
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+          build-args: |
+            VITE_API_URL=https://api.everydaypak.com/api
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      # 6️⃣ Push Docker image
-      - name: Push Docker image
-        run: docker push shazimali/everyday-store-frontend:latest
-
-      # 7️⃣ Deploy to VPS
-      - name: Deploy to VPS
+      # 5️⃣ Deploy to VPS
+      - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.2.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: 22
           script: |
-            cd /var/www/everyday_store/frontend
-
-            # Pull latest docker-compose.prod.yml
-            curl -sL https://raw.githubusercontent.com/shazimali/e-store-front/main/docker-compose.yml -o docker-compose.yml
-
-            # Load .env for runtime variables
-            export $(grep -v '^#' .env | xargs)
-
-            # Pull latest image
-            docker pull shazimali/everyday-store-frontend:latest
-
-            # Stop old container safely
-            docker stop everyday-store-frontend || true
-            docker rm everyday-store-frontend || true
-
-            # Run new container on 8083
+            docker pull ${{ env.IMAGE_NAME }}:latest
+            docker rm -f everyday-store-frontend || true
             docker run -d \
-            --name everyday-store-frontend \
-            --env-file /var/www/everyday_store/frontend/.env \
-            -p 8083:80 \
-            shazimali/everyday-store-frontend:latest
+              --name everyday-store-frontend \
+              -p 8083:80 \
+              ${{ env.IMAGE_NAME }}:latest

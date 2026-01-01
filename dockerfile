@@ -1,49 +1,37 @@
-# Stage 1: Build the application
+# ==========================
+# Stage 1: Build
+# ==========================
 FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
+# Copy only dependency files first (CACHEABLE)
+COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm install
+# Deterministic & faster install
+RUN npm ci --no-audit --no-fund
 
-# Copy the rest of the source code
+# Copy rest of source
 COPY . .
 
-# Compile and run the iconify script
-
-# Accept API URL as build argument
+# Build-time env
 ARG VITE_API_URL
-ENV VITE_API_URL=${VITE_API_URL} 
+ENV VITE_API_URL=$VITE_API_URL
 
-# Write it into a .env file so Vite can read it
-# RUN echo "VITE_API_URL=${VITE_API_URL}" > .env
-
-# Build production output
+# Build
 RUN npx tsc -p tsconfig.scripts.json \
     && node scripts-dist/build-icons.cjs \
     && npm run build
 
-# ------------------------------
-# Stage 2: Serve with Nginx
-# ------------------------------
-FROM nginx:stable
+# ==========================
+# Stage 2: Runtime
+# ==========================
+FROM nginx:stable-alpine
 
-# Remove default Nginx static folder
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy built files from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
-
-# Copy SPA nginx config to the correct location
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
 EXPOSE 80
-
-# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
-
