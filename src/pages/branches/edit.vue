@@ -15,6 +15,7 @@ const form = ref<IBranch>({
     city_id: '',phone: '',
     store_id:''
 })
+
 onMounted(() => {
     fetchCitiesAndStores().then((res:any) => {
         lstCities.value = res.data.cities
