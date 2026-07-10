@@ -358,6 +358,34 @@ onMounted(() => {
       </tr> -->
      </table>
      </v-row>
+     
+     <!-- FBR Verification Block -->
+     <v-row v-if="invoice.fbr_irn" class="justify-center mt-10">
+       <v-col cols="12" sm="8" md="6">
+         <div class="pa-4 rounded-lg d-flex align-center justify-space-between" style="border: 2px dashed #004488; background-color: #f7f9fc; color: black; max-width: 500px; margin: 0 auto;">
+           <div class="d-flex flex-column text-left">
+             <div class="d-flex align-center mb-2">
+               <span style="font-size: 24px; color: #004488; margin-right: 8px;">🏛️</span>
+               <div>
+                 <strong style="color: #004488; font-size: 14px;">FBR VERIFIED INVOICE</strong>
+                 <div style="font-size: 10px; color: #666; line-height: 1;">Digital Invoicing System</div>
+               </div>
+             </div>
+             <div style="font-size: 11px; margin-top: 5px;">
+               <strong>FBR Invoice No (IRN):</strong>
+               <div class="font-mono text-subtitle-2 font-weight-bold mt-1" style="letter-spacing: 0.5px; font-size: 11px;">{{ invoice.fbr_irn }}</div>
+             </div>
+             <div style="font-size: 11px; margin-top: 5px;" v-if="invoice.fbr_usin">
+               <strong>USIN:</strong> {{ invoice.fbr_usin }}
+             </div>
+           </div>
+           <div class="ml-4 d-flex flex-column align-center">
+             <img :src="`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(invoice.fbr_qr_url)}`" alt="FBR QR Code" style="height: 90px; width: 90px; display: block; border: 1px solid #ccc; padding: 2px; background: white;" />
+             <small class="text-caption mt-1" style="font-size: 9px; color: #555;">Scan to Verify</small>
+           </div>
+         </div>
+       </v-col>
+     </v-row>
     
             <!-- <VRow 
               absolute

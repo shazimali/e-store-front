@@ -58,17 +58,35 @@
             {{index+1}}
         </template>
         <template v-slot:item.invoice_id="{item}">
-            <a :href="`/print/${item.id}/?type=invoice`" target="_blank">
-          inv#{{ item.invoice_id }}
-            </a>
+            <div class="d-flex align-center">
+                <a :href="`/print/${item.id}/?type=invoice`" target="_blank" :class="{'text-decoration-line-through text-error': item.is_cancelled}">
+                    inv#{{ item.invoice_id }}
+                </a>
+                <v-chip v-if="item.is_cancelled" color="error" size="x-small" class="ml-1" label>
+                    Cancelled
+                </v-chip>
+            </div>
         </template>
         <template v-slot:item.total_qty="{item}">
             {{ commaFormate(item.total_qty ) }}
         </template>
-                <template 
-                    v-slot:item.actions="{ item }">
-                    <v-icon v-if="canAccess('invoice_edit')"  @click="handleEdit(item.id)" class="mr-2 ri-pencil-line"/>
-                </template>
+        <template v-slot:item.fbr_status="{item}">
+            <v-chip
+                :color="item.fbr_status === 'submitted' ? 'success' : (item.fbr_status === 'pending' ? 'warning' : (item.fbr_status === 'failed' ? 'error' : 'default'))"
+                size="small"
+                label
+                class="text-capitalize"
+            >
+                {{ item.fbr_status || 'N/A' }}
+            </v-chip>
+        </template>
+        <template v-slot:item.fbr_irn="{item}">
+            <span class="text-caption font-mono">{{ item.fbr_irn || '—' }}</span>
+        </template>
+        <template v-slot:item.actions="{ item }">
+            <v-icon v-if="canAccess('invoice_edit') && !item.is_cancelled"  @click="handleEdit(item.id)" class="mr-2 ri-pencil-line"/>
+            <v-icon v-if="canAccess('invoice_delete') && !item.is_cancelled" @click="handleCancel(item.id)" class="ri-delete-bin-line text-error" title="Cancel Invoice"/>
+        </template>
             </v-data-table-server>
        </VCard>
        </VCol>
@@ -78,7 +96,7 @@
 
 import { IBranchList } from '@/interfaces/IBranch';
 import { IStoreList } from '@/interfaces/IStore';
-import { fetchBranchesByStoreID, fetchInvoices, fetchStoresAndCompany } from '@/services/InvoiceService';
+import { fetchBranchesByStoreID, fetchInvoices, fetchStoresAndCompany, cancelInvoice } from '@/services/InvoiceService';
 import { canAccess, commaFormate } from '@core/utils/helpers';
 import { toast } from 'vue3-toastify';
 import { IStockForm } from '../../interfaces/IStock';
@@ -104,6 +122,8 @@ import { InfInvoice } from '../../interfaces/InfInvoice';
                { title: "Total Quantity", value: "total_qty"},
                { title: "Total Price", value: "total_price"},
                { title: "Date", value: "date"},
+               { title: "FBR Status", value: "fbr_status"},
+               { title: "FBR IRN", value: "fbr_irn"},
                { title: "Created At", value: "created_at"},
                { title: "Actions", value: "actions" }
            ]
@@ -132,8 +152,19 @@ import { InfInvoice } from '../../interfaces/InfInvoice';
         }
 
        const handleEdit = (id:number) => {
-            router.push('invoices/'+id)
-        } 
+             router.push('invoices/'+id)
+         } 
+
+         const handleCancel = (id:number) => {
+             if (confirm('Are you sure you want to cancel this invoice? This will register a full Credit Note reversal with FBR.')) {
+                 cancelInvoice(id).then((res:any) => {
+                     toast.success('Invoice cancelled successfully');
+                     doFetchInvoices();
+                 }).catch((err:any) => {
+                     toast.error(err.response?.data?.message || err.message || 'Failed to cancel invoice');
+                 })
+             }
+         }
 
         const doFetchInvoices = () => {
             loading.value = true;

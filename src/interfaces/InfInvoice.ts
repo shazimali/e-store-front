@@ -16,6 +16,10 @@ export interface InfInvoice{
     product_id:number | string,
     products:IProductObj[],
     return_products:IProductObj[],
+    fbr_status?:string,
+    fbr_irn?:string,
+    fbr_usin?:string,
+    is_cancelled?:boolean,
 }
 
 export interface IDeliverableEdit{

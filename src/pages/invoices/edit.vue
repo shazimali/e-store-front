@@ -40,7 +40,11 @@ const form = ref<InfInvoice>({
     return_products:[],
     product_id:'',
     discount:0,
-    branch_id: ''
+    branch_id: '',
+    fbr_status: 'pending',
+    fbr_irn: '',
+    fbr_usin: '',
+    is_cancelled: false,
 })
 const route = useRoute();
 const router = useRouter();
@@ -269,9 +273,20 @@ const reset = () => {
 }
 </script>
 <template>
-    <VCard title="New Invoice">
+    <VCard :title="form.is_cancelled ? 'Cancelled Invoice' : 'Edit Invoice'">
            <VCardText>
-             <VForm @submit.prevent="handleSubmit">
+             <!-- Alert Banners for FBR / Cancellation Status -->
+             <v-alert v-if="form.is_cancelled" type="error" class="mb-4" variant="tonal" border="start">
+                 This invoice has been cancelled. No further edits can be made.
+             </v-alert>
+             <v-alert v-else-if="form.fbr_status === 'submitted'" type="warning" class="mb-4" variant="tonal" border="start">
+                 This invoice is synchronized with FBR (FBR IRN: <strong>{{ form.fbr_irn }}</strong>). Modifying it will issue a Credit Note reversal and submit a new invoice.
+             </v-alert>
+             <v-alert v-else-if="form.fbr_status === 'failed'" type="error" class="mb-4" variant="tonal" border="start">
+                 FBR Sync failed. Saving edits will trigger another sync attempt.
+             </v-alert>
+
+             <VForm @submit.prevent="handleSubmit" :disabled="form.is_cancelled">
      <VRow>
         <VCol cols="5">
              <label for="date">Date</label>

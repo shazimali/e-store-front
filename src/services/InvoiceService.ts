@@ -34,3 +34,8 @@ export const fetchInvoiceByID = async (id:number) => {
 export  const updateInvoice = async (id:number,params: InfInvoice) => {
     return await  axios.post("/invoices/update/"+id, {...params})
 }
+
+export const cancelInvoice = async (id:number) => {
+    return await axios.delete("/invoices/delete/"+id)
+}
+
