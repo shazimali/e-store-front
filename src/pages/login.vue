@@ -155,6 +155,16 @@ const handleSubmit = async () => {
               <!-- ✅ Correct reCAPTCHA placeholder -->
               <div class="my-4" ref="recaptchaContainer"></div>
 
+              <!-- forgot password link -->
+              <div class="d-flex align-center justify-end mt-1 mb-4">
+                <RouterLink
+                  class="text-primary text-sm text-decoration-none"
+                  to="/forgot-password"
+                >
+                  Forgot Password?
+                </RouterLink>
+              </div>
+
               <!-- login button -->
               <VBtn block type="submit" :loading="loading">Login</VBtn>
             </VCol>
