@@ -65,6 +65,12 @@ function resetRecaptcha() {
 const handleSubmit = async () => {
   loading.value = true
 
+  if (!window.grecaptcha) {
+    toast.error('reCAPTCHA failed to load. Please check your connection.')
+    loading.value = false
+    return
+  }
+
   const recaptchaResponse = window.grecaptcha.getResponse(recaptchaWidgetId)
 
   if (!recaptchaResponse) {

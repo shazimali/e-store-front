@@ -226,6 +226,7 @@ export const routes = [
       },
       {
         path: 'register',
+        name: 'register',
         component: () => import('@/pages/register.vue'),
       },
       {

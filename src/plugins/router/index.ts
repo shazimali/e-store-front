@@ -6,9 +6,16 @@ const router = createRouter({
   routes,
 })
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'login' && !localStorage.getItem('token')) next({ name: 'login' })
-  else if(to.name == 'login' && localStorage.getItem('token')) next({name: 'dashboard'})
-  else next()
+  const publicPages = ['login', 'forgot-password', 'reset-password']
+  const isPublic = publicPages.includes(to.name as string)
+
+  if (!isPublic && !localStorage.getItem('token')) {
+    next({ name: 'login' })
+  } else if (to.name === 'login' && localStorage.getItem('token')) {
+    next({ name: 'dashboard' })
+  } else {
+    next()
+  }
 })
 
 export default function (app: App) {
