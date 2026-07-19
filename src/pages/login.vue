@@ -54,6 +54,10 @@ function loadRecaptcha() {
 
 // ✅ Render reCAPTCHA after mount
 onMounted(async () => {
+  if (!recaptchaSiteKey) {
+    console.warn('[reCAPTCHA] VITE_RECAPTCHA_SITE_KEY is not set. reCAPTCHA will not render.')
+    return
+  }
   const grecaptcha: any = await loadRecaptcha()
   if (recaptchaContainer.value) {
     recaptchaWidgetId = grecaptcha.render(recaptchaContainer.value, {
