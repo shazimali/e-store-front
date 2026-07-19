@@ -1,221 +1,208 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { toast } from 'vue3-toastify'
+import type { IBranch } from '../../interfaces/IBranch'
+import type { ILedger, ILedgerForm } from '../../interfaces/ILedger'
+import type { IStore } from '../../interfaces/IStore'
+import { fetchBranchesByStoreID, fetchLedger, fetchStores } from '../../services/LedgerService'
+import { commaFormate } from '@/@core/utils/helpers'
 
-import { commaFormate } from '@/@core/utils/helpers';
-import { toast } from 'vue3-toastify';
-import { IBranchList } from '../../interfaces/IBranch';
-import { ILedgerForm, ILedgerList } from '../../interfaces/ILedger';
-import { IStoreList } from '../../interfaces/IStore';
-import { fetchBranchesByStoreID, fetchLedger, fetchStores } from '../../services/LedgerService';
-        const lstStores = ref<IStoreList>([])
-        const lstBranches = ref<IBranchList>([])
-        const lstLedgers = ref<ILedgerList>([])
-        const loading = ref<boolean>(false)
-        const router = useRouter();
+const lstStores = ref<IStore[]>([])
+const lstBranches = ref<IBranch[]>([])
+const lstLedgers = ref<ILedger[]>([])
+const loading = ref<boolean>(false)
+const router = useRouter()
+
 const form = ref<ILedgerForm>({
-    store_id:'',
-    branch_id:'',
-    from_date:'',
-    to_date:''
+  store_id: '',
+  branch_id: '',
+  from_date: '',
+  to_date: '',
 })
 
 const headers = [
-               { title: "Invoice#", value: "data_id" },
-               { title: "Description", value: "type" },
-               { title: "Date", value: "date" },
-               { title: "Amount", value: "amount"},
-               { title: "Total", value: "total"},
-           ]
+  { title: 'Invoice#', value: 'data_id' },
+  { title: 'Description', value: 'type' },
+  { title: 'Date', value: 'date' },
+  { title: 'Amount', value: 'amount' },
+  { title: 'Total', value: 'total' },
+]
 
 onMounted(() => {
-    doFetchStores()
+  doFetchStores()
 })
- 
+
 const doFetchStores = () => {
-    fetchStores().then((res:any) => {
-        lstStores.value = res.data
-        }).catch((err:any) => {
-        toast.error(err.message)
+  fetchStores().then((res: any) => {
+    lstStores.value = res.data
+  }).catch((err: any) => {
+    toast.error(err.message)
+  })
+}
+
+const getBranches = (id: number | string) => {
+  lstBranches.value = []
+  form.value.branch_id = ''
+  if (id) {
+    fetchBranchesByStoreID(Number(id)).then((res: any) => {
+      lstBranches.value = res.data
+    }).catch((err: any) => {
+      toast.error(err.message)
     })
-}
-const getBranches = (id:number) => {
-    lstBranches.value= [];
-    form.value.branch_id= '';
-        if(id){
-            fetchBranchesByStoreID(id).then((res:any) => {
-                lstBranches.value = res.data
-            }).catch((err:any) => {
-                toast.error(err.message);
-            })
-        }
-        
+  }
 }
 
+const handleSubmit = () => {
+  loading.value = true
 
-const handleSubmit  =  () => {
-    loading.value = true;
-    const paramString = router.replace({ query:form.value });
-    const searchParams = new URLSearchParams(form.value);
-    fetchLedger(searchParams.toString()).then((res: any)=>{
-        // let ledgersArr  = Object.keys(res.data).map((key) => res.data[key]);
-        let ledgersArr =  res.data.data.sort((a, b) => new Date(a.date) - new Date(b.date));
-            ledgersArr.forEach((item, index) => {
-                index == 0 ?
-                item['total'] = item.amount 
-                :
-                    item['type'] == 'invoice' ?
-                        item['total'] =  (parseFloat(ledgersArr[index-1].total) + parseFloat(item.amount)).toFixed(2)
-                        :
-                        item['total'] =  (parseFloat(ledgersArr[index-1].total) - parseFloat(item.amount)).toFixed(2)
+  const paramString = router.replace({ query: form.value as any })
+  const searchParams = new URLSearchParams(form.value as any)
 
-            });
-            lstLedgers.value = ledgersArr;
-            loading.value = false;
-    }).catch((err:any) => {
-        toast.error(err.message)
+  fetchLedger(searchParams.toString()).then((res: any) => {
+    const ledgersArr = res.data.data.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+
+    ledgersArr.forEach((item: any, index: number) => {
+      index == 0
+        ? item.total = item.amount
+        : item.type == 'invoice'
+          ? item.total = (Number.parseFloat(ledgersArr[index - 1].total) + Number.parseFloat(item.amount)).toFixed(2)
+          : item.total = (Number.parseFloat(ledgersArr[index - 1].total) - Number.parseFloat(item.amount)).toFixed(2)
     })
+    lstLedgers.value = ledgersArr
+    loading.value = false
+  }).catch((err: any) => {
+    toast.error(err.message)
+  })
 }
+
 const handlePrint = () => {
-    const searchParams = new URLSearchParams(form.value);
-    let url = 'print/?type=ledger&'+searchParams.toString();
-        window.open(url, '_blank');
-    
+  const searchParams = new URLSearchParams(form.value as any)
+  const url = `print/?type=ledger&${searchParams.toString()}`
+
+  window.open(url, '_blank')
 }
-  
 </script>
+
 <template>
-    <VRow>
-       <VCol cols="12">
-        <v-subheader class="py-0 d-flex justify-space-between rounded-lg mb-3">
-            <h3>Ledger</h3>
-        </v-subheader>
-       <VCard>
+  <VRow>
+    <VCol cols="12">
+      <div class="py-0 d-flex justify-space-between rounded-lg mb-3">
+        <h3>Ledger</h3>
+      </div>
+      <VCard>
         <VForm @submit.prevent="handleSubmit">
-                <VRow>
-                    <VCol cols="6">
-                        <VRow no-gutters>
-                        <VCol
-                            cols="12"
-                        >
-                            <label for="name">Stores</label>
-                        </VCol>
-                
-                        <VCol
-                            cols="12"
-                        >
-                        <v-autocomplete
-                            v-model="form.store_id"
-                            :items="lstStores"
-                            @update:menu="getBranches(form.store_id)"
-                            :item-title="item => item? `${item.code}-${item.name}`: ''"
-                            item-value="id"
-                            variant="outlined"
-                        />
-                        </VCol>
-                        </VRow>
-                    </VCol>
-                    <VCol cols="6">
-                        <VRow no-gutters>
-                        <VCol
-                            cols="12"
-                        >
-                            <label for="code">Branches</label>
-                        </VCol>
-                
-                        <VCol
-                            cols="12"
-                        >
-                        <v-autocomplete
-            
-            v-model="form.branch_id"
-            :items="lstBranches"
-            :item-title="item => item? `${item.code}-${item.name}`: ''"
-            item-value="id"
-            variant="outlined"
+          <VRow>
+            <VCol cols="6">
+              <VRow no-gutters>
+                <VCol cols="12">
+                  <label for="name">Stores</label>
+                </VCol>
+
+                <VCol cols="12">
+                  <VAutocomplete
+                    v-model="form.store_id"
+                    :items="lstStores"
+                    :item-title="item => item ? `${item.code}-${item.name}` : ''"
+                    item-value="id"
+                    variant="outlined"
+                    @update:menu="getBranches(form.store_id)"
+                  />
+                </VCol>
+              </VRow>
+            </VCol>
+            <VCol cols="6">
+              <VRow no-gutters>
+                <VCol cols="12">
+                  <label for="code">Branches</label>
+                </VCol>
+
+                <VCol cols="12">
+                  <VAutocomplete
+
+                    v-model="form.branch_id"
+                    :items="lstBranches"
+                    :item-title="item => item ? `${item.code}-${item.name}` : ''"
+                    item-value="id"
+                    variant="outlined"
+                  />
+                </VCol>
+              </VRow>
+            </VCol>
+            <VCol cols="6">
+              <VRow no-gutters>
+                <VCol cols="12">
+                  <label for="code">From Date</label>
+                </VCol>
+
+                <VCol cols="12">
+                  <VTextField
+                    id="date"
+                    v-model="form.from_date"
+                    type="date"
+                    tabindex="1"
+                    persistent-placeholder
+                  />
+                </VCol>
+              </VRow>
+            </VCol>
+            <VCol cols="6">
+              <VRow no-gutters>
+                <VCol cols="12">
+                  <label for="sku">To Date</label>
+                </VCol>
+
+                <VCol cols="12">
+                  <VTextField
+                    id="date"
+                    v-model="form.to_date"
+                    type="date"
+                    tabindex="1"
+                    persistent-placeholder
+                  />
+                </VCol>
+              </VRow>
+            </VCol>
+            <VCol
+              cols="12"
+              class="d-flex gap-4"
             >
-            </v-autocomplete>
-                        </VCol>
-                        </VRow>
-                    </VCol>
-                    <VCol cols="6">
-                        <VRow no-gutters>
-                        <VCol
-                            cols="12"
-                        >
-                            <label for="code">From Date</label>
-                        </VCol>
-                
-                        <VCol
-                            cols="12"
-                        >
-                        <VTextField
-               id="date"
-               type="date"
-               tabindex="1"
-               v-model="form.from_date"
-               persistent-placeholder
-             />
-                        </VCol>
-                        </VRow>
-                    </VCol>
-                    <VCol cols="6">
-                        <VRow no-gutters>
-                        <VCol
-                            cols="12"
-                        >
-                            <label for="sku">To Date</label>
-                        </VCol>
-                
-                        <VCol
-                            cols="12"
-                        >
-                        <VTextField
-               id="date"
-               type="date"
-               v-model="form.to_date"
-               tabindex="1"
-               persistent-placeholder
-             />
-                        </VCol>
-                        </VRow>
-                    </VCol>
-                    <VCol
-                        cols="12"
-                        class="d-flex gap-4"
-                    >
-                        <VBtn type="submit">
-                        Search
-                        </VBtn>
-                        <VBtn v-if="Object.keys(form).length > 0" @click="handlePrint">
-                        Print
-                        </VBtn>
-                    </VCol>
-                </VRow>
-            </VForm>
-            <v-data-table-server
-           :headers="headers"
-           :items-per-page="-1"
-           :items="lstLedgers"
-           :loading="loading"
-           item-key="id"
-           return-object
-           class="elevation-1"
-       >
-
-       <template v-slot:item.invoice_id="{item}">
-            <a :href="item.type == 'invoice' ? '/print/'+item.id+'/?type=invoice' : '/print/'+item.id+'/?type=voucher'"
-            target="_blank">
-          inv#{{ item.invoice_id }}
+              <VBtn type="submit">
+                Search
+              </VBtn>
+              <VBtn
+                v-if="Object.keys(form).length > 0"
+                @click="handlePrint"
+              >
+                Print
+              </VBtn>
+            </VCol>
+          </VRow>
+        </VForm>
+        <VDataTable
+          :headers="headers"
+          :items-per-page="-1"
+          :items="lstLedgers"
+          :loading="loading"
+          item-key="id"
+          return-object
+          class="elevation-1"
+        >
+          <template #item.invoice_id="{ item }">
+            <a
+              :href="item.type == 'invoice' ? `/print/${item.id}/?type=invoice` : `/print/${item.id}/?type=voucher`"
+              target="_blank"
+            >
+              inv#{{ item.invoice_id }}
             </a>
-        </template>
-        <template v-slot:item.amount="{item}">
-          {{ commaFormate(item.amount ) }}
-        </template>
-        <template v-slot:item.total="{item}">
-          {{ commaFormate(item.total ) }}
-        </template>
-            </v-data-table-server>
-       </VCard>
-       </VCol>
-    </VRow>
+          </template>
+          <template #item.amount="{ item }">
+            {{ commaFormate(item.amount) }}
+          </template>
+          <template #item.total="{ item }">
+            {{ commaFormate(Number(item.total || 0)) }}
+          </template>
+        </VDataTable>
+      </VCard>
+    </VCol>
+  </VRow>
 </template>
-

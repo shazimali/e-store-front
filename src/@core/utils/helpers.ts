@@ -31,15 +31,16 @@ export const isToday = (date: Date) => {
   )
 }
 
-export const canAccess = (val : string) => {
-  let permissions = localStorage.getItem('permissions').split(',')
+export const canAccess = (val: string) => {
+  const permissions = (localStorage.getItem('permissions') || '').split(',')
+
   return permissions.includes(val)
 }
 
 export const commaFormate = (num: number) => {
   return (
-      Number(num)
+    Number(num)
       .toString()
-      .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")
-  );
+      .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,')
+  )
 }

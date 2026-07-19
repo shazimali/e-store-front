@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { doLogOut } from '@/services/AuthService';
-import avatar1 from '@images/avatars/avatar-1.png';
+import { useRouter } from 'vue-router'
+import avatar1 from '@images/avatars/avatar-1.png'
 
-import { useRouter } from "vue-router";
+import { doLogOut } from '@/services/AuthService'
 
+const handleLogOut = () => {
+  const id: number = Number(localStorage.getItem('user_id'))
 
-  const handleLogOut = () => {
-
-    let id:number = localStorage.getItem('user_id')
-      window.localStorage.clear()
-      doLogOut(id).then((res) => {
-        router.push('/login')
-      }).catch(() => alert('Failed to log out'))
+  window.localStorage.clear()
+  doLogOut(id).then(res => {
+    router.push('/login')
+  }).catch(() => alert('Failed to log out'))
 }
+
 const user_name = localStorage.getItem('user_name')
 
-const router = useRouter();
+const router = useRouter()
 </script>
 
 <template>
@@ -135,7 +135,9 @@ const router = useRouter();
               />
             </template>
 
-            <VListItemTitle @click="handleLogOut">Logout</VListItemTitle>
+            <VListItemTitle @click="handleLogOut">
+              Logout
+            </VListItemTitle>
           </VListItem>
         </VList>
       </VMenu>

@@ -42,6 +42,18 @@ export default defineConfig({
       ),
     },
   },
+  css: {
+    preprocessorOptions: {
+      sass: {
+        quietDeps: true,
+        silenceDeprecations: ['global-builtin', 'import', 'legacy-js-api'],
+      },
+      scss: {
+        quietDeps: true,
+        silenceDeprecations: ['global-builtin', 'import', 'legacy-js-api'],
+      },
+    },
+  },
   build: {
     chunkSizeWarningLimit: 5000,
   },

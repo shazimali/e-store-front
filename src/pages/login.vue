@@ -1,34 +1,42 @@
 <script setup lang="ts">
-import ILogin from '@/interfaces/ILogin'
-import { doLogin } from '@/services/AuthService'
-import logo from '@images/logo.svg?raw'
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
+import logo from '@images/logo.svg?raw'
+import { doLogin } from '@/services/AuthService'
+import type { ILogin } from '@/interfaces/ILogin'
+
+declare global {
+  interface Window {
+    grecaptcha?: any
+  }
+}
 
 const router = useRouter()
 
 const form = ref<ILogin>({
   email: '',
   password: '',
-  recaptcha_token: ''
+  recaptcha_token: '',
 })
 
 const loading = ref(false)
 const errorMessages = ref<any>({})
 const recaptchaContainer = ref<HTMLElement | null>(null)
-let recaptchaWidgetId: number | null = null
+let recaptchaWidgetId: any = null
 
-const recaptchaSiteKey = '6Lca4OgrAAAAAG1FgcgukpeTmzCverfriePTYfJj'
+const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || ''
 const isPasswordVisible = ref(false)
 
 // ✅ Load and wait for reCAPTCHA
 function loadRecaptcha() {
-  return new Promise((resolve) => {
-    if (window.grecaptcha) return resolve(window.grecaptcha)
+  return new Promise(resolve => {
+    if (window.grecaptcha)
+      return resolve(window.grecaptcha)
 
     const script = document.createElement('script')
+
     script.src = 'https://www.google.com/recaptcha/api.js?render=explicit'
     script.async = true
     script.defer = true
@@ -46,20 +54,20 @@ function loadRecaptcha() {
 
 // ✅ Render reCAPTCHA after mount
 onMounted(async () => {
-  const grecaptcha = await loadRecaptcha()
+  const grecaptcha: any = await loadRecaptcha()
   if (recaptchaContainer.value) {
     recaptchaWidgetId = grecaptcha.render(recaptchaContainer.value, {
       sitekey: recaptchaSiteKey,
     })
-  } else {
+  }
+  else {
     console.error('reCAPTCHA container not found!')
   }
 })
 
 function resetRecaptcha() {
-  if (window.grecaptcha && recaptchaWidgetId !== null) {
+  if (window.grecaptcha && recaptchaWidgetId !== null)
     window.grecaptcha.reset(recaptchaWidgetId)
-  }
 }
 
 const handleSubmit = async () => {
@@ -68,6 +76,7 @@ const handleSubmit = async () => {
   if (!window.grecaptcha) {
     toast.error('reCAPTCHA failed to load. Please check your connection.')
     loading.value = false
+
     return
   }
 
@@ -76,6 +85,7 @@ const handleSubmit = async () => {
   if (!recaptchaResponse) {
     toast.error('Please complete the reCAPTCHA')
     loading.value = false
+
     return
   }
 
@@ -90,22 +100,26 @@ const handleSubmit = async () => {
     localStorage.setItem('user_email', res.data.user.email)
     localStorage.setItem('permissions', res.data.permissions)
 
-    axios.defaults.headers.common['Authorization'] = 'Bearer ' + res.data.token
+    axios.defaults.headers.common.Authorization = `Bearer ${res.data.token}`
 
     toast.success('Logged in successfully')
     router.push('/dashboard')
-  } catch (err: any) {
+  }
+  catch (err: any) {
     if (err.response?.status === 422) {
       errorMessages.value = err.response.data.errors
       toast.error('Validation error')
-    } else if (err.response?.status === 401) {
+    }
+    else if (err.response?.status === 401) {
       toast.error(err.response.data.message)
-    } else {
+    }
+    else {
       toast.error(err.message)
     }
 
     resetRecaptcha() // 🔁 Reset CAPTCHA after any error
-  } finally {
+  }
+  finally {
     loading.value = false
   }
 }
@@ -113,7 +127,10 @@ const handleSubmit = async () => {
 
 <template>
   <div class="auth-wrapper d-flex align-center justify-center pa-4">
-    <VCard class="auth-card pa-4 pt-7" max-width="448">
+    <VCard
+      class="auth-card pa-4 pt-7"
+      max-width="448"
+    >
       <VCardItem class="justify-center">
         <template #prepend>
           <div class="d-flex">
@@ -130,7 +147,9 @@ const handleSubmit = async () => {
         <h5 class="text-h5 font-weight-semibold mb-1">
           Welcome to Everyday Store! 👋🏻
         </h5>
-        <p class="mb-0">Please sign in to your account and start the adventure</p>
+        <p class="mb-0">
+          Please sign in to your account and start the adventure
+        </p>
       </VCardText>
 
       <VCardText>
@@ -159,7 +178,10 @@ const handleSubmit = async () => {
               />
 
               <!-- ✅ Correct reCAPTCHA placeholder -->
-              <div class="my-4" ref="recaptchaContainer"></div>
+              <div
+                ref="recaptchaContainer"
+                class="my-4"
+              />
 
               <!-- forgot password link -->
               <div class="d-flex align-center justify-end mt-1 mb-4">
@@ -172,7 +194,13 @@ const handleSubmit = async () => {
               </div>
 
               <!-- login button -->
-              <VBtn block type="submit" :loading="loading">Login</VBtn>
+              <VBtn
+                block
+                type="submit"
+                :loading="loading"
+              >
+                Login
+              </VBtn>
             </VCol>
           </VRow>
         </VForm>

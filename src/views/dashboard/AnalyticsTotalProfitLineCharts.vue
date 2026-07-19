@@ -40,8 +40,8 @@ const chartOptions = computed(() => {
     },
     stroke: {
       width: 3,
-      lineCap: 'butt',
-      curve: 'straight',
+      lineCap: 'butt' as const,
+      curve: 'straight' as const,
     },
     colors: [currentTheme.primary],
     markers: {

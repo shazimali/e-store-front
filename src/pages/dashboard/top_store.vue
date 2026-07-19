@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { commaFormate } from '@/@core/utils/helpers';
-import trophy from '@images/misc/trophy.png';
+import trophy from '@images/misc/trophy.png'
+import { commaFormate } from '@/@core/utils/helpers'
+
 const props = defineProps(['server_data'])
 </script>
 
@@ -9,7 +10,7 @@ const props = defineProps(['server_data'])
     <VCardText>
       <div class="mb-2">
         <h5 class="text-h5">
-          Congratulations {{ props.server_data.name}}! <span class="text-high-emphasis">🎉</span>
+          Congratulations {{ props.server_data.name }}! <span class="text-high-emphasis">🎉</span>
         </h5>
         <div class="text-body-1">
           Best seller
@@ -21,9 +22,11 @@ const props = defineProps(['server_data'])
       <div class="text-body-1 mb-2">
         Achieved highest target <span class="text-high-emphasis">🚀</span>
       </div>
-      <!-- <VBtn size="small">
+      <!--
+        <VBtn size="small">
         View Sales
-      </VBtn> -->
+        </VBtn>
+      -->
     </VCardText>
 
     <!-- Trophy -->

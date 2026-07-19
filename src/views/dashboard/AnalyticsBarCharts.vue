@@ -19,7 +19,7 @@ const chartOptions = computed(() => {
 
   return {
     chart: {
-      type: 'bar',
+      type: 'bar' as const,
       stacked: false,
       width: 200,
       parentHeightOffset: 0,

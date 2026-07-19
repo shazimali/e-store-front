@@ -10,11 +10,11 @@ export const routes = [
         path: 'dashboard',
         name: 'dashboard',
         component: () => import('@/pages/dashboard/index.vue'),
-        
+
       },
       {
         path: 'users',
-        name: 'users',       
+        name: 'users',
         component: () => import('@/pages/users/index.vue'),
       },
       {
@@ -76,7 +76,7 @@ export const routes = [
         path: 'store/dashboard/:id',
         name: 'store-dashboard',
         component: () => import('@/pages/stores/dashboard/index.vue'),
-        
+
       },
       {
         path: 'branches',

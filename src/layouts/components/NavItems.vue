@@ -1,40 +1,42 @@
 <script lang="ts" setup>
-import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue';
-import { canAccess } from '@core/utils/helpers';
-import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue';
-import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
+import { canAccess } from '@core/utils/helpers'
+import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
+import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
+import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
 </script>
 
 <template>
-  <!-- <VerticalNavSectionTitle
+  <!--
+    <VerticalNavSectionTitle
     :item="{
-      heading: 'Apps & Pages',
+    heading: 'Apps & Pages',
     }"
-  /> -->
+    />
+  -->
   <VerticalNavLink
     v-if="canAccess('stock_access')"
     :item="{
       title: 'Dashboard',
       icon: 'ri-dashboard-2-line',
-      to: '/dashboard'
+      to: '/dashboard',
     }"
   />
   <VerticalNavGroup
-  v-if="canAccess('purchase_access') ||  canAccess('purchase_create')"
+    v-if="canAccess('purchase_access') || canAccess('purchase_create')"
     :item="{
       title: 'Purchases',
       icon: 'ri-bank-card-line',
     }"
   >
     <VerticalNavLink
-    v-if="canAccess('purchase_access')"
+      v-if="canAccess('purchase_access')"
       :item="{
         title: 'All Purchases',
         to: '/purchases',
       }"
     />
     <VerticalNavLink
-    v-if="canAccess('purchase_create')"
+      v-if="canAccess('purchase_create')"
       :item="{
         title: 'New Purchase',
         to: '/purchases/create',
@@ -43,21 +45,21 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     />
   </VerticalNavGroup>
   <VerticalNavGroup
-  v-if="canAccess('deliverable_access') ||  canAccess('deliverable_create')"
+    v-if="canAccess('deliverable_access') || canAccess('deliverable_create')"
     :item="{
       title: 'Deliverables',
       icon: 'ri-truck-line',
     }"
   >
     <VerticalNavLink
-    v-if="canAccess('deliverable_access')"
+      v-if="canAccess('deliverable_access')"
       :item="{
         title: 'All Deliverables',
         to: '/deliverables',
       }"
     />
     <VerticalNavLink
-    v-if="canAccess('deliverable_create')"
+      v-if="canAccess('deliverable_create')"
       :item="{
         title: 'New Deliverable',
         to: '/deliverables/create',
@@ -66,21 +68,21 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     />
   </VerticalNavGroup>
   <VerticalNavGroup
-  v-if="canAccess('return_deliverable_access') ||  canAccess('return_deliverable_create')"
+    v-if="canAccess('return_deliverable_access') || canAccess('return_deliverable_create')"
     :item="{
       title: 'Return Deliverables',
       icon: 'ri-text-wrap',
     }"
   >
     <VerticalNavLink
-    v-if="canAccess('return_deliverable_access')"
+      v-if="canAccess('return_deliverable_access')"
       :item="{
         title: 'All Return Deliverables',
         to: '/return-deliverables',
       }"
     />
     <VerticalNavLink
-    v-if="canAccess('return_deliverable_create')"
+      v-if="canAccess('return_deliverable_create')"
       :item="{
         title: 'New Return Deliverable',
         to: '/return-deliverables/create',
@@ -89,21 +91,21 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     />
   </VerticalNavGroup>
   <VerticalNavGroup
-  v-if="canAccess('invoice_access') ||  canAccess('invoice_create')"
+    v-if="canAccess('invoice_access') || canAccess('invoice_create')"
     :item="{
       title: 'Invoices',
       icon: 'ri-profile-line',
     }"
   >
     <VerticalNavLink
-    v-if="canAccess('invoice_access')"
+      v-if="canAccess('invoice_access')"
       :item="{
         title: 'All Invoices',
         to: '/invoices',
       }"
     />
     <VerticalNavLink
-    v-if="canAccess('invoice_create')"
+      v-if="canAccess('invoice_create')"
       :item="{
         title: 'New Invoice',
         to: '/invoices/create',
@@ -112,21 +114,21 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     />
   </VerticalNavGroup>
   <VerticalNavGroup
-  v-if="canAccess('invoice_access') ||  canAccess('invoice_create')"
+    v-if="canAccess('invoice_access') || canAccess('invoice_create')"
     :item="{
       title: 'Vouchers',
       icon: 'ri-file-list-3-line',
     }"
   >
     <VerticalNavLink
-    v-if="canAccess('invoice_access')"
+      v-if="canAccess('invoice_access')"
       :item="{
         title: 'All Vouchers',
         to: '/vouchers',
       }"
     />
     <VerticalNavLink
-    v-if="canAccess('invoice_create')"
+      v-if="canAccess('invoice_create')"
       :item="{
         title: 'New Voucher',
         to: '/vouchers/create',
@@ -135,21 +137,21 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     />
   </VerticalNavGroup>
   <VerticalNavGroup
-  v-if="canAccess('invoice_access') ||  canAccess('invoice_create')"
+    v-if="canAccess('invoice_access') || canAccess('invoice_create')"
     :item="{
       title: 'Discounts',
       icon: 'ri-scissors-cut-line',
     }"
   >
     <VerticalNavLink
-    v-if="canAccess('invoice_access')"
+      v-if="canAccess('invoice_access')"
       :item="{
         title: 'All Discounts',
         to: '/discounts',
       }"
     />
     <VerticalNavLink
-    v-if="canAccess('invoice_create')"
+      v-if="canAccess('invoice_create')"
       :item="{
         title: 'New Discount',
         to: '/discounts/create',
@@ -158,21 +160,21 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     />
   </VerticalNavGroup>
   <VerticalNavGroup
-  v-if="canAccess('invoice_access') ||  canAccess('invoice_create')"
+    v-if="canAccess('invoice_access') || canAccess('invoice_create')"
     :item="{
       title: 'Reports',
       icon: 'ri-file-chart-line',
     }"
   >
     <VerticalNavLink
-    v-if="canAccess('invoice_access')"
+      v-if="canAccess('invoice_access')"
       :item="{
         title: 'Ledgers',
         to: '/reports/ledgers',
       }"
     />
     <VerticalNavLink
-    v-if="canAccess('invoice_create')"
+      v-if="canAccess('invoice_create')"
       :item="{
         title: 'Profit & Loss',
         to: '/reports/profitloss',
@@ -190,7 +192,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     :item="{
       title: 'Products',
       icon: 'ri-layout-4-line',
-      to: '/products'
+      to: '/products',
     }"
   />
   <VerticalNavLink
@@ -198,7 +200,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     :item="{
       title: 'Stores',
       icon: 'ri-building-line',
-      to: '/stores'
+      to: '/stores',
     }"
   />
   <VerticalNavLink
@@ -206,7 +208,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     :item="{
       title: 'Branches',
       icon: 'ri-git-merge-line',
-      to: '/branches'
+      to: '/branches',
     }"
   />
   <VerticalNavLink
@@ -214,7 +216,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     :item="{
       title: 'Stocks',
       icon: 'ri-stock-line',
-      to: '/stocks'
+      to: '/stocks',
     }"
   />
   <VerticalNavSectionTitle
@@ -227,7 +229,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     :item="{
       title: 'Company',
       icon: 'ri-building-2-line',
-      to: '/company'
+      to: '/company',
     }"
   />
   <VerticalNavSectionTitle
@@ -241,7 +243,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     :item="{
       title: 'Roles',
       icon: 'ri-lock-2-line',
-      to: '/roles'
+      to: '/roles',
     }"
   />
   <VerticalNavLink

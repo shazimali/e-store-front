@@ -1,30 +1,38 @@
 <script setup lang="ts">
-import { doForgotPassword } from '@/services/AuthService'
-import logo from '@images/logo.svg?raw'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { toast } from 'vue3-toastify'
+import logo from '@images/logo.svg?raw'
+import { doForgotPassword } from '@/services/AuthService'
+
+declare global {
+  interface Window {
+    grecaptcha?: any
+  }
+}
 
 const router = useRouter()
 
 const form = ref({
   email: '',
-  recaptcha_token: ''
+  recaptcha_token: '',
 })
 
 const loading = ref(false)
 const errorMessages = ref<any>({})
 const recaptchaContainer = ref<HTMLElement | null>(null)
-let recaptchaWidgetId: number | null = null
+let recaptchaWidgetId: any = null
 
-const recaptchaSiteKey = '6Lca4OgrAAAAAG1FgcgukpeTmzCverfriePTYfJj'
+const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || ''
 
 // ✅ Load and wait for reCAPTCHA
 function loadRecaptcha() {
-  return new Promise((resolve) => {
-    if (window.grecaptcha) return resolve(window.grecaptcha)
+  return new Promise(resolve => {
+    if (window.grecaptcha)
+      return resolve(window.grecaptcha)
 
     const script = document.createElement('script')
+
     script.src = 'https://www.google.com/recaptcha/api.js?render=explicit'
     script.async = true
     script.defer = true
@@ -42,20 +50,20 @@ function loadRecaptcha() {
 
 // ✅ Render reCAPTCHA after mount
 onMounted(async () => {
-  const grecaptcha = await loadRecaptcha()
+  const grecaptcha: any = await loadRecaptcha()
   if (recaptchaContainer.value) {
     recaptchaWidgetId = grecaptcha.render(recaptchaContainer.value, {
       sitekey: recaptchaSiteKey,
     })
-  } else {
+  }
+  else {
     console.error('reCAPTCHA container not found!')
   }
 })
 
 function resetRecaptcha() {
-  if (window.grecaptcha && recaptchaWidgetId !== null) {
+  if (window.grecaptcha && recaptchaWidgetId !== null)
     window.grecaptcha.reset(recaptchaWidgetId)
-  }
 }
 
 const handleSubmit = async () => {
@@ -65,6 +73,7 @@ const handleSubmit = async () => {
   if (!window.grecaptcha) {
     toast.error('reCAPTCHA failed to load. Please check your connection.')
     loading.value = false
+
     return
   }
 
@@ -73,6 +82,7 @@ const handleSubmit = async () => {
   if (!recaptchaResponse) {
     toast.error('Please complete the reCAPTCHA')
     loading.value = false
+
     return
   }
 
@@ -80,23 +90,28 @@ const handleSubmit = async () => {
 
   try {
     const res = await doForgotPassword(form.value)
+
     toast.success(res.data.message || 'Reset link sent to your email.')
-    
+
     // Redirect to login after 3 seconds
     setTimeout(() => {
       router.push('/login')
     }, 3000)
-  } catch (err: any) {
+  }
+  catch (err: any) {
     if (err.response?.status === 422) {
       errorMessages.value = err.response.data.errors
       toast.error('Validation error')
-    } else if (err.response?.status === 400) {
+    }
+    else if (err.response?.status === 400) {
       toast.error(err.response.data.message)
-    } else {
+    }
+    else {
       toast.error(err.message || 'An error occurred')
     }
     resetRecaptcha() // 🔁 Reset CAPTCHA after any error
-  } finally {
+  }
+  finally {
     loading.value = false
   }
 }
@@ -104,7 +119,10 @@ const handleSubmit = async () => {
 
 <template>
   <div class="auth-wrapper d-flex align-center justify-center pa-4">
-    <VCard class="auth-card pa-4 pt-7" max-width="448">
+    <VCard
+      class="auth-card pa-4 pt-7"
+      max-width="448"
+    >
       <VCardItem class="justify-center">
         <template #prepend>
           <div class="d-flex">
@@ -142,15 +160,25 @@ const handleSubmit = async () => {
 
             <VCol cols="12">
               <!-- reCAPTCHA -->
-              <div class="my-4" ref="recaptchaContainer"></div>
+              <div
+                ref="recaptchaContainer"
+                class="my-4"
+              />
 
               <!-- submit button -->
-              <VBtn block type="submit" :loading="loading">
+              <VBtn
+                block
+                type="submit"
+                :loading="loading"
+              >
                 Send Reset Link
               </VBtn>
             </VCol>
 
-            <VCol cols="12" class="text-center">
+            <VCol
+              cols="12"
+              class="text-center"
+            >
               <RouterLink
                 class="text-primary text-sm text-decoration-none"
                 to="/login"

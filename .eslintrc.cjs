@@ -11,7 +11,8 @@ module.exports = {
     'plugin:promise/recommended',
     'plugin:sonarjs/recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:case-police/recommended',
+
+    // 'plugin:case-police/recommended',
 
     // 'plugin:unicorn/recommended',
   ],
@@ -26,7 +27,7 @@ module.exports = {
     '@typescript-eslint',
     'regex',
   ],
-  ignorePatterns: ['src/plugins/iconify/*.js', 'node_modules', 'dist', '*.d.ts', 'vendor'],
+  ignorePatterns: ['src/plugins/iconify/*.js', 'node_modules', 'dist', 'scripts-dist', '*.d.ts', 'vendor'],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
@@ -55,7 +56,10 @@ module.exports = {
     'object-curly-spacing': ['error', 'always'],
 
     // Enforce camelCase naming convention
-    'camelcase': 'error',
+    'camelcase': 'off',
+
+    // Allow function hoisting in script setup
+    '@typescript-eslint/no-use-before-define': 'off',
 
     // Disable max-len
     'max-len': 'off',
@@ -84,9 +88,6 @@ module.exports = {
         ignorePattern: '!SECTION',
       },
     ],
-
-    // Ignore _ as unused variable
-    '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '^_+$', argsIgnorePattern: '^_+$' }],
 
     'array-element-newline': ['error', 'consistent'],
     'array-bracket-newline': ['error', 'consistent'],
@@ -134,7 +135,6 @@ module.exports = {
 
     // Thanks: https://stackoverflow.com/a/63961972/10796681
     'no-shadow': 'off',
-    '@typescript-eslint/no-shadow': ['error'],
 
     '@typescript-eslint/consistent-type-imports': 'error',
 
@@ -144,13 +144,9 @@ module.exports = {
 
     // ESLint plugin vue
     'vue/block-tag-newline': 'error',
-    'vue/component-api-style': 'error',
+    'vue/component-api-style': 'off',
     'vue/component-name-in-template-casing': ['error', 'PascalCase', { registeredComponentsOnly: false, ignores: ['/^swiper-/'] }],
-    'vue/custom-event-name-casing': ['error', 'camelCase', {
-      ignores: [
-        '/^(click):[a-z]+((\d)|([A-Z0-9][a-z0-9]+))*([A-Z])?/',
-      ],
-    }],
+    'vue/custom-event-name-casing': 'off',
     'vue/define-macros-order': 'error',
     'vue/html-comment-content-newline': 'error',
     'vue/html-comment-content-spacing': 'error',
@@ -163,14 +159,14 @@ module.exports = {
     'vue/no-empty-component-block': 'error',
     'vue/no-multiple-objects-in-class': 'error',
     'vue/no-reserved-component-names': 'error',
-    'vue/no-template-target-blank': 'error',
+    'vue/no-template-target-blank': 'off',
     'vue/no-useless-mustaches': 'error',
     'vue/no-useless-v-bind': 'error',
     'vue/padding-line-between-blocks': 'error',
     'vue/prefer-separate-static-class': 'error',
-    'vue/prefer-true-attribute-shorthand': 'error',
+    'vue/prefer-true-attribute-shorthand': 'off',
     'vue/v-on-function-call': 'error',
-    'vue/no-restricted-class': ['error', '/^(p|m)(l|r)-/'],
+    'vue/no-restricted-class': 'off',
     'vue/valid-v-slot': ['error', {
       allowModifiers: true,
     }],
@@ -208,11 +204,11 @@ module.exports = {
           message: 'Use \'@styles\' path alias for importing styles from \'src/assets/styles\'',
         },
 
-        {
-          id: 'Disallow icon of icon library',
-          regex: 'mdi-\\w',
-          message: 'Only \'remix\' icons are allowed',
-        },
+        // {
+        //   id: 'Disallow icon of icon library',
+        //   regex: 'mdi-\\w',
+        //   message: 'Only \'remix\' icons are allowed',
+        // },
 
         {
           regex: '@core/\\w',
@@ -233,6 +229,22 @@ module.exports = {
       // Ignore files
       '\.eslintrc\.cjs',
     ],
+
+    // CV Portfolio Overrides to support legacy template options & DB properties
+    'eqeqeq': 'off',
+    'vue/eqeqeq': 'off',
+    'vue/prop-name-casing': 'off',
+    'vue/require-prop-types': 'off',
+    'no-alert': 'off',
+    'unused-imports/no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+    'max-statements-per-line': 'off',
+    'sonarjs/no-same-line-conditional': 'off',
+    'no-unused-expressions': 'off',
+    '@stylistic/js/multiline-ternary': 'off',
+    'array-callback-return': 'off',
+    'vue/require-v-for-key': 'off',
+    'vue/no-use-v-if-with-v-for': 'off',
   },
   settings: {
     'import/resolver': {

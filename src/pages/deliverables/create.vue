@@ -1,267 +1,275 @@
-
 import { getRandomValues } from 'crypto';
 
 import { fetchProducts } from '@/services/ProductService';
 <script setup lang="ts">
-import { IBranchList } from '@/interfaces/IBranch';
-import { IDeliverable, IDeliverableErrors } from '@/interfaces/IDeliverable';
-import { IProductList } from '@/interfaces/IProduct';
-import { IStoreList } from '@/interfaces/IStore';
-import { fetchBranchesAndProductsByStoreID, fetchStores, saveDeliverable } from '@/services/Deliverable';
-import { toast } from 'vue3-toastify';
-import SelectedProducts from './selectedProducts.vue';
-const errorMessages = ref<IDeliverableErrors>({})
-const lstProducts = ref<IProductList>([])
-const lstStores = ref<IStoreList>()
-const lstBranches = ref<IBranchList>()
+import { toast } from 'vue3-toastify'
+import SelectedProducts from './selectedProducts.vue'
+import { fetchBranchesAndProductsByStoreID, fetchStores, saveDeliverable } from '@/services/Deliverable'
+
+const errorMessages = ref<Record<string, any>>({})
+const lstProducts = ref<any[]>([])
+const lstStores = ref<any[]>()
+const lstBranches = ref<any[]>([])
 const loading = ref<boolean>(false)
 const searchInput = ref<string>('')
-const form = ref<IDeliverable>({
-    date:new Date().toISOString().slice(0,10),
-    order_date:new Date().toISOString().slice(0,10),
-    sr_number:'',
-    total_qty:'',
-    store_id: '',
-    available_qty: '',
-    remarks: '',
-    products:[],
-    product_id:'',
-    branch_id: ''
+
+const form = ref<any>({
+  date: new Date().toISOString().slice(0, 10),
+  order_date: new Date().toISOString().slice(0, 10),
+  sr_number: '',
+  total_qty: '',
+  store_id: '',
+  available_qty: '',
+  remarks: '',
+  products: [],
+  product_id: '',
+  branch_id: '',
 })
+
 onMounted(() => {
-    doFetchStores()
+  doFetchStores()
 })
 
 const doFetchStores = () => {
-    fetchStores().then((res:any) => {
-        lstStores.value = res.data
-    }).catch((err:any) => {
-        toast.error(err.message)
-    })
+  fetchStores().then((res: any) => {
+    lstStores.value = res.data
+  }).catch((err: any) => {
+    toast.error(err.message)
+  })
 }
+
 const handleSelectedProducts = () => {
-    const  selectedIdx = lstProducts.value.findIndex((item)=>{return item.id == form.value.product_id});
-    const available_qty = lstProducts.value[selectedIdx].available_qty;
-     if (selectedIdx != -1){ 
-        const isProductAlreadyExistsIndex = form.value.products.findIndex((item)=>{return item.id == lstProducts.value[selectedIdx].id});
-        // check product already  exist in the list
-        if(isProductAlreadyExistsIndex != -1){
-            if(available_qty <= form.value.products[isProductAlreadyExistsIndex].qty){
-                alert('Available Quantity Exceeded');
-            }else{
-                form.value.products[isProductAlreadyExistsIndex].qty = parseInt(form.value.products[isProductAlreadyExistsIndex].qty) + parseInt(1)  
-            }
-        }
-        //  push new product into the list
-        else{
-            if(available_qty < 1){
-                alert("No Available Product");
-                return false
-            }
-                form.value.products.push({
-                    id :lstProducts.value[selectedIdx].id,
-                    name:lstProducts.value[selectedIdx].name,
-                    code:lstProducts.value[selectedIdx].code,
-                    sku:lstProducts.value[selectedIdx].sku,
-                    available_qty:lstProducts.value[selectedIdx].available_qty,
-                    price:0,
-                    qty:1
-                 })
-            
-        }
-     }
-    searchInput.value = "";
-    form.value.product_id = "";
-}
-const handleProductDelete = (id:number) => {
-    form.value.products =  form.value.products.filter((item) => item.id !== id )
-}
-const handleProductQty = (payload:{id:number,val:number}) => {
-    const  qtyIdx = form.value.products.findIndex((item)=> item.id == payload.id);
-    form.value.products[qtyIdx].qty=payload.val
+  const selectedIdx = lstProducts.value.findIndex((item: any) => { return item.id == form.value.product_id })
+  const available_qty = lstProducts.value[selectedIdx].available_qty || 0
+  if (selectedIdx != -1) {
+    const isProductAlreadyExistsIndex = form.value.products.findIndex((item: any) => { return item.id == lstProducts.value[selectedIdx].id })
+
+    // check product already  exist in the list
+    if (isProductAlreadyExistsIndex != -1) {
+      if (available_qty <= form.value.products[isProductAlreadyExistsIndex].qty)
+        alert('Available Quantity Exceeded')
+      else
+        form.value.products[isProductAlreadyExistsIndex].qty = Number(form.value.products[isProductAlreadyExistsIndex].qty) + 1
+    }
+
+    //  push new product into the list
+    else {
+      if (available_qty < 1) {
+        alert('No Available Product')
+
+        return false
+      }
+      form.value.products.push({
+        id: lstProducts.value[selectedIdx].id,
+        name: lstProducts.value[selectedIdx].name,
+        code: lstProducts.value[selectedIdx].code,
+        sku: lstProducts.value[selectedIdx].sku,
+        available_qty: lstProducts.value[selectedIdx].available_qty,
+        price: 0,
+        qty: 1,
+      })
+    }
+  }
+  searchInput.value = ''
+  form.value.product_id = ''
 }
 
-
-const handleTotalQty = (qty:number) => {
-    form.value.total_qty = qty;
+const handleProductDelete = (id: number) => {
+  form.value.products = form.value.products.filter((item: any) => item.id !== id)
 }
 
+const handleProductQty = (payload: { id: number;val: number }) => {
+  const qtyIdx = form.value.products.findIndex((item: any) => item.id == payload.id)
+
+  form.value.products[qtyIdx].qty = payload.val
+}
+
+const handleTotalQty = (qty: number) => {
+  form.value.total_qty = qty
+}
 
 const handleSubmit = () => {
-    loading.value = true;
-    saveDeliverable(form.value).then((res:any) => {
-        reset();
-        doFetchStores();
-        const id = res.data;
-        toast.success('Deliverable created successfully');
-        loading.value = false
-        let url = '/print/'+id+"?type="+"deliverable";
-        window.open(url, '_blank');
-    }).catch((err:any) => {
-        loading.value = false
-        if(err.response.status == "422"){
-            errorMessages.value =  err.response.data.errors
-        }else if(err.response.status == "401"){  
-            toast.error(err.response.data.message);
-        }else{
-            toast.error(err.message)
-        }
-    })
+  loading.value = true
+  saveDeliverable(form.value).then((res: any) => {
+    reset()
+    doFetchStores()
+
+    const id = res.data
+
+    toast.success('Deliverable created successfully')
+    loading.value = false
+
+    const url = `/print/${id}?type=` + 'deliverable'
+
+    window.open(url, '_blank')
+  }).catch((err: any) => {
+    loading.value = false
+    if (err.response.status == '422')
+      errorMessages.value = err.response.data.errors
+
+    else if (err.response.status == '401')
+      toast.error(err.response.data.message)
+    else
+      toast.error(err.message)
+  })
 }
 
-const getBranchesAndProducts = (id:number) => {
-    if(id){
-        fetchBranchesAndProductsByStoreID(id).then((res:any) => {
-        lstBranches.value = res.data.branches
-        lstProducts.value = res.data.products
-        }).catch((err:any) => {
-            toast.error(err.message)
-        })
-    }else{
-        lstBranches.value = []
-    }
-    
+const getBranchesAndProducts = (id: number | string) => {
+  if (id) {
+    fetchBranchesAndProductsByStoreID(Number(id)).then((res: any) => {
+      lstBranches.value = res.data.branches
+      lstProducts.value = res.data.products
+    }).catch((err: any) => {
+      toast.error(err.message)
+    })
+  }
+  else {
+    lstBranches.value = []
+  }
 }
 
 const reset = () => {
-    form.value.store_id = ''
-    form.value.branch_id = ''
-    form.value.sr_number = ''
-    form.value.date = new Date().toISOString().slice(0,10)
-    form.value.order_date = new Date().toISOString().slice(0,10)
-    form.value.total_qty = 0
-    form.value.products = []
-    lstBranches.value = []
-    lstStores.value = []
+  form.value.store_id = ''
+  form.value.branch_id = ''
+  form.value.sr_number = ''
+  form.value.date = new Date().toISOString().slice(0, 10)
+  form.value.order_date = new Date().toISOString().slice(0, 10)
+  form.value.total_qty = 0
+  form.value.products = []
+  lstBranches.value = []
+  lstStores.value = []
 }
 </script>
+
 <template>
-    <VCard title="New Deliverable">
-           <VCardText>
-             <VForm @submit.prevent="handleSubmit">
-     <VRow>
-        <VCol cols="4">
-             <label for="date">Date</label>
-             <VTextField
-               id="date"
-               type="date"
-               tabindex="1"
-               :error-messages="errorMessages.date"
-               v-model="form.date"
-               persistent-placeholder
-             />
-
-       </VCol>
-       <VCol cols="4">
-             <label for="order_date">Order Date</label>
-             <VTextField
-               id="order_date"
-               type="date"
-               tabindex="2"
-               :error-messages="errorMessages.order_date"
-               v-model="form.order_date"
-               persistent-placeholder
-             />
-
-       </VCol>
-       <VCol cols="4">
-             <label for="sr_number">Sr #</label>
-             <VTextField
-               id="sr_number"
-               type="text"
-               tabindex="3"
-               :error-messages="errorMessages.sr_number"
-               v-model="form.sr_number"
-               persistent-placeholder
-             />
-
-       </VCol>
-        <VCol cols="6">
-             <label for="name">Main Store</label>
-            <v-autocomplete
-            v-model="form.store_id"
-            :items="lstStores"
-            :item-title="item => item? `${item.code}-${item.name}`: ''"
-            item-value="id"
-            tabindex="4 "
-            :error-messages="errorMessages.store_id"
-            variant="outlined"
-            @update:menu="getBranchesAndProducts(form.store_id)"
-            >
-            </v-autocomplete>
-
-       </VCol>
-
-       <VCol v-if="lstBranches && lstBranches.length > 0" cols="6">
-             <label for="branches">Branches</label>
-            <v-autocomplete
-            v-model="form.branch_id"
-            :items="lstBranches"
-            :item-title="item => item? `${item.code}-${item.name}`: ''"
-            item-value="id"
-            tabindex="5"
-            :error-messages="errorMessages.branch_id"
-            variant="outlined"
-            >
-            </v-autocomplete>
-
-       </VCol>
-
-       <VCol v-if="lstBranches && lstBranches.length > 0" cols="12">
-             <label for="branches">Remarks</label>
-             <VTextField
-               id="remarks"
-               type="text"
-               tabindex="3"
-               :error-messages="errorMessages.remarks"
-               v-model="form.remarks"
-               persistent-placeholder
-             />
-
-       </VCol>
-       
-       <VCol v-if="lstBranches && lstBranches.length > 0" cols="12">
-            
-            <label for="products">Products</label>
-            <v-autocomplete
-                v-model="form.product_id"
-                v-model:search="searchInput"
-                :items="lstProducts"
-                tabindex="6"
-                :item-title="item => item? `${item.code}-${item.sku}-${item.name}`: ''"
-                item-value="id"
-                :error-messages="errorMessages.products"
-                variant="outlined"
-                @keyup.enter="handleSelectedProducts"
-                >
-            </v-autocomplete>
-        </VCol>
-        
-        <VCol v-if="lstBranches && lstBranches.length > 0" cols="12">
-            <SelectedProducts 
-            v-bind="form"
-            @delete-product="handleProductDelete"
-            @update-qty="handleProductQty"
-            :error-messages="errorMessages.products"
-            @total-qty="handleTotalQty"
+  <VCard title="New Deliverable">
+    <VCardText>
+      <VForm @submit.prevent="handleSubmit">
+        <VRow>
+          <VCol cols="4">
+            <label for="date">Date</label>
+            <VTextField
+              id="date"
+              v-model="form.date"
+              type="date"
+              tabindex="1"
+              :error-messages="errorMessages.date"
+              persistent-placeholder
             />
-        </VCol>
-        
-       <VCol
-        v-if="lstBranches && lstBranches.length > 0"
-         cols="12"
-         class="d-flex gap-4 justify-end align-center flex-wrap"
-       >
-         <VBtn 
-         type="submit" 
-         color="primary"
-         :loading="loading"
-         >
-           Save
-         </VBtn>
-       </VCol>
-     </VRow>
-   </VForm>
-           </VCardText>
-         </VCard>
- </template>
+          </VCol>
+          <VCol cols="4">
+            <label for="order_date">Order Date</label>
+            <VTextField
+              id="order_date"
+              v-model="form.order_date"
+              type="date"
+              tabindex="2"
+              :error-messages="errorMessages.order_date"
+              persistent-placeholder
+            />
+          </VCol>
+          <VCol cols="4">
+            <label for="sr_number">Sr #</label>
+            <VTextField
+              id="sr_number"
+              v-model="form.sr_number"
+              type="text"
+              tabindex="3"
+              :error-messages="errorMessages.sr_number"
+              persistent-placeholder
+            />
+          </VCol>
+          <VCol cols="6">
+            <label for="name">Main Store</label>
+            <VAutocomplete
+              v-model="form.store_id"
+              :items="lstStores"
+              :item-title="item => item ? `${item.code}-${item.name}` : ''"
+              item-value="id"
+              tabindex="4 "
+              :error-messages="errorMessages.store_id"
+              variant="outlined"
+              @update:menu="getBranchesAndProducts(form.store_id)"
+            />
+          </VCol>
+
+          <VCol
+            v-if="lstBranches && lstBranches.length > 0"
+            cols="6"
+          >
+            <label for="branches">Branches</label>
+            <VAutocomplete
+              v-model="form.branch_id"
+              :items="lstBranches"
+              :item-title="item => item ? `${item.code}-${item.name}` : ''"
+              item-value="id"
+              tabindex="5"
+              :error-messages="errorMessages.branch_id"
+              variant="outlined"
+            />
+          </VCol>
+
+          <VCol
+            v-if="lstBranches && lstBranches.length > 0"
+            cols="12"
+          >
+            <label for="branches">Remarks</label>
+            <VTextField
+              id="remarks"
+              v-model="form.remarks"
+              type="text"
+              tabindex="3"
+              :error-messages="errorMessages.remarks"
+              persistent-placeholder
+            />
+          </VCol>
+
+          <VCol
+            v-if="lstBranches && lstBranches.length > 0"
+            cols="12"
+          >
+            <label for="products">Products</label>
+            <VAutocomplete
+              v-model="form.product_id"
+              v-model:search="searchInput"
+              :items="lstProducts"
+              tabindex="6"
+              :item-title="item => item ? `${item.code}-${item.sku}-${item.name}` : ''"
+              item-value="id"
+              :error-messages="errorMessages.products"
+              variant="outlined"
+              @keyup.enter="handleSelectedProducts"
+            />
+          </VCol>
+
+          <VCol
+            v-if="lstBranches && lstBranches.length > 0"
+            cols="12"
+          >
+            <SelectedProducts
+              v-bind="form"
+              :error-messages="errorMessages.products"
+              @delete-product="handleProductDelete"
+              @update-qty="handleProductQty"
+              @total-qty="handleTotalQty"
+            />
+          </VCol>
+
+          <VCol
+            v-if="lstBranches && lstBranches.length > 0"
+            cols="12"
+            class="d-flex gap-4 justify-end align-center flex-wrap"
+          >
+            <VBtn
+              type="submit"
+              color="primary"
+              :loading="loading"
+            >
+              Save
+            </VBtn>
+          </VCol>
+        </VRow>
+      </VForm>
+    </VCardText>
+  </VCard>
+</template>
