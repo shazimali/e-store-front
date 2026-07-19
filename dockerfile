@@ -18,6 +18,9 @@ COPY . .
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
+ARG VITE_RECAPTCHA_SITE_KEY
+ENV VITE_RECAPTCHA_SITE_KEY=$VITE_RECAPTCHA_SITE_KEY
+
 # Build
 RUN npx tsc -p tsconfig.scripts.json \
     && node scripts-dist/build-icons.cjs \

@@ -63,6 +63,7 @@ jobs:
             ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
           build-args: |
             VITE_API_URL=https://api.everydaypak.com/api
+            VITE_RECAPTCHA_SITE_KEY=${{ secrets.VITE_RECAPTCHA_SITE_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
