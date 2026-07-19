@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue'
-import { toast } from 'vue3-toastify'
 import { commaFormate } from '@/@core/utils/helpers'
 import { fetchInvoiceByIDForPrint } from '@/services/InvoiceService'
+import type { CSSProperties } from 'vue'
+import { toast } from 'vue3-toastify'
 
 // import { numberToWords } from '@core/utils/numberToWords';
 
@@ -64,6 +64,8 @@ onMounted(() => {
       total_price_sx_sale_tax.value += price
       total_price.value = Number(total_price.value) + price + tax
       total_sale_tax.value += tax
+
+      
     })
     data.return_products.forEach((r_pr: any) => {
       total_sale_tax.value -= (Number(r_pr.price) * Number(r_pr.qty)) / 100 * Number(r_pr.sale_tax)
