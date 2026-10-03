@@ -1,16 +1,15 @@
 <script setup lang="ts">
+import type { InvoiceProduct } from '@/interfaces/InvoiceProduct'
 import { toast } from 'vue3-toastify'
 import type { ICompany } from '../../interfaces/ICompany'
 import { fetchBranchesByStoreID, fetchProductsByBranchID, fetchStoresAndCompany, saveInvoice } from '../../services/InvoiceService'
 import ReturnSelectedProducts from './returnSelectedProducts.vue'
 import SelectedProducts from './selectedProducts.vue'
-import type { IBranch } from '@/interfaces/IBranch'
-import type { IStore } from '@/interfaces/IStore'
-import type { InvoiceProduct } from '@/interfaces/InvoiceProduct'
 
 const errorMessages = ref<Record<string, any>>({})
 const lstProducts = ref<InvoiceProduct[]>([])
 const lstStores = ref<any[]>()
+
 const selectedStore = ref<any>()
 const companyInfo = ref<ICompany>()
 const lstBranches = ref<any[]>([])
