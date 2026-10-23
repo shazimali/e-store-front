@@ -9,7 +9,6 @@ import SelectedProducts from './selectedProducts.vue'
 const errorMessages = ref<Record<string, any>>({})
 const lstProducts = ref<InvoiceProduct[]>([])
 const lstStores = ref<any[]>()
-
 const selectedStore = ref<any>()
 const companyInfo = ref<ICompany>()
 const lstBranches = ref<any[]>([])
